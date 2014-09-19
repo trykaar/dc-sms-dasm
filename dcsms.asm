@@ -429,13 +429,13 @@ _LABEL_2E9_:
 	ld a, $7F
 	out ($BF), a
 	ld hl, $C500
-	call _LABEL_9BC_
+	call OUTI64
 	ld a, $80
 	out ($BF), a
 	ld a, $7F
 	out ($BF), a
 	ld hl, $C540
-	call _LABEL_93C_
+	call OUTI128
 	ret
 
 _LABEL_308_:
@@ -617,7 +617,7 @@ _LABEL_42C_:
 	ld ($C0A0), a
 	ld hl, $C020
 	ld de, $C060
-	call _LABEL_AFD_
+	call LDI32
 	ld a, $04
 	ld ($C0A2), a
 	ret
@@ -632,7 +632,7 @@ _LABEL_443_:
 	ld ($C020), a
 	ld hl, $C020
 	ld de, $C021
-	call _LABEL_AFD_
+	call LDI32
 	ld hl, $C01E
 	set 0, (hl)
 	ld a, $04
@@ -644,7 +644,7 @@ _LABEL_461_:
 	ld ($C0A0), a
 	ld hl, $C020
 	ld de, $C060
-	call _LABEL_AFD_
+	call LDI32
 	ld a, $04
 	ld ($C0A2), a
 	ret
@@ -862,8 +862,8 @@ _LABEL_59D_:
 	inc hl
 	ld de, $C502
 	ld (hl), $00
-	call _LABEL_A3D_
-	call _LABEL_ABD_
+	call LDI129
+	call LDI64
 	ret
 
 _LABEL_5DE_:
@@ -881,8 +881,8 @@ _LABEL_5DE_:
 	inc hl
 	ld de, $C502
 	ld (hl), $00
-	call _LABEL_A3D_
-	call _LABEL_ABD_
+	call LDI129
+	call LDI64
 	ret
 
 _LABEL_608_:
@@ -1107,7 +1107,7 @@ _LABEL_784_:
 	out ($BF), a
 	ld hl, $C020
 	ld c, $BE
-	jp _LABEL_9FC_
+	jp OUTI32
 
 _LABEL_793_:
 	ld a, (hl)
@@ -1259,7 +1259,8 @@ _LABEL_82F_:
 	jp nz, _LABEL_820_
 	ret
 
-_LABEL_83C_:
+; Unrolled loop
+OUTI256:
 	outi
 	outi
 	outi
@@ -1388,7 +1389,7 @@ _LABEL_83C_:
 	outi
 	outi
 	outi
-_LABEL_93C_:
+OUTI128:
 	outi
 	outi
 	outi
@@ -1437,7 +1438,7 @@ _LABEL_93C_:
 	outi
 	outi
 	outi
-_LABEL_99C_:
+OUTI80:
 	outi
 	outi
 	outi
@@ -1454,7 +1455,7 @@ _LABEL_99C_:
 	outi
 	outi
 	outi
-_LABEL_9BC_:
+OUTI64:
 	outi
 	outi
 	outi
@@ -1487,7 +1488,7 @@ _LABEL_9BC_:
 	outi
 	outi
 	outi
-_LABEL_9FC_:
+OUTI32:
 	outi
 	outi
 	outi
@@ -1498,39 +1499,40 @@ _LABEL_9FC_:
 	outi
 	outi
 	outi
-_LABEL_A10_:
+OUTI22:
 	outi
 	outi
 	outi
 	outi
 	outi
 	outi
-_LABEL_A1C_:
+OUTI16:
 	outi
 	outi
 	outi
 	outi
 	outi
 	outi
-_LABEL_A28_:
+OUTI10:
 	outi
 	outi
-_LABEL_A2C_:
+OUTI8:
 	outi
 	outi
-_LABEL_A30_:
+OUTI6:
 	outi
 	outi
-_LABEL_A34_:
+OUTI4:
 	outi
 	outi
 	outi
 	outi
 	ret
 
-_LABEL_A3D_:
+; Unrolled loop
+LDI129:
 	ldi
-_LABEL_A3F_:
+LDI128:
 	ldi
 	ldi
 	ldi
@@ -1547,7 +1549,7 @@ _LABEL_A3F_:
 	ldi
 	ldi
 	ldi
-_LABEL_A5F_:
+LDI112:
 	ldi
 	ldi
 	ldi
@@ -1571,7 +1573,7 @@ _LABEL_A5F_:
 	ldi
 	ldi
 	ldi
-_LABEL_A8D_:
+LDI88:
 	ldi
 	ldi
 	ldi
@@ -1580,7 +1582,7 @@ _LABEL_A8D_:
 	ldi
 	ldi
 	ldi
-_LABEL_A9D_:
+LDI80:
 	ldi
 	ldi
 	ldi
@@ -1597,7 +1599,7 @@ _LABEL_A9D_:
 	ldi
 	ldi
 	ldi
-_LABEL_ABD_:
+LDI64:
 	ldi
 	ldi
 	ldi
@@ -1626,14 +1628,14 @@ _LABEL_ABD_:
 	ldi
 	ldi
 	ldi
-_LABEL_AF5_:
+LDI36:
 	ldi
 	ldi
 	ldi
 	ldi
-_LABEL_AFD_:
+LDI32:
 	ldi
-_LABEL_AFF_:
+LDI31:
 	ldi
 	ldi
 	ldi
@@ -1649,7 +1651,7 @@ _LABEL_AFF_:
 	ldi
 	ldi
 	ldi
-_LABEL_B1D_:
+LDI16:
 	ldi
 	ldi
 	ldi
@@ -1658,12 +1660,12 @@ _LABEL_B1D_:
 	ldi
 	ldi
 	ldi
-_LABEL_B2D_:
+LDI8:
 	ldi
 	ldi
-_LABEL_B31_:
+LDI6:
 	ldi
-_LABEL_B33_:
+LDI5:
 	ldi
 	ldi
 	ldi
@@ -2139,13 +2141,13 @@ _LABEL_F76_:
 	djnz _LABEL_F76_
 	ld hl, $C935
 	ld de, $C945
-	call _LABEL_B1D_
+	call LDI16
 	ld hl, $C935
 	ld de, $C955
-	call _LABEL_B1D_
+	call LDI16
 	ld hl, $C935
 	ld de, $C965
-	call _LABEL_B1D_
+	call LDI16
 	ld hl, $C935
 	call _LABEL_1000_
 	ld hl, $C945
@@ -2214,7 +2216,7 @@ _LABEL_101A_:
 	inc hl
 	ld de, $C902
 	ld (hl), $00
-	call _LABEL_B31_
+	call LDI6
 	ld a, ($C900)
 	cp $0E
 	jr nz, _LABEL_1034_
@@ -2226,11 +2228,11 @@ _LABEL_1034_:
 	inc hl
 	ld de, $C90A
 	ld (hl), $00
-	call _LABEL_B31_
+	call LDI6
 	ld hl, $C910
 	ld de, $C911
 	ld (hl), $00
-	call _LABEL_AF5_
+	call LDI36
 	jp _LABEL_48F0_
 
 ; Data from 1050 to 1057 (8 bytes)
@@ -2278,7 +2280,7 @@ _LABEL_108F_:
 	ld hl, $C631
 	ld de, $C632
 	ld (hl), $00
-	call _LABEL_B33_
+	call LDI5
 	ld hl, $8064
 	call _LABEL_750_
 	call _LABEL_27E3_
@@ -2454,12 +2456,12 @@ _LABEL_1256_:
 	add hl, de
 	djnz _LABEL_1256_
 	ld c, $BE
-	call _LABEL_A10_
+	call OUTI22
 	ld de, $3A24
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $1990
-	call _LABEL_A2C_
+	call OUTI8
 	ld hl, ($C01C)
 	ld h, $00
 	call _LABEL_2C98_
@@ -2477,7 +2479,7 @@ _LABEL_1256_:
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $AE3B
-	call _LABEL_A28_
+	call OUTI10
 	ld hl, $C62D
 	ld e, $00
 	ld b, $02
@@ -2620,17 +2622,17 @@ _LABEL_131F_:
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $AE45
-	call _LABEL_A1C_
+	call OUTI16
 	ld de, $3CAA
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $AE55
-	call _LABEL_A30_
+	call OUTI6
 	ld de, $3D2A
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $AE5B
-	call _LABEL_A34_
+	call OUTI4
 	ld hl, $4F98
 	ld ($C100), hl
 	ld a, $C4
@@ -2657,9 +2659,9 @@ _LABEL_13A4_:
 _LABEL_13A9_:
 	ld ($FFFF), a
 	ld c, $BE
-	call _LABEL_93C_
-	call _LABEL_93C_
-	call _LABEL_93C_
+	call OUTI128
+	call OUTI128
+	call OUTI128
 	jr _LABEL_13BF_
 
 _LABEL_13B9_:
@@ -2685,7 +2687,7 @@ _LABEL_13BF_:
 	ld hl, $ADF3
 	add hl, de
 	ld de, $C060
-	call _LABEL_AFD_
+	call LDI32
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
@@ -2775,15 +2777,15 @@ _LABEL_149F_:
 _LABEL_14A7_:
 	ld ($FFFF), a
 	ld c, $BE
-	call _LABEL_93C_
-	call _LABEL_93C_
-	call _LABEL_93C_
+	call OUTI128
+	call OUTI128
+	call OUTI128
 	ex de, hl
 	ld de, $1400
 	rst $08	; _LABEL_8_
-	call _LABEL_93C_
-	call _LABEL_93C_
-	call _LABEL_93C_
+	call OUTI128
+	call OUTI128
+	call OUTI128
 	ld a, $06
 	ld ($FFFF), a
 	ld a, ($C01D)
@@ -2901,14 +2903,14 @@ _LABEL_1566_:
 	ld hl, $D300
 	ld de, $D301
 	ld (hl), $00
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3F_
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI128
 	call _LABEL_42C_
 	ld a, $11
 	ld ($C018), a
@@ -3043,7 +3045,7 @@ _LABEL_16F4_:
 	rst $08	; _LABEL_8_
 	ld c, $BE
 	ld hl, $1990
-	call _LABEL_A2C_
+	call OUTI8
 	ld hl, ($C01C)
 	ld h, $00
 	call _LABEL_2C98_
@@ -3066,11 +3068,11 @@ _LABEL_16F4_:
 _LABEL_17F5_:
 	add hl, de
 	djnz _LABEL_17F5_
-	call _LABEL_A10_
+	call OUTI22
 	ld de, $3D48
 	rst $08	; _LABEL_8_
 	ld hl, $1998
-	call _LABEL_A30_
+	call OUTI6
 	ld hl, ($C621)
 	call _LABEL_2C6D_
 	ld e, $00
@@ -3110,7 +3112,7 @@ _LABEL_17F5_:
 	ld de, $3D60
 	rst $08	; _LABEL_8_
 	ld hl, $199E
-	call _LABEL_A30_
+	call OUTI6
 	ld a, ($C618)
 	ld hl, ($C62F)
 	add a, l
@@ -3128,7 +3130,7 @@ _LABEL_17F5_:
 	ld de, $3D6E
 	rst $08	; _LABEL_8_
 	ld hl, $19A4
-	call _LABEL_A30_
+	call OUTI6
 	ld a, ($C61A)
 	ld hl, ($C630)
 	add a, l
@@ -3146,7 +3148,7 @@ _LABEL_17F5_:
 	ld de, $3D8A
 	rst $08	; _LABEL_8_
 	ld hl, $19AA
-	call _LABEL_A28_
+	call OUTI10
 	ld hl, $C62D
 	ld e, $00
 	ld b, $02
@@ -3170,7 +3172,7 @@ _LABEL_18B2_:
 	ld de, $3DA6
 	rst $08	; _LABEL_8_
 	ld hl, $19B6
-	call _LABEL_A28_
+	call OUTI10
 	ld e, $00
 	ld a, ($C620)
 	rrca
@@ -3318,14 +3320,14 @@ _LABEL_1B80_:
 	ld hl, $D700
 	ld de, $D701
 	ld (hl), $00
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3F_
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI128
 	ld a, $07
 	ld ($FFFF), a
 	ld a, ($C0D3)
@@ -3342,7 +3344,7 @@ _LABEL_1B80_:
 	ld b, $0C
 _LABEL_1BC2_:
 	push bc
-	call _LABEL_B1D_
+	call LDI16
 	ex de, hl
 	ld bc, $0010
 	add hl, bc
@@ -3386,7 +3388,7 @@ _LABEL_1BD5_:
 	ld hl, $C631
 	ld de, $C632
 	ld (hl), $00
-	call _LABEL_B33_
+	call LDI5
 	ld a, $02
 	ld ($FFFF), a
 	ld hl, $8064
@@ -4587,14 +4589,14 @@ _LABEL_2492_:
 	ld hl, $D700
 	ld de, $D701
 	ld (hl), $00
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3D_
-	call _LABEL_A3F_
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI128
 	ld a, $03
 	ld ($FFFF), a
 	call GetRandomNumber
@@ -4655,11 +4657,11 @@ _LABEL_2505_:
 	ld hl, $D300
 	ld de, $D301
 	ld (hl), $00
-	call _LABEL_AFF_
+	call LDI31
 	ld hl, $D6E0
 	ld de, $D6E1
 	ld (hl), $00
-	call _LABEL_AFF_
+	call LDI31
 	ld hl, $D31F
 	ld de, $001F
 	ld b, $1F
@@ -4742,7 +4744,7 @@ _LABEL_259A_:
 	ld b, $10
 _LABEL_259C_:
 	push bc
-	call _LABEL_B1D_
+	call LDI16
 	ex de, hl
 	ld bc, $0010
 	add hl, bc
@@ -4854,7 +4856,7 @@ _LABEL_265E_:
 	ld hl, $C980
 	ld de, $C981
 	ld (hl), $00
-	call _LABEL_A5F_
+	call LDI112
 	ld a, $02
 	ld ($FFFF), a
 	ld a, ($C01C)
@@ -5011,7 +5013,7 @@ _LABEL_2756_:
 	ld de, $276B
 	add hl, de
 	ld de, $C078
-	jp _LABEL_B2D_
+	jp LDI8
 
 ; Data from 276B to 27E2 (120 bytes)
 .db $04 $08 $09 $1E $02 $03 $07 $0B $20 $34 $38 $3C $02 $03 $07 $0B
@@ -5067,8 +5069,8 @@ _LABEL_2826_:
 	ld h, (hl)
 	ld l, a
 	ld c, $BE
-	call _LABEL_83C_
-	jp _LABEL_93C_
+	call OUTI256
+	jp OUTI128
 
 ; Data from 283A to 28B1 (120 bytes)
 .db $0A $80 $8A $81 $0A $83 $8A $84 $0A $86 $8A $87 $0A $89 $8A $8A
@@ -5124,7 +5126,7 @@ _LABEL_28E8_:
 	ex de, hl
 _LABEL_28F4_:
 	ld c, $BE
-	call _LABEL_99C_
+	call OUTI80
 	ld ($C0D0), hl
 	ret
 
@@ -5226,10 +5228,10 @@ _LABEL_2A22_:
 	ld d, (hl)
 	ex de, hl
 	ld de, $C800
-	call _LABEL_A8D_
+	call LDI88
 	ld hl, $86C5
 	ld de, $C860
-	jp _LABEL_A9D_
+	jp LDI80
 
 ; Data from 2A5C to 2A6B (16 bytes)
 .db $27 $87 $D1 $89 $3B $8A $0E $8E $78 $8E $32 $92 $9C $92 $EE $95
@@ -6293,7 +6295,7 @@ _LABEL_310F_:
 	ld d, h
 	inc de
 	ld (hl), $00
-	jp _LABEL_AFF_
+	jp LDI31
 
 _LABEL_311A_:
 	call _LABEL_481B_
@@ -9604,7 +9606,7 @@ _LABEL_54C8_:
 	ex de, hl
 	push ix
 	pop hl
-	call _LABEL_AFD_
+	call LDI32
 	xor a
 	ret
 
