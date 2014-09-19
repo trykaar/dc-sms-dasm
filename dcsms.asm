@@ -1,3 +1,10 @@
+; Definitions
+
+; Random Number Generation
+.define RNGSeed	$C016
+
+; End Definitions
+
 .MEMORYMAP
 SLOTSIZE $4000
 SLOT 0 $0000
@@ -542,7 +549,7 @@ _LABEL_3B3_:
 
 _LABEL_3BE_:
 	ld d, $01
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 _LABEL_3C5_:
 	or a
@@ -554,7 +561,7 @@ _LABEL_3C5_:
 _LABEL_3CD_:
 	ld a, d
 	ld ($C007), a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $1F
 	add a, $10
 	ld ($C00A), a
@@ -1670,9 +1677,10 @@ _LABEL_B33_:
 .db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8
 .db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $C9
 
-_LABEL_B7B_:
+; $B7B Get Random Number
+GetRandomNumber:
 	push hl
-	ld hl, ($C016)
+	ld hl, (RNGSeed)
 	ld a, h
 	rrca
 	rrca
@@ -1691,7 +1699,7 @@ _LABEL_B7B_:
 _LABEL_B92_:
 	ld a, r
 	xor l
-	ld ($C016), hl
+	ld (RNGSeed), hl
 	pop hl
 	ret
 
@@ -2184,7 +2192,7 @@ _LABEL_1000_:
 _LABEL_1004_:
 	push bc
 	push hl
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ld c, a
 	ld b, $00
@@ -2248,7 +2256,7 @@ _LABEL_1058_:
 	ld a, ($C01C)
 	dec a
 	jr z, _LABEL_108F_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 _LABEL_108F_:
 	ld ($C01D), a
@@ -3301,7 +3309,7 @@ _LABEL_1B20_:
 	ld a, ($C01C)
 	dec a
 	jr z, _LABEL_1B80_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 _LABEL_1B80_:
 	ld ($C01D), a
@@ -3932,14 +3940,14 @@ _LABEL_1FB8_:
 	jr _LABEL_1FDD_
 
 _LABEL_1FD5_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	add a, $06
 	ld b, a
 _LABEL_1FDD_:
 	push bc
 	push hl
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ld e, a
 	ld d, $00
@@ -3978,9 +3986,9 @@ _LABEL_1FDD_:
 .db $26 $00 $29 $11 $12 $20 $19 $5E $23 $56 $C9
 
 _LABEL_207D_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	ld l, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	ld h, a
 	ld de, $D300
@@ -4589,7 +4597,7 @@ _LABEL_2492_:
 	call _LABEL_A3F_
 	ld a, $03
 	ld ($FFFF), a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $30
 	ld e, a
 	ld d, $00
@@ -4611,7 +4619,7 @@ _LABEL_24C5_:
 	push hl
 	ld hl, $24E4
 	push hl
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ld b, a
 	ld c, $00
@@ -4635,7 +4643,7 @@ _LABEL_24E4_:
 	inc hl
 	ld hl, $2505
 	push hl
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $1F
 	ld b, a
 	ld c, $00
@@ -4696,7 +4704,7 @@ _LABEL_2559_:
 	dec a
 	ld ($C605), a
 	jr z, _LABEL_2571_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	cp $03
 	jr nc, _LABEL_257A_
@@ -4717,7 +4725,7 @@ _LABEL_257E_:
 	jr c, _LABEL_2595_
 	inc a
 	ld d, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $3F
 	sub d
 	jr nc, _LABEL_2595_
@@ -4819,7 +4827,7 @@ _LABEL_25EB_:
 .db $9A $25 $00 $D5 $C5 $25 $00 $D3 $E0 $25 $10 $D3 $AA $25 $10 $D5
 
 _LABEL_263B_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	inc a
 	ld b, a
@@ -4827,7 +4835,7 @@ _LABEL_2642_:
 	call _LABEL_26DD_
 	ld (hl), $8C
 	djnz _LABEL_2642_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	inc a
 	ld b, a
@@ -4835,7 +4843,7 @@ _LABEL_2650_:
 	call _LABEL_26DD_
 	ld (hl), $8D
 	djnz _LABEL_2650_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $01
 	inc a
 	ld b, a
@@ -4861,7 +4869,7 @@ _LABEL_265E_:
 	ld d, (hl)
 	exx
 	ld hl, $C980
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	ld b, a
 	ld a, ($C01C)
@@ -4882,7 +4890,7 @@ _LABEL_26A2_:
 	ld c, $90
 _LABEL_26A8_:
 	exx
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $3F
 	ld l, a
 	ld h, $00
@@ -4890,7 +4898,7 @@ _LABEL_26A8_:
 	ld a, (hl)
 	cp $20
 	jr nc, _LABEL_26C1_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ld a, (hl)
 	jr nz, _LABEL_26C1_
@@ -4916,9 +4924,9 @@ _LABEL_26C1_:
 	ret
 
 _LABEL_26DD_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	ld l, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	ld h, a
 	ld de, $D300
@@ -6351,7 +6359,7 @@ _LABEL_3199_:
 	ret
 
 _LABEL_31AA_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	jp z, _LABEL_32C4_
 	dec a
@@ -6481,7 +6489,7 @@ _LABEL_327F_:
 	and $7F
 	cp $59
 	ret nz
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ret nz
 	pop hl
@@ -6648,7 +6656,7 @@ _LABEL_3424_:
 	cp $53
 	jr z, _LABEL_343D_
 _LABEL_3431_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	ld d, a
 	ld a, ($C637)
@@ -6746,7 +6754,7 @@ _LABEL_34C7_:
 
 _LABEL_34CF_:
 	ld (hl), $04
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	inc a
 	ld b, a
@@ -6757,7 +6765,7 @@ _LABEL_34DD_:
 	add a, d
 	djnz _LABEL_34DD_
 	ld d, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $03
 	inc a
 	ld b, a
@@ -6818,13 +6826,13 @@ _LABEL_3548_:
 	ld d, $30
 _LABEL_354A_:
 	ld (hl), $04
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	cp $09
 	jr nc, _LABEL_354A_
 	add a, d
 	ld d, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $10
 	add a, d
 	ld d, a
@@ -6892,7 +6900,7 @@ _LABEL_35CD_:
 	cp $1C
 	jp z, _LABEL_372E_
 _LABEL_35FD_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $7F
 	ld b, a
 	ld hl, ($C638)
@@ -7471,7 +7479,7 @@ _LABEL_3AAC_:
 	cp $1C
 	jp z, _LABEL_3C74_
 _LABEL_3AE9_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $7F
 	ld b, a
 	ld hl, ($C638)
@@ -8101,7 +8109,7 @@ _LABEL_4848_:
 	ld a, $01
 _LABEL_4851_:
 	ld e, a
-	call _LABEL_B7B_
+	call GetRandomNumber
 	ld b, a
 	and $3F
 	jr z, _LABEL_4863_
@@ -9339,7 +9347,7 @@ _LABEL_5291_:
 	ret
 
 _LABEL_52A1_:
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $40
 	jr c, _LABEL_52B2_
 	cp $80
@@ -9416,7 +9424,7 @@ _LABEL_5302_:
 	ld a, $80
 	sub b
 	push af
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $7F
 	ld b, a
 	pop af
@@ -10224,7 +10232,7 @@ _LABEL_5959_:
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $D8
 	jr nc, _LABEL_5989_
 	ld (ix+30), $01
@@ -10454,7 +10462,7 @@ _LABEL_5DE5_:
 	ld a, ($C634)
 	or a
 	jr nz, _LABEL_5E32_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $40
 	jr nc, _LABEL_5E32_
 	ld (ix+24), $10
@@ -10462,7 +10470,7 @@ _LABEL_5DE5_:
 	ld (ix+1), $5E
 	dec (ix+24)
 	ret nz
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $0F
 	ld b, $10
 	add a, b
@@ -10587,7 +10595,7 @@ _LABEL_5F46_:
 	jr nc, _LABEL_5F67_
 	call _LABEL_55BF_
 	jr c, _LABEL_5F67_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_5F67_
 	ld (ix+0), $69
@@ -10807,7 +10815,7 @@ _LABEL_6144_:
 	jr nc, _LABEL_6177_
 	call _LABEL_55BF_
 	jr c, _LABEL_6177_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_6160_
 	ld (ix+0), $C9
@@ -10960,7 +10968,7 @@ _LABEL_626F_:
 	ld a, ($C636)
 	or a
 	jr nz, _LABEL_62BD_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $18
 	jp nc, _LABEL_62BD_
 	ld (ix+24), $10
@@ -10968,7 +10976,7 @@ _LABEL_626F_:
 	ld (ix+1), $62
 	dec (ix+24)
 	ret nz
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	ld b, $08
 	add a, b
@@ -11320,7 +11328,7 @@ _LABEL_7012_:
 	jr z, _LABEL_709E_
 	cp $18
 	jr z, _LABEL_702B_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_709E_
 _LABEL_702B_:
@@ -11333,7 +11341,7 @@ _LABEL_702B_:
 	ld a, h
 	or l
 	jr z, _LABEL_709E_
-	call _LABEL_B7B_
+	call GetRandomNumber
 	and $07
 	ld b, $08
 	push af
