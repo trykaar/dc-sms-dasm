@@ -1,3 +1,6 @@
+; Dragon Crystal Disassembly
+; Disassembled with Emulicious 
+
 ; Definitions
 
 ; Random Number Generation
@@ -6,18 +9,24 @@
 ; End Definitions
 
 .MEMORYMAP
-SLOTSIZE $4000
+SLOTSIZE $4001
 SLOT 0 $0000
-SLOT 1 $4000
+SLOTSIZE $3FFF
+SLOT 1 $4001
+SLOTSIZE $4000
 SLOT 2 $8000
 DEFAULTSLOT 2
 .ENDME
+
 .ROMBANKMAP
 BANKSTOTAL 8
+BANKSIZE $4001
+BANKS 1
+BANKSIZE $3FFF
+BANKS 1
 BANKSIZE $4000
-BANKS 8
+BANKS 6
 .ENDRO
-
 
 .BANK 0 SLOT 0
 .ORG $0000
@@ -89,6 +98,7 @@ _LABEL_7E_:
 	pop af
 	retn
 
+_LABEL_81_:
 	di
 	ld sp, $DFF0
 	im 1
@@ -680,9 +690,15 @@ _LABEL_49A_:
 	ld ($C0A2), a
 	ret
 
-; Data from 4A9 to 4BC (20 bytes)
-.db $3E $06 $32 $A0 $C0 $21 $20 $C0 $11 $60 $C0 $CD $FD $0A $3E $04
-.db $32 $A2 $C0 $C9
+_LABEL_4A9_:
+	ld a, $06
+	ld ($C0A0), a
+	ld hl, $C020
+	ld de, $C060
+	call LDI32
+	ld a, $04
+	ld ($C0A2), a
+	ret
 
 _LABEL_4BD_:
 	ld hl, $C0A2
@@ -6875,9 +6891,21 @@ _LABEL_357C_:
 	ld ($DD05), a
 	ret
 
-; Data from 35B2 to 35CC (27 bytes)
-.db $CD $2B $3F $D0 $CD $61 $04 $DD $36 $00 $C2 $DD $36 $01 $35 $C9
-.db $3A $A0 $C0 $B7 $C0 $3E $0D $32 $18 $C0 $C9
+_LABEL_35B2_:
+	call _LABEL_3F2B_
+	ret nc
+	call _LABEL_461_
+	ld (ix+0), $C2
+	ld (ix+1), $35
+	ret
+
+_LABEL_35C2_:
+	ld a, ($C0A0)
+	or a
+	ret nz
+	ld a, $0D
+	ld ($C018), a
+	ret
 
 _LABEL_35CD_:
 	ld ($C638), hl
