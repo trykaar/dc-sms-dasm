@@ -717,6 +717,7 @@ _LABEL_4BD_:
 	ld a, (hl)
 	cp $04
 	ret nz
+_LABEL_4DC_:
 	xor a
 	ld ($C0A1), a
 	ld ($C0A0), a
@@ -1678,6 +1679,7 @@ LDI16:
 	ldi
 LDI8:
 	ldi
+LDI7:
 	ldi
 LDI6:
 	ldi
@@ -3994,14 +3996,40 @@ _LABEL_1FDD_:
 	djnz _LABEL_1FDD_
 	ret
 
-; Data from 2012 to 207C (107 bytes)
-.db $C8 $56 $9D $5C $E6 $5E $E7 $60 $3E $58 $90 $5E $1A $63 $E7 $64
-.db $A6 $59 $BB $5E $7E $67 $F2 $69 $CB $6B $47 $6D $C4 $60 $F3 $62
-.db $6B $6F $E3 $72 $A9 $64 $30 $67 $DE $70 $50 $75 $CF $69 $A0 $6B
-.db $01 $71 $73 $75 $C8 $64 $57 $67 $40 $5B $48 $6F $24 $71 $96 $75
-.db $D1 $77 $3E $02 $32 $FF $FF $2A $1C $C0 $2B $26 $00 $29 $29 $29
-.db $29 $11 $70 $9A $19 $CD $7B $0B $E6 $0F $5F $16 $00 $19 $7E $6F
-.db $26 $00 $29 $11 $12 $20 $19 $5E $23 $56 $C9
+; Jump Table from 2012 to 2053 (33 entries, indexed by unknown)
+.dw _LABEL_56C8_ _LABEL_5C9D_ _LABEL_5EE6_ _LABEL_60E7_ _LABEL_583E_ _LABEL_5E90_ _LABEL_631A_ _LABEL_64E7_
+.dw _LABEL_59A6_ _LABEL_5EBB_ _LABEL_677E_ _LABEL_69F2_ _LABEL_6BCB_ _LABEL_6D47_ _LABEL_60C4_ _LABEL_62F3_
+.dw _LABEL_6F6B_ _LABEL_72E3_ _LABEL_64A9_ _LABEL_6730_ _LABEL_70DE_ _LABEL_7550_ _LABEL_69CF_ _LABEL_6BA0_
+.dw _LABEL_7101_ _LABEL_7573_ _LABEL_64C8_ _LABEL_6757_ _LABEL_5B40_ _LABEL_6F48_ _LABEL_7124_ _LABEL_7596_
+.dw _LABEL_77D1_
+
+_LABEL_2054_:
+	ld a, $02
+	ld ($FFFF), a
+	ld hl, ($C01C)
+	dec hl
+	ld h, $00
+	add hl, hl
+	add hl, hl
+	add hl, hl
+	add hl, hl
+	ld de, $9A70
+	add hl, de
+	call GetRandomNumber
+	and $0F
+	ld e, a
+	ld d, $00
+	add hl, de
+	ld a, (hl)
+	ld l, a
+	ld h, $00
+	add hl, hl
+	ld de, $2012
+	add hl, de
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ret
 
 _LABEL_207D_:
 	call GetRandomNumber
@@ -4225,17 +4253,110 @@ _LABEL_2198_:
 	ld ($CAC5), a
 	ret
 
-; Data from 21BF to 225B (157 bytes)
-.db $21 $00 $D3 $01 $00 $04 $C5 $41 $7E $FE $03 $20 $02 $36 $02 $CB
-.db $FE $23 $10 $F4 $C1 $10 $EF $21 $81 $C9 $11 $02 $00 $06 $36 $7E
-.db $FE $03 $20 $02 $36 $02 $19 $10 $F6 $21 $00 $D7 $11 $01 $D7 $36
-.db $00 $CD $3D $0A $CD $3D $0A $CD $3D $0A $CD $3D $0A $CD $3D $0A
-.db $CD $3D $0A $CD $3D $0A $C3 $3F $0A $21 $00 $D3 $01 $00 $04 $C5
-.db $41 $7E $E6 $7F $FE $02 $20 $02 $3E $03 $77 $23 $10 $F3 $C1 $10
-.db $EE $21 $00 $D3 $06 $20 $C5 $E5 $EB $21 $00 $04 $19 $E5 $EB $11
-.db $20 $00 $7E $D9 $4F $57 $1E $00 $D9 $19 $D1 $06 $20 $C5 $7C $FE
-.db $D7 $7E $D9 $30 $01 $5F $CD $ED $23 $4A $53 $D9 $12 $01 $20 $00
-.db $EB $09 $EB $09 $C1 $10 $E6 $E1 $23 $C1 $10 $CA $C9
+_LABEL_21BF_:
+	ld hl, $D300
+	ld bc, $0400
+_LABEL_21C5_:
+	push bc
+	ld b, c
+_LABEL_21C7_:
+	ld a, (hl)
+	cp $03
+	jr nz, _LABEL_21CE_
+	ld (hl), $02
+_LABEL_21CE_:
+	set 7, (hl)
+	inc hl
+	djnz _LABEL_21C7_
+	pop bc
+	djnz _LABEL_21C5_
+	ld hl, $C981
+	ld de, $0002
+	ld b, $36
+_LABEL_21DE_:
+	ld a, (hl)
+	cp $03
+	jr nz, _LABEL_21E5_
+	ld (hl), $02
+_LABEL_21E5_:
+	add hl, de
+	djnz _LABEL_21DE_
+	ld hl, $D700
+	ld de, $D701
+	ld (hl), $00
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	call LDI129
+	jp LDI128
+
+_LABEL_2208_:
+	ld hl, $D300
+	ld bc, $0400
+_LABEL_220E_:
+	push bc
+	ld b, c
+_LABEL_2210_:
+	ld a, (hl)
+	and $7F
+	cp $02
+	jr nz, _LABEL_2219_
+	ld a, $03
+_LABEL_2219_:
+	ld (hl), a
+	inc hl
+	djnz _LABEL_2210_
+	pop bc
+	djnz _LABEL_220E_
+	ld hl, $D300
+	ld b, $20
+_LABEL_2225_:
+	push bc
+	push hl
+	ex de, hl
+	ld hl, $0400
+	add hl, de
+	push hl
+	ex de, hl
+	ld de, $0020
+	ld a, (hl)
+	exx
+	ld c, a
+	ld d, a
+	ld e, $00
+	exx
+	add hl, de
+	pop de
+	ld b, $20
+_LABEL_223C_:
+	push bc
+	ld a, h
+	cp $D7
+	ld a, (hl)
+	exx
+	jr nc, _LABEL_2245_
+	ld e, a
+_LABEL_2245_:
+	call _LABEL_23ED_
+	ld c, d
+	ld d, e
+	exx
+	ld (de), a
+	ld bc, $0020
+	ex de, hl
+	add hl, bc
+	ex de, hl
+	add hl, bc
+	pop bc
+	djnz _LABEL_223C_
+	pop hl
+	inc hl
+	pop bc
+	djnz _LABEL_2225_
+	ret
 
 _LABEL_225C_:
 	ld a, ($C635)
@@ -4756,6 +4877,7 @@ _LABEL_2595_:
 	ld (hl), $85
 	jr _LABEL_2552_
 
+; 1st entry of Jump Table from 25FB (indexed by unknown)
 _LABEL_259A_:
 	ld b, $10
 _LABEL_259C_:
@@ -4769,6 +4891,7 @@ _LABEL_259C_:
 	djnz _LABEL_259C_
 	ret
 
+; 1st entry of Jump Table from 25FF (indexed by unknown)
 _LABEL_25AA_:
 	ex de, hl
 	ld bc, $000F
@@ -4792,6 +4915,7 @@ _LABEL_25B5_:
 	djnz _LABEL_25B2_
 	ret
 
+; 1st entry of Jump Table from 2607 (indexed by unknown)
 _LABEL_25C5_:
 	ex de, hl
 	ld bc, $01E0
@@ -4815,6 +4939,7 @@ _LABEL_25D0_:
 	djnz _LABEL_25CD_
 	ret
 
+; 1st entry of Jump Table from 2603 (indexed by unknown)
 _LABEL_25E0_:
 	ex de, hl
 	ld bc, $01EF
@@ -4838,11 +4963,101 @@ _LABEL_25EB_:
 	djnz _LABEL_25E8_
 	ret
 
-; Data from 25FB to 263A (64 bytes)
-.db $9A $25 $00 $D3 $AA $25 $10 $D3 $E0 $25 $10 $D5 $C5 $25 $00 $D5
-.db $9A $25 $10 $D3 $C5 $25 $10 $D5 $E0 $25 $00 $D5 $AA $25 $00 $D3
-.db $9A $25 $10 $D5 $AA $25 $00 $D5 $E0 $25 $00 $D3 $C5 $25 $10 $D3
-.db $9A $25 $00 $D5 $C5 $25 $00 $D3 $E0 $25 $10 $D3 $AA $25 $10 $D5
+; Jump Table from 25FB to 25FC (1 entries, indexed by unknown)
+.dw _LABEL_259A_
+
+; Data from 25FD to 25FE (2 bytes)
+.db $00 $D3
+
+; Jump Table from 25FF to 2600 (1 entries, indexed by unknown)
+.dw _LABEL_25AA_
+
+; Data from 2601 to 2602 (2 bytes)
+.db $10 $D3
+
+; Jump Table from 2603 to 2604 (1 entries, indexed by unknown)
+.dw _LABEL_25E0_
+
+; Data from 2605 to 2606 (2 bytes)
+.db $10 $D5
+
+; Jump Table from 2607 to 2608 (1 entries, indexed by unknown)
+.dw _LABEL_25C5_
+
+; Data from 2609 to 260A (2 bytes)
+.db $00 $D5
+
+; Jump Table from 260B to 260C (1 entries, indexed by unknown)
+.dw _LABEL_259A_
+
+; Data from 260D to 260E (2 bytes)
+.db $10 $D3
+
+; Jump Table from 260F to 2610 (1 entries, indexed by unknown)
+.dw _LABEL_25C5_
+
+; Data from 2611 to 2612 (2 bytes)
+.db $10 $D5
+
+; Jump Table from 2613 to 2614 (1 entries, indexed by unknown)
+.dw _LABEL_25E0_
+
+; Data from 2615 to 2616 (2 bytes)
+.db $00 $D5
+
+; Jump Table from 2617 to 2618 (1 entries, indexed by unknown)
+.dw _LABEL_25AA_
+
+; Data from 2619 to 261A (2 bytes)
+.db $00 $D3
+
+; Jump Table from 261B to 261C (1 entries, indexed by unknown)
+.dw _LABEL_259A_
+
+; Data from 261D to 261E (2 bytes)
+.db $10 $D5
+
+; Jump Table from 261F to 2620 (1 entries, indexed by unknown)
+.dw _LABEL_25AA_
+
+; Data from 2621 to 2622 (2 bytes)
+.db $00 $D5
+
+; Jump Table from 2623 to 2624 (1 entries, indexed by unknown)
+.dw _LABEL_25E0_
+
+; Data from 2625 to 2626 (2 bytes)
+.db $00 $D3
+
+; Jump Table from 2627 to 2628 (1 entries, indexed by unknown)
+.dw _LABEL_25C5_
+
+; Data from 2629 to 262A (2 bytes)
+.db $10 $D3
+
+; Jump Table from 262B to 262C (1 entries, indexed by unknown)
+.dw _LABEL_259A_
+
+; Data from 262D to 262E (2 bytes)
+.db $00 $D5
+
+; Jump Table from 262F to 2630 (1 entries, indexed by unknown)
+.dw _LABEL_25C5_
+
+; Data from 2631 to 2632 (2 bytes)
+.db $00 $D3
+
+; Jump Table from 2633 to 2634 (1 entries, indexed by unknown)
+.dw _LABEL_25E0_
+
+; Data from 2635 to 2636 (2 bytes)
+.db $10 $D3
+
+; Jump Table from 2637 to 2638 (1 entries, indexed by unknown)
+.dw _LABEL_25AA_
+
+; Data from 2639 to 263A (2 bytes)
+.db $10 $D5
 
 _LABEL_263B_:
 	call GetRandomNumber
@@ -6126,31 +6341,26 @@ _LABEL_2FDC_:
 	ld ($CAC2), hl
 	pop af
 	ret
-.incbin "dcsms_8000.inc"
 
 _LABEL_2FF7_:
 	push af
 	ld hl, ($CA07)
 	ld de, $0180
-.incbin "dcsms_c000.inc"
 	add hl, de
 	ld ($C60F), hl
 	ld hl, $CA42
 	ld ($C611), hl
 	ld bc, $0110
-.incbin "dcsms_10000.inc"
 	call _LABEL_26F3_
 	ld hl, ($CA09)
 	ld a, h
 	add a, $06
 	cp $3F
-.incbin "dcsms_14000.inc"
 	jr c, _LABEL_301A_
 	sub $07
 _LABEL_301A_:
 	ld h, a
 	ld ($CAC2), hl
-.incbin "dcsms_18000.inc"
 	pop af
 	ret
 
@@ -6426,8 +6636,14 @@ _LABEL_31FF_:
 	ld ($CAC4), a
 	ret
 
-; Data from 320C to 321B (16 bytes)
-.db $2A $21 $C6 $7D $B4 $CA $CB $31 $CD $F6 $1E $38 $03 $C3 $D8 $33
+_LABEL_320C_:
+	ld hl, ($C621)
+	ld a, l
+	or h
+	jp z, _LABEL_31CB_
+	call _LABEL_1EF6_
+	jr c, _LABEL_321C_
+	jp _LABEL_33D8_
 
 _LABEL_321C_:
 	ld a, ($CAC5)
@@ -7180,7 +7396,6 @@ _LABEL_37C5_:
 	ld hl, $37F0
 	add hl, de
 	ld e, (hl)
-.incbin "dcsms_1c88c.inc"
 	ld d, $00
 	ld hl, $3E68
 	add hl, de
@@ -7359,6 +7574,7 @@ _LABEL_393C_:
 	inc hl
 	or (hl)
 	jr nz, _LABEL_39B9_
+_LABEL_3962_:
 	ld a, $09
 	ld ($CAC4), a
 	ld iy, ($C638)
@@ -7573,26 +7789,186 @@ _LABEL_3B38_:
 	ex de, hl
 	jp (hl)
 
-; Data from 3B51 to 3C73 (291 bytes)
-.db $2A $38 $C6 $11 $1A $00 $19 $5E $23 $56 $EB $29 $01 $E7 $03 $B7
-.db $ED $42 $38 $03 $21 $00 $00 $09 $EB $72 $2B $73 $3E $15 $32 $C4
-.db $CA $AF $32 $32 $C9 $3E $A9 $32 $05 $DD $C3 $1A $3F $2A $38 $C6
-.db $11 $1A $00 $19 $5E $23 $56 $4B $42 $CB $38 $CB $19 $CB $38 $CB
-.db $19 $EB $AF $ED $42 $EB $72 $2B $73 $3E $18 $32 $C4 $CA $AF $32
-.db $32 $C9 $3E $90 $32 $05 $DD $C3 $1A $3F $2A $38 $C6 $11 $1C $00
-.db $19 $CB $C6 $3E $16 $32 $C4 $CA $AF $32 $32 $C9 $3E $90 $32 $05
-.db $DD $C3 $1A $3F $2A $38 $C6 $11 $1C $00 $19 $CB $CE $CB $A6 $3E
-.db $17 $32 $C4 $CA $AF $32 $32 $C9 $3E $90 $32 $05 $DD $C3 $1A $3F
-.db $2A $38 $C6 $11 $1A $00 $19 $5E $23 $56 $CB $3A $CB $1B $CB $3A
-.db $CB $1B $7B $B2 $20 $03 $11 $01 $00 $72 $2B $73 $3E $18 $32 $C4
-.db $CA $AF $32 $32 $C9 $3E $90 $32 $05 $DD $C3 $1A $3F $3E $19 $32
-.db $C4 $CA $AF $32 $32 $C9 $C3 $1A $3F $AF $32 $32 $C9 $21 $01 $00
-.db $22 $3A $C6 $CD $6E $48 $C3 $3C $39 $CD $7D $20 $EB $2A $38 $C6
-.db $01 $05 $00 $09 $73 $23 $72 $3E $1A $32 $C4 $CA $AF $32 $32 $C9
-.db $C3 $1A $3F $2A $38 $C6 $11 $1F $00 $19 $7E $FE $01 $28 $0C $FE
-.db $05 $28 $08 $FE $09 $28 $04 $AF $C3 $16 $3B $AF $32 $32 $C9 $21
-.db $E7 $03 $22 $3A $C6 $CD $6E $48 $C3 $3C $39 $AF $C3 $16 $3B $AF
-.db $C3 $5C $3C
+; 1st entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3B51_:
+	ld hl, ($C638)
+	ld de, $001A
+	add hl, de
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de, hl
+	add hl, hl
+	ld bc, $03E7
+	or a
+	sbc hl, bc
+	jr c, _LABEL_3B68_
+	ld hl, $0000
+_LABEL_3B68_:
+	add hl, bc
+	ex de, hl
+	ld (hl), d
+	dec hl
+	ld (hl), e
+	ld a, $15
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld a, $A9
+	ld ($DD05), a
+	jp _LABEL_3F1A_
+
+; 2nd entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3B7E_:
+	ld hl, ($C638)
+	ld de, $001A
+	add hl, de
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ld c, e
+	ld b, d
+	srl b
+	rr c
+	srl b
+	rr c
+	ex de, hl
+	xor a
+	sbc hl, bc
+	ex de, hl
+	ld (hl), d
+	dec hl
+	ld (hl), e
+	ld a, $18
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld a, $90
+	ld ($DD05), a
+	jp _LABEL_3F1A_
+
+; 3rd entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3BAB_:
+	ld hl, ($C638)
+	ld de, $001C
+	add hl, de
+	set 0, (hl)
+	ld a, $16
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld a, $90
+	ld ($DD05), a
+	jp _LABEL_3F1A_
+
+; 4th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3BC5_:
+	ld hl, ($C638)
+	ld de, $001C
+	add hl, de
+	set 1, (hl)
+	res 4, (hl)
+	ld a, $17
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld a, $90
+	ld ($DD05), a
+	jp _LABEL_3F1A_
+
+; 5th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3BE1_:
+	ld hl, ($C638)
+	ld de, $001A
+	add hl, de
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	srl d
+	rr e
+	srl d
+	rr e
+	ld a, e
+	or d
+	jr nz, _LABEL_3BFA_
+	ld de, $0001
+_LABEL_3BFA_:
+	ld (hl), d
+	dec hl
+	ld (hl), e
+	ld a, $18
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld a, $90
+	ld ($DD05), a
+	jp _LABEL_3F1A_
+
+; 6th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C0E_:
+	ld a, $19
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	jp _LABEL_3F1A_
+
+; 7th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C1A_:
+	xor a
+	ld ($C932), a
+	ld hl, $0001
+	ld ($C63A), hl
+	call _LABEL_486E_
+	jp _LABEL_393C_
+
+; 8th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C2A_:
+	call _LABEL_207D_
+	ex de, hl
+	ld hl, ($C638)
+	ld bc, $0005
+	add hl, bc
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	ld a, $1A
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	jp _LABEL_3F1A_
+
+; 9th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C44_:
+	ld hl, ($C638)
+	ld de, $001F
+	add hl, de
+	ld a, (hl)
+	cp $01
+	jr z, _LABEL_3C5C_
+	cp $05
+	jr z, _LABEL_3C5C_
+	cp $09
+	jr z, _LABEL_3C5C_
+	xor a
+	jp _LABEL_3B16_
+
+_LABEL_3C5C_:
+	xor a
+	ld ($C932), a
+	ld hl, $03E7
+	ld ($C63A), hl
+	call _LABEL_486E_
+	jp _LABEL_393C_
+
+; 10th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C6C_:
+	xor a
+	jp _LABEL_3B16_
+
+; 11th entry of Jump Table from 3CC0 (indexed by unknown)
+_LABEL_3C70_:
+	xor a
+	jp _LABEL_3C5C_
 
 _LABEL_3C74_:
 	ld a, $92
@@ -7603,13 +7979,15 @@ _LABEL_3C74_:
 	ld ($C932), a
 	jp _LABEL_3F1A_
 
-; Data from 3C85 to 3CD5 (81 bytes)
+; Data from 3C85 to 3CBF (59 bytes)
 .db $00 $01 $02 $03 $05 $08 $0B $0E $12 $06 $06 $08 $08 $04 $08 $0C
 .db $00 $01 $02 $03 $04 $05 $06 $06 $0A $04 $0A $00 $00 $01 $00 $02
 .db $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00 $00 $09 $00 $09 $00
-.db $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00 $51 $3B $7E $3B $AB
-.db $3B $C5 $3B $E1 $3B $0E $3C $1A $3C $2A $3C $44 $3C $6C $3C $70
-.db $3C
+.db $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
+
+; Jump Table from 3CC0 to 3CD5 (11 entries, indexed by unknown)
+.dw _LABEL_3B51_ _LABEL_3B7E_ _LABEL_3BAB_ _LABEL_3BC5_ _LABEL_3BE1_ _LABEL_3C0E_ _LABEL_3C1A_ _LABEL_3C2A_
+.dw _LABEL_3C44_ _LABEL_3C6C_ _LABEL_3C70_
 
 _LABEL_3CD6_:
 	ld hl, $C01C
@@ -7699,32 +8077,109 @@ _LABEL_3D8A_:
 	ld (ix+1), $3D
 	ret
 
-; Data from 3DA6 to 3ED7 (306 bytes)
-.db $2A $0A $C1 $DD $75 $0A $DD $74 $0B $2A $0D $C1 $DD $75 $0D $DD
-.db $74 $0E $DD $36 $13 $04 $DD $36 $02 $01 $DD $36 $03 $1F $DD $36
-.db $18 $04 $3A $04 $C1 $DD $77 $04 $DD $36 $00 $D7 $DD $36 $01 $3D
-.db $C9 $CD $BB $47 $DD $35 $18 $C0 $DD $7E $0A $E6 $F0 $6F $DD $66
-.db $0B $29 $EB $DD $7E $0D $E6 $F0 $DD $66 $0E $CB $3C $1F $CB $3C
-.db $1F $CB $3C $1F $CB $3C $1F $6F $19 $11 $00 $D3 $19 $7E $E6 $7F
-.db $28 $49 $FE $0C $30 $04 $FE $06 $30 $41 $FD $21 $40 $C1 $11 $20
-.db $00 $06 $14 $FD $7E $0B $DD $BE $0B $20 $18 $FD $7E $0A $DD $BE
-.db $0A $20 $10 $FD $7E $0E $DD $BE $0E $20 $08 $FD $7E $0D $DD $BE
-.db $0D $28 $09 $FD $19 $10 $DC $DD $36 $18 $04 $C9 $FD $E5 $E1 $22
-.db $38 $C6 $DD $36 $00 $0F $DD $36 $01 $31 $C9 $3E $92 $32 $05 $DD
-.db $3E $08 $32 $C4 $CA $AF $32 $32 $C9 $DD $36 $00 $0F $DD $36 $01
-.db $31 $C9 $53 $3F $68 $3F $74 $3F $81 $3F $DA $3F $E6 $3F $1C $40
-.db $77 $40 $9F $40 $B0 $40 $1D $41 $40 $41 $63 $41 $86 $41 $A9 $41
-.db $B1 $41 $26 $42 $40 $42 $59 $42 $AB $42 $39 $43 $8C $43 $EE $43
-.db $46 $44 $7F $44 $94 $44 $BC $44 $C5 $44 $E0 $44 $FA $44 $45 $45
-.db $65 $45 $8E $45 $9C $45 $C9 $45 $10 $46 $17 $46 $1E $46 $33 $46
-.db $49 $46 $56 $46 $63 $46 $70 $46 $7E $46 $7E $46 $8B $46 $98 $46
-.db $AD $46 $C2 $46 $DF $46 $4C $47 $58 $47 $78 $47 $78 $47 $78 $47
-.db $78 $47
+_LABEL_3DA6_:
+	ld hl, ($C10A)
+	ld (ix+10), l
+	ld (ix+11), h
+	ld hl, ($C10D)
+	ld (ix+13), l
+	ld (ix+14), h
+	ld (ix+19), $04
+	ld (ix+2), $01
+	ld (ix+3), $1F
+	ld (ix+24), $04
+	ld a, ($C104)
+	ld (ix+4), a
+	ld (ix+0), $D7
+	ld (ix+1), $3D
+	ret
+
+_LABEL_3DD7_:
+	call _LABEL_47BB_
+	dec (ix+24)
+	ret nz
+	ld a, (ix+10)
+	and $F0
+	ld l, a
+	ld h, (ix+11)
+	add hl, hl
+	ex de, hl
+	ld a, (ix+13)
+	and $F0
+	ld h, (ix+14)
+	srl h
+	rra
+	srl h
+	rra
+	srl h
+	rra
+	srl h
+	rra
+	ld l, a
+	add hl, de
+	ld de, $D300
+	add hl, de
+	ld a, (hl)
+	and $7F
+	jr z, _LABEL_3E51_
+	cp $0C
+	jr nc, _LABEL_3E10_
+	cp $06
+	jr nc, _LABEL_3E51_
+_LABEL_3E10_:
+	ld iy, $C140
+	ld de, $0020
+	ld b, $14
+_LABEL_3E19_:
+	ld a, (iy+11)
+	cp (ix+11)
+	jr nz, _LABEL_3E39_
+	ld a, (iy+10)
+	cp (ix+10)
+	jr nz, _LABEL_3E39_
+	ld a, (iy+14)
+	cp (ix+14)
+	jr nz, _LABEL_3E39_
+	ld a, (iy+13)
+	cp (ix+13)
+	jr z, _LABEL_3E42_
+_LABEL_3E39_:
+	add iy, de
+	djnz _LABEL_3E19_
+	ld (ix+24), $04
+	ret
+
+_LABEL_3E42_:
+	push iy
+	pop hl
+	ld ($C638), hl
+	ld (ix+0), $0F
+	ld (ix+1), $31
+	ret
+
+_LABEL_3E51_:
+	ld a, $92
+	ld ($DD05), a
+	ld a, $08
+	ld ($CAC4), a
+	xor a
+	ld ($C932), a
+	ld (ix+0), $0F
+	ld (ix+1), $31
+	ret
+
+; Jump Table from 3E68 to 3ED7 (56 entries, indexed by unknown)
+.dw _LABEL_3F53_ _LABEL_3F68_ _LABEL_3F74_ _LABEL_3F81_ _LABEL_3FDA_ _LABEL_3FE6_ _LABEL_401C_ _LABEL_4077_
+.dw _LABEL_409F_ _LABEL_40B0_ _LABEL_411D_ _LABEL_4140_ _LABEL_4163_ _LABEL_4186_ _LABEL_41A9_ _LABEL_41B1_
+.dw _LABEL_4226_ _LABEL_4240_ _LABEL_4259_ _LABEL_42AB_ _LABEL_4339_ _LABEL_438C_ _LABEL_43EE_ _LABEL_4446_
+.dw _LABEL_447F_ _LABEL_4494_ _LABEL_44BC_ _LABEL_44C5_ _LABEL_44E0_ _LABEL_44FA_ _LABEL_4545_ _LABEL_4565_
+.dw _LABEL_458E_ _LABEL_459C_ _LABEL_45C9_ _LABEL_4610_ _LABEL_4617_ _LABEL_461E_ _LABEL_4633_ _LABEL_4649_
+.dw _LABEL_4656_ _LABEL_4663_ _LABEL_4670_ _LABEL_467E_ _LABEL_467E_ _LABEL_468B_ _LABEL_4698_ _LABEL_46AD_
+.dw _LABEL_46C2_ _LABEL_46DF_ _LABEL_474C_ _LABEL_4758_ _LABEL_4778_ _LABEL_4778_ _LABEL_4778_ _LABEL_4778_
 
 _LABEL_3ED8_:
 	ld a, $3F
 	ld ($C0AB), a
-.incbin "dcsms_409f.inc"
 	jr _LABEL_3EE5_
 
 _LABEL_3EDF_:
@@ -7788,11 +8243,36 @@ _LABEL_3F46_:
 	scf
 	ret
 
-; Data from 3F53 to 3F80 (46 bytes)
-.db $3A $18 $C6 $3C $FE $3C $38 $02 $3E $3B $32 $18 $C6 $3E $1C $32
-.db $75 $C9 $C3 $D8 $3E $21 $1A $C6 $34 $3E $1D $32 $75 $C9 $C3 $D8
-.db $3E $3E $01 $32 $31 $C6 $3E $1E $32 $75 $C9 $C3 $D8 $3E
+; 1st entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_3F53_:
+	ld a, ($C618)
+	inc a
+	cp $3C
+	jr c, _LABEL_3F5D_
+	ld a, $3B
+_LABEL_3F5D_:
+	ld ($C618), a
+	ld a, $1C
+	ld ($C975), a
+	jp _LABEL_3ED8_
 
+; 2nd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_3F68_:
+	ld hl, $C61A
+	inc (hl)
+	ld a, $1D
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 3rd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_3F74_:
+	ld a, $01
+	ld ($C631), a
+	ld a, $1E
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 4th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_3F81_:
 	ld a, ($C930)
 	or a
@@ -7829,7 +8309,7 @@ _LABEL_3FA1_:
 	jr z, _LABEL_3FD2_
 	ld hl, $C929
 	ld de, $C928
-	call _LABEL_B2F_
+	call LDI7
 	xor a
 	ld (de), a
 	ld ($C930), a
@@ -7838,6 +8318,7 @@ _LABEL_3FD2_:
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
+; 5th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_3FDA_:
 	ld a, $19
 	ld ($C975), a
@@ -7845,23 +8326,77 @@ _LABEL_3FDA_:
 	ld ($C931), a
 	jp _LABEL_3EDF_
 
-; Data from 3FE6 to 3FFF (26 bytes)
-.db $3A $35 $C6 $B7 $20 $EE $3A $20 $C0 $32 $A9 $C0 $3E $3F $32 $AB
-.db $C0 $DD $36 $18 $1E $21 $01 $40 $C3 $86
+; 6th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_3FE6_:
+	ld a, ($C635)
+	or a
+	jr nz, _LABEL_3FDA_
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $4001
+	jp _LABEL_4786_
 
 .BANK 1 SLOT 1
 .ORG $0000
 
-; Data from 4000 to 4076 (119 bytes)
-.db $47 $CD $2B $3F $D0 $3E $20 $32 $C4 $CA $CD $08 $22 $3E $01 $32
-.db $0E $C6 $AF $32 $31 $C9 $CD $88 $48 $C3 $1A $3F $3A $20 $C0 $32
-.db $A9 $C0 $3E $3F $32 $AB $C0 $DD $36 $18 $1E $21 $31 $40 $C3 $86
-.db $47 $CD $2B $3F $D0 $3E $21 $32 $C4 $CA $DD $36 $18 $1E $21 $44
-.db $40 $C3 $86 $47 $DD $35 $18 $C0 $CD $8F $1F $CD $1B $48 $CD $BA
-.db $20 $2A $05 $C1 $11 $00 $2D $19 $CD $FA $2D $DD $E5 $CD $4F $1F
-.db $DD $E1 $AF $32 $31 $C9 $32 $C4 $CA $32 $C5 $CA $3E $98 $32 $05
-.db $DD $21 $42 $31 $C3 $86 $47
+_LABEL_4001_:
+	call _LABEL_3F2B_
+	ret nc
+	ld a, $20
+	ld ($CAC4), a
+	call _LABEL_2208_
+	ld a, $01
+	ld ($C60E), a
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	jp _LABEL_3F1A_
 
+; 7th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_401C_:
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $4031
+	jp _LABEL_4786_
+
+_LABEL_4031_:
+	call _LABEL_3F2B_
+	ret nc
+	ld a, $21
+	ld ($CAC4), a
+	ld (ix+24), $1E
+	ld hl, $4044
+	jp _LABEL_4786_
+
+_LABEL_4044_:
+	dec (ix+24)
+	ret nz
+	call _LABEL_1F8F_
+	call _LABEL_481B_
+	call _LABEL_20BA_
+	ld hl, ($C105)
+	ld de, $2D00
+	add hl, de
+	call _LABEL_2DFA_
+	push ix
+	call _LABEL_1F4F_
+	pop ix
+	xor a
+	ld ($C931), a
+	ld ($CAC4), a
+	ld ($CAC5), a
+	ld a, $98
+	ld ($DD05), a
+	ld hl, $3142
+	jp _LABEL_4786_
+
+; 8th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4077_:
 	ld iy, $C140
 	ld de, $0020
@@ -7882,11 +8417,693 @@ _LABEL_408E_:
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
-; Data from 409F to 45CD (1327 bytes)
+; 9th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_409F_:
+	call GetRandomNumber
+	and $03
+	inc a
+	ld ($C632), a
+	ld a, $23
+	ld ($C975), a
+	jp _LABEL_3ED8_
 
+; 10th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_40B0_:
+	call _LABEL_1F3A_
+	jp c, _LABEL_3FDA_
+	ld ($C638), hl
+	push hl
+	pop iy
+	ld a, (ix+4)
+	ld hl, $4115
+_LABEL_40C2_:
+	rrca
+	jr c, _LABEL_40C9_
+	inc hl
+	inc hl
+	jr _LABEL_40C2_
+
+_LABEL_40C9_:
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ld l, (ix+5)
+	ld h, (ix+6)
+	add hl, de
+	call _LABEL_2091_
+	jp c, _LABEL_3FDA_
+	ld (iy+5), l
+	ld (iy+6), h
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $40F4
+	jp _LABEL_4786_
+
+_LABEL_40F4_:
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	call _LABEL_2054_
+	ld hl, ($C638)
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	ld de, $001E
+	add hl, de
+	ld (hl), a
+	ld a, $24
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; Data from 4115 to 411C (8 bytes)
+.db $E0 $FF $20 $00 $FF $FF $01 $00
+
+; 11th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_411D_:
+	ld a, ($C900)
+	cp $09
+	jp z, _LABEL_3FDA_
+	ld a, $09
+	ld ($C900), a
+	ld hl, $0F00
+	ld ($C04E), hl
+	ld hl, $C01E
+	set 0, (hl)
+	call _LABEL_48F7_
+	ld a, $25
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 12th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4140_:
+	ld a, ($C900)
+	cp $0A
+	jp z, _LABEL_3FDA_
+	ld a, $0A
+	ld ($C900), a
+	ld hl, $0F00
+	ld ($C04E), hl
+	ld hl, $C01E
+	set 0, (hl)
+	call _LABEL_48F7_
+	ld a, $25
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 13th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4163_:
+	ld a, ($C900)
+	cp $0B
+	jp z, _LABEL_3FDA_
+	ld a, $0B
+	ld ($C900), a
+	ld hl, $0F00
+	ld ($C04E), hl
+	ld hl, $C01E
+	set 0, (hl)
+	call _LABEL_48F7_
+	ld a, $25
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 14th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4186_:
+	ld a, ($C900)
+	cp $0C
+	jp z, _LABEL_3FDA_
+	ld a, $0C
+	ld ($C900), a
+	ld hl, $0F00
+	ld ($C04E), hl
+	ld hl, $C01E
+	set 0, (hl)
+	call _LABEL_48F7_
+	ld a, $25
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 15th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_41A9_:
+	ld a, $26
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+; 16th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_41B1_:
+	ld a, ($C61F)
+	add a, a
+	add a, a
+	ld l, a
+	ld h, $00
+	ld ($C63A), hl
+	ld a, $03
+	ld ($C0AB), a
+	ld a, $96
+	ld ($DD05), a
+_LABEL_41C6_:
+	call _LABEL_489C_
+	jr nc, _LABEL_41D8_
+	ld a, $22
+	ld ($C975), a
+	ld a, $00
+	ld ($DD05), a
+	jp _LABEL_3EE5_
+
+_LABEL_41D8_:
+	ld ($C638), iy
+	set 4, (iy+28)
+	res 1, (iy+28)
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld (ix+24), $1E
+	ld hl, $41F4
+	jp _LABEL_4786_
+
+_LABEL_41F4_:
+	ld a, (ix+24)
+	and $01
+	ld hl, ($C638)
+	ld de, $0002
+	add hl, de
+	ld (hl), a
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	ld hl, ($C63A)
+	ld a, ($C930)
+	or a
+	jr z, _LABEL_4220_
+	ld a, ($C928)
+	cp $51
+	jr nz, _LABEL_4220_
+	add hl, hl
+	ld ($C63A), hl
+_LABEL_4220_:
+	call _LABEL_486E_
+	jp _LABEL_393C_
+
+; 17th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4226_:
+	ld a, ($C61F)
+	add a, a
+	ld d, a
+	add a, a
+	add a, d
+	ld l, a
+	ld h, $00
+	ld ($C63A), hl
+	ld a, $3F
+	ld ($C0AB), a
+	ld a, $97
+	ld ($DD05), a
+	jp _LABEL_41C6_
+
+; 18th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4240_:
+	ld a, ($C61F)
+	add a, a
+	add a, a
+	add a, a
+	ld l, a
+	ld h, $00
+	ld ($C63A), hl
+	ld a, $0F
+	ld ($C0AB), a
+	ld a, $95
+	ld ($DD05), a
+	jp _LABEL_41C6_
+
+; 19th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4259_:
+	call _LABEL_489C_
+	jr nc, _LABEL_4266_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+_LABEL_4266_:
+	ld ($C638), iy
+	set 4, (iy+28)
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $4283
+	jp _LABEL_4786_
+
+_LABEL_4283_:
+	ld a, (ix+24)
+	and $01
+	ld hl, ($C638)
+	ld de, $0002
+	add hl, de
+	ld (hl), a
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	ld hl, ($C638)
+	ld (hl), $0F
+	inc hl
+	ld (hl), $31
+	ld a, $1A
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; 20th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_42AB_:
+	call _LABEL_489C_
+	jr nc, _LABEL_42B8_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+_LABEL_42B8_:
+	ld ($C638), iy
+	set 4, (iy+28)
+	res 1, (iy+28)
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld a, $96
+	ld ($DD05), a
+	ld (ix+24), $1E
+	ld hl, $42DE
+	jp _LABEL_4786_
+
+_LABEL_42DE_:
+	ld a, (ix+24)
+	and $01
+	ld hl, ($C638)
+	ld de, $0002
+	add hl, de
+	ld (hl), a
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	ld hl, ($C621)
+	ld e, l
+	ld d, h
+	srl h
+	rr l
+	ld a, l
+	or h
+	jr nz, _LABEL_4306_
+	ld hl, $0001
+_LABEL_4306_:
+	ld ($C621), hl
+	ex de, hl
+	add hl, hl
+	ld a, ($C928)
+	cp $51
+	jr nz, _LABEL_4313_
+	add hl, hl
+_LABEL_4313_:
+	ld c, l
+	ld b, h
+	ld hl, ($C638)
+	ld de, $001A
+	add hl, de
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de, hl
+	xor a
+	sbc hl, bc
+	ex de, hl
+	jr nc, _LABEL_4329_
+	ld de, $0000
+_LABEL_4329_:
+	ld (hl), d
+	dec hl
+	ld (hl), e
+	ld a, e
+	or d
+	jp z, _LABEL_3962_
+	ld a, $29
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; 21st entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4339_:
+	call _LABEL_489C_
+	jr nc, _LABEL_4346_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+_LABEL_4346_:
+	ld ($C638), iy
+	set 4, (iy+28)
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $4363
+	jp _LABEL_4786_
+
+_LABEL_4363_:
+	ld a, (ix+24)
+	and $01
+	ld hl, ($C638)
+	ld de, $0002
+	add hl, de
+	ld (hl), a
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	ld hl, ($C638)
+	ld de, $001C
+	add hl, de
+	set 3, (hl)
+	ld a, $2A
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; 22nd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_438C_:
+	call _LABEL_489C_
+	jr nc, _LABEL_4399_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+_LABEL_4399_:
+	ld ($C638), iy
+	set 4, (iy+28)
+	res 1, (iy+28)
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $43BA
+	jp _LABEL_4786_
+
+_LABEL_43BA_:
+	ld a, (ix+24)
+	and $01
+	ld hl, ($C638)
+	ld de, $0002
+	add hl, de
+	ld (hl), a
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+_LABEL_43D2_:
+	call _LABEL_2054_
+	ld hl, ($C638)
+	ld bc, $001F
+	add hl, bc
+	cp (hl)
+	jr z, _LABEL_43D2_
+	ld (hl), a
+	ld hl, ($C638)
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	ld a, $2B
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; 23rd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_43EE_:
+	ld a, ($C01C)
+	cp $1E
+	jr c, _LABEL_43FD_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_43FD_:
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $4412
+	jp _LABEL_4786_
+
+_LABEL_4412_:
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	ld a, $2C
+	ld ($CAC4), a
+	ld (ix+24), $1E
+	ld hl, $442C
+	jp _LABEL_4786_
+
+_LABEL_442C_:
+	dec (ix+24)
+	ret nz
+	ld hl, $C01C
+	inc (hl)
+	xor a
+	ld ($CAC4), a
+	ld ($CAC5), a
+	call _LABEL_42C_
+	ld a, $08
+	ld ($C018), a
+	jp _LABEL_143_
+
+; 24th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4446_:
+	call _LABEL_489C_
+	jr nc, _LABEL_4453_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_4453_:
+	ld ($C638), iy
+	res 1, (iy+28)
+	ld e, (iy+26)
+	ld d, (iy+27)
+	ld hl, ($C621)
+	ld (iy+26), l
+	ld (iy+27), h
+	ld hl, ($C623)
+	or a
+	sbc hl, de
+	ex de, hl
+	jr nc, _LABEL_4474_
+	add hl, de
+_LABEL_4474_:
+	ld ($C621), hl
+	ld a, $2D
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 25th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_447F_:
+	ld a, ($C61F)
+	dec a
+	jp z, _LABEL_3FDA_
+	ld ($C61F), a
+	call _LABEL_496B_
+	ld a, $2E
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 26th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4494_:
+	ld hl, ($C623)
+	srl h
+	rr l
+	srl h
+	rr l
+_LABEL_449F_:
+	ld de, ($C621)
+	add hl, de
+	ex de, hl
+	ld hl, ($C623)
+	xor a
+	sbc hl, de
+	ex de, hl
+	jr nc, _LABEL_44B1_
+	ld hl, ($C623)
+_LABEL_44B1_:
+	ld ($C621), hl
+	ld a, $2F
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 27th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_44BC_:
+	ld hl, ($C623)
+	srl h
+	rr l
+	jr _LABEL_449F_
+
+; 28th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_44C5_:
+	ld a, ($C633)
+	or a
+	jr z, _LABEL_44D3_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_44D3_:
+	ld a, $01
+	ld ($C633), a
+	ld a, $30
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 29th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_44E0_:
+	ld a, ($C633)
+	or a
+	jr nz, _LABEL_44EE_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_44EE_:
+	xor a
+	ld ($C633), a
+	ld a, $31
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 30th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_44FA_:
+	ld a, ($C635)
+	or a
+	jr z, _LABEL_4508_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_4508_:
+	ld a, ($C020)
+	ld ($C0A9), a
+	ld a, $3F
+	ld ($C0AB), a
+	ld (ix+24), $1E
+	ld hl, $451D
+	jp _LABEL_4786_
+
+_LABEL_451D_:
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	call _LABEL_21BF_
+	ld a, $01
+	ld ($C60E), a
+	ld ($C606), a
+	call GetRandomNumber
+	and $0F
+	add a, $10
+	ld ($C635), a
+	ld a, $32
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; 31st entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4545_:
+	ld a, ($C636)
+	or a
+	jr z, _LABEL_4553_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_4553_:
+	call GetRandomNumber
+	and $0F
+	add a, $10
+	ld ($C636), a
+	ld a, $33
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 32nd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4565_:
+	ld a, ($C634)
+	ld d, a
+	ld a, ($C635)
+	ld e, a
+	ld a, ($C636)
+	or e
+	or d
+	jr nz, _LABEL_457C_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_457C_:
+	xor a
+	ld ($C634), a
+	ld ($C635), a
+	ld ($C636), a
+	ld a, $34
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 33rd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_458E_:
+	ld hl, ($C623)
+	ld ($C621), hl
+	ld a, $2F
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 34th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_459C_:
+	call GetRandomNumber
+	and $01
+	jr z, _LABEL_45B6_
+	ld a, ($C62F)
+	or a
+	jp z, _LABEL_3FDA_
+	dec a
+	ld ($C62F), a
+	ld a, $35
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+_LABEL_45B6_:
+	ld a, ($C630)
+	or a
+	jp z, _LABEL_3FDA_
+	dec a
+	ld ($C62F), a
+	ld a, $35
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 35th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_45C9_:
+	ld a, $2F
+	ld ($C975), a
 _LABEL_45CE_:
 	ld a, $3F
 	ld ($C0AB), a
+_LABEL_45D3_:
 	ld a, ($C020)
 	ld ($C0A9), a
 	ld (ix+24), $1E
@@ -7914,14 +9131,19 @@ _LABEL_45FF_:
 	ld hl, $3142
 	jp _LABEL_4786_
 
-; Data from 4610 to 4616 (7 bytes)
-.db $3E $36 $32 $75 $C9 $18 $B7
+; 36th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4610_:
+	ld a, $36
+	ld ($C975), a
+	jr _LABEL_45CE_
 
+; 37th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4617_:
 	ld a, $37
 	ld ($C975), a
 	jr _LABEL_45CE_
 
+; 38th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_461E_:
 	ld a, ($C630)
 	add a, $04
@@ -7934,11 +9156,28 @@ _LABEL_4629_:
 	ld ($C975), a
 	jr _LABEL_45CE_
 
-; Data from 4633 to 4655 (35 bytes)
-.db $3A $2F $C6 $C6 $04 $FE $3C $38 $02 $3E $3B $32 $2F $C6 $3E $39
-.db $32 $75 $C9 $C3 $CE $45 $3E $21 $32 $75 $C9 $3E $00 $32 $AB $C0
-.db $C3 $D3 $45
+; 39th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4633_:
+	ld a, ($C62F)
+	add a, $04
+	cp $3C
+	jr c, _LABEL_463E_
+	ld a, $3B
+_LABEL_463E_:
+	ld ($C62F), a
+	ld a, $39
+	ld ($C975), a
+	jp _LABEL_45CE_
 
+; 40th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4649_:
+	ld a, $21
+	ld ($C975), a
+	ld a, $00
+	ld ($C0AB), a
+	jp _LABEL_45D3_
+
+; 41st entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4656_:
 	ld a, $3A
 	ld ($C975), a
@@ -7946,10 +9185,23 @@ _LABEL_4656_:
 	ld ($C0AB), a
 	jp _LABEL_45D3_
 
-; Data from 4663 to 467D (27 bytes)
-.db $3E $3A $32 $75 $C9 $3E $00 $32 $AB $C0 $C3 $D3 $45 $3E $3B $32
-.db $75 $C9 $3A $20 $C0 $32 $AB $C0 $C3 $D3 $45
+; 42nd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4663_:
+	ld a, $3A
+	ld ($C975), a
+	ld a, $00
+	ld ($C0AB), a
+	jp _LABEL_45D3_
 
+; 43rd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4670_:
+	ld a, $3B
+	ld ($C975), a
+	ld a, ($C020)
+	ld ($C0AB), a
+	jp _LABEL_45D3_
+
+; 44th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_467E_:
 	ld a, $00
 	ld ($C0AB), a
@@ -7957,6 +9209,7 @@ _LABEL_467E_:
 	ld ($C975), a
 	jp _LABEL_3EE5_
 
+; 46th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_468B_:
 	ld a, $00
 	ld ($C0AB), a
@@ -7964,13 +9217,52 @@ _LABEL_468B_:
 	ld ($C975), a
 	jp _LABEL_3EE5_
 
-; Data from 4698 to 46DE (71 bytes)
-.db $3A $2F $C6 $3C $FE $3C $38 $02 $3E $3B $32 $2F $C6 $3E $48 $32
-.db $75 $C9 $C3 $D8 $3E $3A $30 $C6 $3C $FE $32 $38 $02 $3E $31 $32
-.db $30 $C6 $3E $49 $32 $75 $C9 $C3 $D8 $3E $3A $20 $C9 $B7 $CA $DA
-.db $3F $21 $20 $C9 $06 $08 $7E $B7 $28 $05 $36 $41 $23 $10 $F7 $3E
-.db $4A $32 $75 $C9 $C3 $D8 $3E
+; 47th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4698_:
+	ld a, ($C62F)
+	inc a
+	cp $3C
+	jr c, _LABEL_46A2_
+	ld a, $3B
+_LABEL_46A2_:
+	ld ($C62F), a
+	ld a, $48
+	ld ($C975), a
+	jp _LABEL_3ED8_
 
+; 48th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_46AD_:
+	ld a, ($C630)
+	inc a
+	cp $32
+	jr c, _LABEL_46B7_
+	ld a, $31
+_LABEL_46B7_:
+	ld ($C630), a
+	ld a, $49
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 49th entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_46C2_:
+	ld a, ($C920)
+	or a
+	jp z, _LABEL_3FDA_
+	ld hl, $C920
+	ld b, $08
+_LABEL_46CE_:
+	ld a, (hl)
+	or a
+	jr z, _LABEL_46D7_
+	ld (hl), $41
+	inc hl
+	djnz _LABEL_46CE_
+_LABEL_46D7_:
+	ld a, $4A
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 50th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_46DF_:
 	call _LABEL_1F3A_
 	jp c, _LABEL_3FDA_
@@ -8005,14 +9297,60 @@ _LABEL_46F8_:
 	ld hl, $4723
 	jp _LABEL_4786_
 
-; Data from 4723 to 4785 (99 bytes)
-.db $CD $2B $3F $D0 $AF $32 $31 $C9 $CD $88 $48 $CD $54 $20 $2A $38
-.db $C6 $73 $23 $72 $11 $1E $00 $19 $77 $3E $4F $32 $C4 $CA $C3 $1A
-.db $3F $E0 $FF $20 $00 $FF $FF $01 $00 $3E $50 $32 $75 $C9 $AF $32
-.db $31 $C9 $C3 $DF $3E $3A $36 $C6 $B7 $28 $08 $3E $22 $32 $75 $C9
-.db $C3 $DF $3E $CD $7B $0B $E6 $0F $C6 $10 $32 $36 $C6 $3E $51 $32
-.db $75 $C9 $C3 $D8 $3E $3A $20 $C0 $32 $AB $C0 $3E $19 $32 $75 $C9
-.db $C3 $E5 $3E
+_LABEL_4723_:
+	call _LABEL_3F2B_
+	ret nc
+	xor a
+	ld ($C931), a
+	call _LABEL_4888_
+	call _LABEL_2054_
+	ld hl, ($C638)
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	ld de, $001E
+	add hl, de
+	ld (hl), a
+	ld a, $4F
+	ld ($CAC4), a
+	jp _LABEL_3F1A_
+
+; Data from 4744 to 474B (8 bytes)
+.db $E0 $FF $20 $00 $FF $FF $01 $00
+
+; 51st entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_474C_:
+	ld a, $50
+	ld ($C975), a
+	xor a
+	ld ($C931), a
+	jp _LABEL_3EDF_
+
+; 52nd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4758_:
+	ld a, ($C636)
+	or a
+	jr z, _LABEL_4766_
+	ld a, $22
+	ld ($C975), a
+	jp _LABEL_3EDF_
+
+_LABEL_4766_:
+	call GetRandomNumber
+	and $0F
+	add a, $10
+	ld ($C636), a
+	ld a, $51
+	ld ($C975), a
+	jp _LABEL_3ED8_
+
+; 53rd entry of Jump Table from 3E68 (indexed by unknown)
+_LABEL_4778_:
+	ld a, ($C020)
+	ld ($C0AB), a
+	ld a, $19
+	ld ($C975), a
+	jp _LABEL_3EE5_
 
 _LABEL_4786_:
 	ld (ix+0), l
@@ -8050,6 +9388,7 @@ _LABEL_47AB_:
 
 _LABEL_47B8_:
 	call _LABEL_478D_
+_LABEL_47BB_:
 	ld a, (ix+4)
 	rrca
 	jr c, _LABEL_47CB_
@@ -8197,13 +9536,65 @@ _LABEL_4897_:
 	ld (ix+3), a
 	ret
 
-; Data from 489C to 48EF (84 bytes)
-.db $DD $7E $04 $21 $E8 $48 $0F $38 $04 $23 $23 $18 $F9 $5E $23 $56
-.db $DD $6E $05 $DD $66 $06 $C5 $FD $21 $40 $C1 $06 $16 $C5 $FD $7E
-.db $05 $BD $20 $0A $FD $7E $06 $BC $20 $04 $C1 $C1 $AF $C9 $01 $20
-.db $00 $FD $09 $C1 $10 $E7 $19 $7E $FE $0C $30 $08 $FE $06 $30 $09
-.db $FE $02 $38 $05 $C1 $10 $CF $37 $C9 $C1 $37 $C9 $E0 $FF $20 $00
-.db $FF $FF $01 $00
+_LABEL_489C_:
+	ld a, (ix+4)
+	ld hl, $48E8
+_LABEL_48A2_:
+	rrca
+	jr c, _LABEL_48A9_
+	inc hl
+	inc hl
+	jr _LABEL_48A2_
+
+_LABEL_48A9_:
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ld l, (ix+5)
+	ld h, (ix+6)
+_LABEL_48B2_:
+	push bc
+	ld iy, $C140
+	ld b, $16
+_LABEL_48B9_:
+	push bc
+	ld a, (iy+5)
+	cp l
+	jr nz, _LABEL_48CA_
+	ld a, (iy+6)
+	cp h
+	jr nz, _LABEL_48CA_
+	pop bc
+	pop bc
+	xor a
+	ret
+
+_LABEL_48CA_:
+	ld bc, $0020
+	add iy, bc
+	pop bc
+	djnz _LABEL_48B9_
+	add hl, de
+	ld a, (hl)
+	cp $0C
+	jr nc, _LABEL_48E0_
+	cp $06
+	jr nc, _LABEL_48E5_
+	cp $02
+	jr c, _LABEL_48E5_
+_LABEL_48E0_:
+	pop bc
+	djnz _LABEL_48B2_
+	scf
+	ret
+
+_LABEL_48E5_:
+	pop bc
+	scf
+	ret
+
+; Data from 48E8 to 48EF (8 bytes)
+.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 _LABEL_48F0_:
 	call _LABEL_48F7_
@@ -8246,15 +9637,44 @@ _LABEL_4916_:
 	ld ($C61A), a
 	ret
 
-; Data from 4935 to 49A6 (114 bytes)
+; Data from 4935 to 496A (54 bytes)
 .db $00 $00 $00 $02 $04 $04 $08 $08 $10 $0E $14 $13 $18 $19 $1E $20
 .db $28 $28 $0A $0C $28 $0D $1E $0D $28 $17 $14 $0E $00 $12 $28 $1E
 .db $00 $00 $08 $02 $0C $05 $10 $09 $14 $0F $18 $14 $1D $1C $23 $24
-.db $28 $2C $28 $10 $32 $32 $3A $1F $C6 $57 $3A $1C $C0 $82 $3C $5F
-.db $16 $00 $2A $23 $C6 $AF $ED $52 $22 $23 $C6 $EB $2A $21 $C6 $AF
-.db $ED $52 $38 $04 $ED $53 $21 $C6 $3A $1F $C6 $87 $5F $16 $00 $21
-.db $8D $3A $19 $11 $29 $C6 $ED $A8 $ED $A8 $11 $26 $C6 $ED $A8 $ED
-.db $A8 $C9
+.db $28 $2C $28 $10 $32 $32
+
+_LABEL_496B_:
+	ld a, ($C61F)
+	ld d, a
+	ld a, ($C01C)
+	add a, d
+	inc a
+	ld e, a
+	ld d, $00
+	ld hl, ($C623)
+	xor a
+	sbc hl, de
+	ld ($C623), hl
+	ex de, hl
+	ld hl, ($C621)
+	xor a
+	sbc hl, de
+	jr c, _LABEL_498D_
+	ld ($C621), de
+_LABEL_498D_:
+	ld a, ($C61F)
+	add a, a
+	ld e, a
+	ld d, $00
+	ld hl, $3A8D
+	add hl, de
+	ld de, $C629
+	ldd
+	ldd
+	ld de, $C626
+	ldd
+	ldd
+	ret
 
 _LABEL_49A7_:
 	ld (ix+24), $00
@@ -8342,6 +9762,7 @@ _LABEL_4A36_:
 	jr c, _LABEL_4A6F_
 	cp $58
 	jr z, _LABEL_4A6F_
+_LABEL_4A4F_:
 	ld a, ($C438)
 	cp $02
 	jr c, _LABEL_4A58_
@@ -8688,12 +10109,13 @@ _LABEL_4C9E_:
 	add a, a
 	add a, $28
 	ld (ix+17), a
+_LABEL_4CAB_:
 	ld a, ($C438)
 	ld hl, $4CB4
 	jp _LABEL_12D_
 
-; Data from 4CB4 to 4CBF (12 bytes)
-.db $43 $4E $54 $4E $65 $4E $79 $4E $8D $4E $A1 $4E
+; Jump Table from 4CB4 to 4CBF (6 entries, indexed by unknown)
+.dw _LABEL_4E43_ _LABEL_4E54_ _LABEL_4E65_ _LABEL_4E79_ _LABEL_4E8D_ _LABEL_4EA1_
 
 _LABEL_4CC0_:
 	ld a, ($C418)
@@ -8929,6 +10351,7 @@ _LABEL_4E1B_:
 ; Data from 4E35 to 4E42 (14 bytes)
 .db $75 $A9 $BB $A9 $BB $A9 $01 $AA $01 $AA $01 $AA $BB $A9
 
+; 1st entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4E43_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -8938,6 +10361,7 @@ _LABEL_4E43_:
 	ld de, $A000
 	jp _LABEL_4EBD_
 
+; 2nd entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4E54_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -8947,6 +10371,7 @@ _LABEL_4E54_:
 	ld de, $A020
 	jp _LABEL_4EBD_
 
+; 3rd entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4E65_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -8957,6 +10382,7 @@ _LABEL_4E65_:
 	ld bc, $C935
 	jp _LABEL_4EFE_
 
+; 4th entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4E79_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -8967,6 +10393,7 @@ _LABEL_4E79_:
 	ld bc, $C945
 	jp _LABEL_4EFE_
 
+; 5th entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4E8D_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -8977,6 +10404,7 @@ _LABEL_4E8D_:
 	ld bc, $C955
 	jp _LABEL_4EFE_
 
+; 6th entry of Jump Table from 4CB4 (indexed by unknown)
 _LABEL_4EA1_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
@@ -9153,15 +10581,57 @@ _LABEL_4F93_:
 	out ($BE), a
 	ret
 
-; Data from 4F98 to 500F (120 bytes)
-.db $DD $36 $02 $01 $DD $36 $0F $A0 $DD $36 $11 $90 $DD $36 $18 $00
-.db $DD $36 $00 $B1 $DD $36 $01 $4F $C9 $3A $0D $C0 $E6 $03 $28 $15
-.db $0F $30 $0A $DD $36 $18 $00 $DD $36 $0F $A0 $18 $08 $DD $36 $18
-.db $01 $DD $36 $0F $B0 $3A $0D $C0 $E6 $B0 $C8 $DD $CB $18 $46 $28
-.db $0F $AF $32 $3E $C6 $CD $2C $04 $3E $00 $32 $18 $C0 $C3 $37 $01
-.db $21 $3E $C6 $34 $21 $31 $C6 $11 $32 $C6 $36 $00 $CD $33 $0B $CD
-.db $1A $10 $2A $23 $C6 $22 $21 $C6 $3E $30 $32 $20 $C6 $CD $2C $04
-.db $3E $08 $32 $18 $C0 $C3 $37 $01
+_LABEL_4F98_:
+	ld (ix+2), $01
+	ld (ix+15), $A0
+	ld (ix+17), $90
+	ld (ix+24), $00
+	ld (ix+0), $B1
+	ld (ix+1), $4F
+	ret
+
+_LABEL_4FB1_:
+	ld a, ($C00D)
+	and $03
+	jr z, _LABEL_4FCD_
+	rrca
+	jr nc, _LABEL_4FC5_
+	ld (ix+24), $00
+	ld (ix+15), $A0
+	jr _LABEL_4FCD_
+
+_LABEL_4FC5_:
+	ld (ix+24), $01
+	ld (ix+15), $B0
+_LABEL_4FCD_:
+	ld a, ($C00D)
+	and $B0
+	ret z
+	bit 0, (ix+24)
+	jr z, _LABEL_4FE8_
+	xor a
+	ld ($C63E), a
+	call _LABEL_42C_
+	ld a, $00
+	ld ($C018), a
+	jp _LABEL_137_
+
+_LABEL_4FE8_:
+	ld hl, $C63E
+	inc (hl)
+	ld hl, $C631
+	ld de, $C632
+	ld (hl), $00
+	call LDI5
+	call _LABEL_101A_
+	ld hl, ($C623)
+	ld ($C621), hl
+	ld a, $30
+	ld ($C620), a
+	call _LABEL_42C_
+	ld a, $08
+	ld ($C018), a
+	jp _LABEL_137_
 
 _LABEL_5010_:
 	ld (ix+0), $19
@@ -9184,7 +10654,6 @@ _LABEL_5021_:
 
 _LABEL_5030_:
 	ld d, $1C
-.incbin "dcsms_70b4.inc"
 	ld a, ($C908)
 	cp $13
 	jr c, _LABEL_503F_
@@ -9205,28 +10674,147 @@ _LABEL_503F_:
 _LABEL_505B_:
 	ret
 
-; Data from 505C to 51A4 (329 bytes)
-.db $DD $36 $02 $01 $DD $36 $03 $C3 $DD $36 $1A $00 $DD $36 $0F $80
-.db $DD $36 $11 $80 $DD $36 $18 $20 $DD $36 $00 $7D $DD $36 $01 $50
-.db $C9 $DD $35 $18 $C0 $21 $20 $C0 $22 $A4 $C0 $3E $08 $32 $A3 $C0
-.db $CD $A9 $04 $DD $36 $18 $30 $DD $36 $00 $9C $DD $36 $01 $50 $C9
-.db $DD $35 $18 $C0 $DD $36 $18 $10 $DD $36 $03 $C4 $DD $36 $00 $B1
-.db $DD $36 $01 $50 $C9 $DD $35 $18 $C0 $DD $36 $1C $00 $DD $36 $1D
-.db $FA $DD $36 $00 $C6 $DD $36 $01 $50 $C9 $DD $34 $11 $DD $34 $11
-.db $DD $6E $1A $DD $66 $0F $DD $5E $1C $DD $56 $1D $19 $7C $FE $A0
-.db $30 $11 $DD $75 $1A $DD $74 $0F $21 $74 $00 $19 $DD $75 $1C $DD
-.db $74 $1D $C9 $21 $76 $51 $22 $20 $C1 $DD $36 $03 $00 $DD $36 $0F
-.db $A1 $DD $36 $11 $B8 $DD $36 $15 $20 $DD $36 $16 $16 $DD $36 $17
-.db $51 $DD $36 $00 $1E $DD $36 $01 $51 $C9 $C5 $C6 $C7 $C8 $C7 $C6
-.db $C5 $00 $DD $7E $15 $B7 $28 $05 $3D $DD $77 $15 $C9 $3E $02 $DD
-.db $77 $15 $DD $6E $16 $DD $66 $17 $7E $DD $77 $03 $23 $DD $75 $16
-.db $DD $74 $17 $DD $34 $18 $DD $7E $18 $FE $02 $28 $10 $FE $08 $D8
-.db $DD $36 $02 $00 $DD $36 $00 $67 $DD $36 $01 $51 $C9 $21 $30 $C0
-.db $22 $A4 $C0 $3E $08 $32 $A3 $C0 $C3 $A9 $04 $3E $16 $32 $18 $C0
-.db $21 $0F $31 $22 $00 $C1 $22 $20 $C1 $C9 $DD $36 $02 $01 $DD $36
-.db $03 $C4 $DD $36 $0F $A0 $DD $36 $11 $C0 $DD $36 $18 $08 $DD $36
-.db $00 $93 $DD $36 $01 $51 $C9 $DD $35 $18 $C0 $DD $36 $03 $C3 $DD
-.db $36 $00 $A4 $DD $36 $01 $51 $C9 $C9
+_LABEL_505C_:
+	ld (ix+2), $01
+	ld (ix+3), $C3
+	ld (ix+26), $00
+	ld (ix+15), $80
+	ld (ix+17), $80
+	ld (ix+24), $20
+	ld (ix+0), $7D
+	ld (ix+1), $50
+	ret
+
+_LABEL_507D_:
+	dec (ix+24)
+	ret nz
+	ld hl, $C020
+	ld ($C0A4), hl
+	ld a, $08
+	ld ($C0A3), a
+	call _LABEL_4A9_
+	ld (ix+24), $30
+	ld (ix+0), $9C
+	ld (ix+1), $50
+	ret
+
+_LABEL_509C_:
+	dec (ix+24)
+	ret nz
+	ld (ix+24), $10
+	ld (ix+3), $C4
+	ld (ix+0), $B1
+	ld (ix+1), $50
+	ret
+
+_LABEL_50B1_:
+	dec (ix+24)
+	ret nz
+	ld (ix+28), $00
+	ld (ix+29), $FA
+	ld (ix+0), $C6
+	ld (ix+1), $50
+	ret
+
+_LABEL_50C6_:
+	inc (ix+17)
+	inc (ix+17)
+	ld l, (ix+26)
+	ld h, (ix+15)
+	ld e, (ix+28)
+	ld d, (ix+29)
+	add hl, de
+	ld a, h
+	cp $A0
+	jr nc, _LABEL_50EF_
+	ld (ix+26), l
+	ld (ix+15), h
+	ld hl, $0074
+	add hl, de
+	ld (ix+28), l
+	ld (ix+29), h
+	ret
+
+_LABEL_50EF_:
+	ld hl, $5176
+	ld ($C120), hl
+	ld (ix+3), $00
+	ld (ix+15), $A1
+	ld (ix+17), $B8
+	ld (ix+21), $20
+	ld (ix+22), $16
+	ld (ix+23), $51
+	ld (ix+0), $1E
+	ld (ix+1), $51
+	ret
+
+; Data from 5116 to 511D (8 bytes)
+.db $C5 $C6 $C7 $C8 $C7 $C6 $C5 $00
+
+_LABEL_511E_:
+	ld a, (ix+21)
+	or a
+	jr z, _LABEL_5129_
+	dec a
+	ld (ix+21), a
+	ret
+
+_LABEL_5129_:
+	ld a, $02
+	ld (ix+21), a
+	ld l, (ix+22)
+	ld h, (ix+23)
+	ld a, (hl)
+	ld (ix+3), a
+	inc hl
+	ld (ix+22), l
+	ld (ix+23), h
+	inc (ix+24)
+	ld a, (ix+24)
+	cp $02
+	jr z, _LABEL_5159_
+	cp $08
+	ret c
+	ld (ix+2), $00
+	ld (ix+0), $67
+	ld (ix+1), $51
+	ret
+
+_LABEL_5159_:
+	ld hl, $C030
+	ld ($C0A4), hl
+	ld a, $08
+	ld ($C0A3), a
+	jp _LABEL_4A9_
+
+_LABEL_5167_:
+	ld a, $16
+	ld ($C018), a
+	ld hl, $310F
+	ld ($C100), hl
+	ld ($C120), hl
+	ret
+
+_LABEL_5176_:
+	ld (ix+2), $01
+	ld (ix+3), $C4
+	ld (ix+15), $A0
+	ld (ix+17), $C0
+	ld (ix+24), $08
+	ld (ix+0), $93
+	ld (ix+1), $51
+	ret
+
+_LABEL_5193_:
+	dec (ix+24)
+	ret nz
+	ld (ix+3), $C3
+	ld (ix+0), $A4
+	ld (ix+1), $51
+	ret
+
+_LABEL_51A4_:
+	ret
 
 _LABEL_51A5_:
 	ld a, ($C908)
@@ -9513,19 +11101,95 @@ _LABEL_536A_:
 	ld a, $CC
 	ret
 
-; Data from 536D to 541F (179 bytes)
+; Data from 536D to 538D (33 bytes)
 .db $01 $02 $04 $06 $08 $0A $0E $14 $08 $12 $0E $35 $3C $1E $20 $1C
 .db $32 $23 $34 $46 $3C $30 $3C $AF $50 $46 $8C $6E $10 $78 $B4 $64
-.db $82 $DD $7E $04 $0F $38 $08 $0F $38 $29 $0F $38 $48 $18 $65 $DD
-.db $6E $05 $DD $66 $06 $11 $20 $00 $B7 $ED $52 $7E $E6 $7F $28 $05
-.db $DD $35 $19 $20 $F0 $DD $5E $05 $DD $56 $06 $B7 $ED $52 $DD $36
-.db $19 $01 $C9 $DD $6E $05 $DD $66 $06 $11 $20 $00 $19 $7E $E6 $7F
-.db $28 $05 $DD $35 $19 $20 $F2 $DD $5E $05 $DD $56 $06 $B7 $ED $52
-.db $DD $36 $19 $01 $C9 $DD $6E $05 $DD $66 $06 $2B $7E $E6 $7F $28
-.db $05 $DD $35 $19 $20 $F5 $DD $5E $05 $DD $56 $06 $B7 $ED $52 $DD
-.db $36 $19 $01 $C9 $DD $6E $05 $DD $66 $06 $23 $7E $E6 $7F $28 $05
-.db $DD $35 $19 $20 $F5 $DD $5E $05 $DD $56 $06 $B7 $ED $52 $DD $36
-.db $19 $01 $C9
+.db $82
+
+_LABEL_538E_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_539C_
+	rrca
+	jr c, _LABEL_53C0_
+	rrca
+	jr c, _LABEL_53E2_
+	jr _LABEL_5401_
+
+_LABEL_539C_:
+	ld l, (ix+5)
+	ld h, (ix+6)
+_LABEL_53A2_:
+	ld de, $0020
+	or a
+	sbc hl, de
+	ld a, (hl)
+	and $7F
+	jr z, _LABEL_53B2_
+	dec (ix+25)
+	jr nz, _LABEL_53A2_
+_LABEL_53B2_:
+	ld e, (ix+5)
+	ld d, (ix+6)
+	or a
+	sbc hl, de
+	ld (ix+25), $01
+	ret
+
+_LABEL_53C0_:
+	ld l, (ix+5)
+	ld h, (ix+6)
+_LABEL_53C6_:
+	ld de, $0020
+	add hl, de
+	ld a, (hl)
+	and $7F
+	jr z, _LABEL_53D4_
+	dec (ix+25)
+	jr nz, _LABEL_53C6_
+_LABEL_53D4_:
+	ld e, (ix+5)
+	ld d, (ix+6)
+	or a
+	sbc hl, de
+	ld (ix+25), $01
+	ret
+
+_LABEL_53E2_:
+	ld l, (ix+5)
+	ld h, (ix+6)
+_LABEL_53E8_:
+	dec hl
+	ld a, (hl)
+	and $7F
+	jr z, _LABEL_53F3_
+	dec (ix+25)
+	jr nz, _LABEL_53E8_
+_LABEL_53F3_:
+	ld e, (ix+5)
+	ld d, (ix+6)
+	or a
+	sbc hl, de
+	ld (ix+25), $01
+	ret
+
+_LABEL_5401_:
+	ld l, (ix+5)
+	ld h, (ix+6)
+_LABEL_5407_:
+	inc hl
+	ld a, (hl)
+	and $7F
+	jr z, _LABEL_5412_
+	dec (ix+25)
+	jr nz, _LABEL_5407_
+_LABEL_5412_:
+	ld e, (ix+5)
+	ld d, (ix+6)
+	or a
+	sbc hl, de
+	ld (ix+25), $01
+	ret
 
 _LABEL_5420_:
 	ld e, (ix+5)
@@ -9552,9 +11216,23 @@ _LABEL_5443_:
 	scf
 	ret
 
-; Data from 5445 to 5459 (21 bytes)
-.db $E5 $DD $5E $05 $DD $56 $06 $19 $7E $E6 $7F $FE $05 $28 $03 $E1
-.db $AF $C9 $E1 $37 $C9
+_LABEL_5445_:
+	push hl
+	ld e, (ix+5)
+	ld d, (ix+6)
+	add hl, de
+	ld a, (hl)
+	and $7F
+	cp $05
+	jr z, _LABEL_5457_
+	pop hl
+	xor a
+	ret
+
+_LABEL_5457_:
+	pop hl
+	scf
+	ret
 
 _LABEL_545A_:
 	ld e, (ix+5)
@@ -9960,6 +11638,7 @@ _LABEL_56A9_:
 	ld ($C3C4), a
 	ret
 
+; 1st entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_56C8_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10129,6 +11808,7 @@ _LABEL_5815_:
 	ld (ix+1), $57
 	jp _LABEL_57D7_
 
+; 5th entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_583E_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10284,56 +11964,342 @@ _LABEL_5989_:
 	call _LABEL_567B_
 	jp _LABEL_58B9_
 
-; Data from 59A6 to 5C9C (759 bytes)
-.db $DD $36 $02 $01 $CD $0D $55 $DD $36 $13 $02 $DD $36 $1A $26 $DD
-.db $36 $1B $00 $CD $9C $56 $DD $36 $00 $CD $DD $36 $01 $59 $DD $36
-.db $16 $25 $DD $36 $17 $7B $C9 $CD $67 $55 $D8 $CD $3A $55 $DD $7E
-.db $1C $E6 $02 $C2 $1B $48 $3A $01 $C6 $FE $01 $28 $07 $FE $09 $28
-.db $03 $C3 $1B $48 $DD $34 $19 $DD $7E $19 $FE $02 $20 $14 $DD $36
-.db $19 $00 $CD $73 $54 $30 $21 $DD $36 $00 $F3 $DD $36 $01 $5A $C3
-.db $F3 $5A $DD $36 $18 $08 $DD $36 $00 $14 $DD $36 $01 $5A $CD $3A
-.db $55 $DD $35 $18 $CA $DF $5A $C9 $DD $7E $1C $E6 $01 $20 $16 $CD
-.db $8C $56 $30 $11 $CD $DE $51 $DD $7E $04 $0F $38 $0D $0F $38 $22
-.db $0F $38 $37 $18 $4F $CD $A1 $52 $18 $ED $21 $E0 $FF $CD $20 $54
-.db $38 $06 $DD $36 $04 $01 $18 $49 $DD $7E $04 $E6 $FE $DD $77 $04
-.db $18 $D5 $21 $20 $00 $CD $20 $54 $38 $06 $DD $36 $04 $02 $18 $31
-.db $DD $7E $04 $E6 $FD $DD $77 $04 $18 $BD $21 $FF $FF $CD $20 $54
-.db $38 $06 $DD $36 $04 $04 $18 $19 $DD $7E $04 $E6 $FB $F6 $03 $DD
-.db $77 $04 $18 $A3 $21 $01 $00 $CD $20 $54 $DA $08 $5A $DD $36 $04
-.db $08 $DD $75 $07 $DD $74 $08 $DD $36 $18 $08 $DD $36 $00 $A9 $DD
-.db $36 $01 $5A $CD $BB $47 $CD $3A $55 $DD $35 $18 $28 $2B $C9 $3E
-.db $A0 $32 $05 $DD $CD $7B $56 $DD $36 $00 $C5 $DD $36 $01 $5A $CD
-.db $3A $55 $DD $35 $18 $28 $12 $DD $7E $1E $B7 $C8 $DD $7E $18 $FE
-.db $01 $20 $03 $CD $02 $53 $C3 $43 $56 $CD $55 $56 $DD $36 $16 $25
-.db $DD $36 $17 $7B $DD $36 $00 $CD $DD $36 $01 $59 $C9 $2A $21 $C6
-.db $7C $B5 $28 $E5 $CD $3A $55 $CD $F6 $1E $D8 $CD $7B $0B $FE $A0
-.db $30 $1B $DD $36 $1E $01 $DD $36 $18 $08 $DD $36 $16 $2E $DD $36
-.db $17 $7B $DD $36 $00 $B5 $DD $36 $01 $5A $C3 $B5 $5A $DD $36 $18
-.db $08 $DD $36 $00 $08 $DD $36 $01 $5A $CD $C8 $54 $DA $08 $5A $3E
-.db $A2 $32 $05 $DD $CD $7B $56 $C3 $2D $5A $DD $36 $02 $01 $CD $0D
-.db $55 $DD $36 $13 $04 $DD $36 $1A $A0 $DD $36 $1B $00 $CD $9C $56
-.db $DD $36 $00 $67 $DD $36 $01 $5B $DD $36 $16 $25 $DD $36 $17 $7B
-.db $C9 $CD $67 $55 $D8 $CD $3A $55 $DD $7E $1C $E6 $02 $C2 $1B $48
-.db $3A $01 $C6 $FE $01 $28 $07 $FE $09 $28 $03 $C3 $1B $48 $3E $02
-.db $DD $77 $19 $CD $73 $54 $30 $25 $DD $36 $00 $70 $DD $36 $01 $5C
-.db $C3 $70 $5C $DD $36 $19 $01 $DD $36 $18 $08 $DD $36 $00 $A9 $DD
-.db $36 $01 $5B $CD $3A $55 $DD $35 $18 $CA $42 $5C $C9 $CD $A1 $52
-.db $DD $7E $04 $0F $38 $08 $0F $38 $13 $0F $38 $1E $18 $2A $21 $E0
-.db $FF $CD $20 $54 $38 $06 $DD $36 $04 $01 $18 $28 $21 $20 $00 $CD
-.db $20 $54 $38 $06 $DD $36 $04 $02 $18 $1A $21 $FF $FF $CD $20 $54
-.db $38 $06 $DD $36 $04 $04 $18 $0C $21 $01 $00 $CD $20 $54 $38 $A3
-.db $DD $36 $04 $08 $DD $75 $07 $DD $74 $08 $DD $36 $18 $04 $DD $36
-.db $00 $0C $DD $36 $01 $5C $CD $BB $47 $CD $3A $55 $DD $35 $18 $28
-.db $2B $C9 $3E $A0 $32 $05 $DD $CD $7B $56 $DD $36 $00 $28 $DD $36
-.db $01 $5C $CD $3A $55 $DD $35 $18 $28 $12 $DD $7E $1E $B7 $C8 $DD
-.db $7E $18 $FE $01 $20 $03 $CD $02 $53 $C3 $43 $56 $DD $35 $19 $20
-.db $14 $CD $55 $56 $DD $36 $16 $25 $DD $36 $17 $7B $DD $36 $00 $67
-.db $DD $36 $01 $5B $C9 $DD $7E $07 $DD $77 $05 $DD $7E $08 $DD $77
-.db $06 $DD $36 $00 $89 $DD $36 $01 $5B $C9 $2A $21 $C6 $7C $B5 $28
-.db $CB $CD $3A $55 $CD $F6 $1E $D8 $DD $36 $1E $01 $DD $36 $18 $08
-.db $DD $36 $19 $01 $DD $36 $16 $2E $DD $36 $17 $7B $DD $36 $00 $18
-.db $DD $36 $01 $5C $C3 $18 $5C
+; 9th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_59A6_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $26
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+0), $CD
+	ld (ix+1), $59
+	ld (ix+22), $25
+	ld (ix+23), $7B
+	ret
 
+_LABEL_59CD_:
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_59EA_
+	cp $09
+	jr z, _LABEL_59EA_
+	jp _LABEL_481B_
+
+_LABEL_59EA_:
+	inc (ix+25)
+	ld a, (ix+25)
+	cp $02
+	jr nz, _LABEL_5A08_
+	ld (ix+25), $00
+	call _LABEL_5473_
+	jr nc, _LABEL_5A1E_
+	ld (ix+0), $F3
+	ld (ix+1), $5A
+	jp _LABEL_5AF3_
+
+_LABEL_5A08_:
+	ld (ix+24), $08
+	ld (ix+0), $14
+	ld (ix+1), $5A
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_5ADF_
+	ret
+
+_LABEL_5A1E_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_5A3B_
+	call _LABEL_568C_
+	jr nc, _LABEL_5A3B_
+	call _LABEL_51DE_
+_LABEL_5A2D_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_5A40_
+	rrca
+	jr c, _LABEL_5A58_
+	rrca
+	jr c, _LABEL_5A70_
+	jr _LABEL_5A8A_
+
+_LABEL_5A3B_:
+	call _LABEL_52A1_
+	jr _LABEL_5A2D_
+
+_LABEL_5A40_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_5A4E_
+	ld (ix+4), $01
+	jr _LABEL_5A97_
+
+_LABEL_5A4E_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_5A2D_
+
+_LABEL_5A58_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_5A66_
+	ld (ix+4), $02
+	jr _LABEL_5A97_
+
+_LABEL_5A66_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_5A2D_
+
+_LABEL_5A70_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_5A7E_
+	ld (ix+4), $04
+	jr _LABEL_5A97_
+
+_LABEL_5A7E_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_5A2D_
+
+_LABEL_5A8A_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_5A08_
+	ld (ix+4), $08
+_LABEL_5A97_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+0), $A9
+	ld (ix+1), $5A
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_5ADF_
+	ret
+
+_LABEL_5AB5_:
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	ld (ix+0), $C5
+	ld (ix+1), $5A
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_5ADF_
+	ld a, (ix+30)
+	or a
+	ret z
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_5ADC_
+	call _LABEL_5302_
+_LABEL_5ADC_:
+	jp _LABEL_5643_
+
+_LABEL_5ADF_:
+	call _LABEL_5655_
+	ld (ix+22), $25
+	ld (ix+23), $7B
+	ld (ix+0), $CD
+	ld (ix+1), $59
+	ret
+
+_LABEL_5AF3_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_5ADF_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	call GetRandomNumber
+	cp $A0
+	jr nc, _LABEL_5B23_
+	ld (ix+30), $01
+	ld (ix+24), $08
+	ld (ix+22), $2E
+	ld (ix+23), $7B
+	ld (ix+0), $B5
+	ld (ix+1), $5A
+	jp _LABEL_5AB5_
+
+_LABEL_5B23_:
+	ld (ix+24), $08
+	ld (ix+0), $08
+	ld (ix+1), $5A
+	call _LABEL_54C8_
+	jp c, _LABEL_5A08_
+	ld a, $A2
+	ld ($DD05), a
+	call _LABEL_567B_
+	jp _LABEL_5A2D_
+
+; 29th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_5B40_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $04
+	ld (ix+26), $A0
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+0), $67
+	ld (ix+1), $5B
+	ld (ix+22), $25
+	ld (ix+23), $7B
+	ret
+
+_LABEL_5B67_:
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_5B84_
+	cp $09
+	jr z, _LABEL_5B84_
+	jp _LABEL_481B_
+
+_LABEL_5B84_:
+	ld a, $02
+	ld (ix+25), a
+	call _LABEL_5473_
+	jr nc, _LABEL_5BB3_
+	ld (ix+0), $70
+	ld (ix+1), $5C
+	jp _LABEL_5C70_
+
+_LABEL_5B99_:
+	ld (ix+25), $01
+	ld (ix+24), $08
+	ld (ix+0), $A9
+	ld (ix+1), $5B
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_5C42_
+	ret
+
+_LABEL_5BB3_:
+	call _LABEL_52A1_
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_5BC4_
+	rrca
+	jr c, _LABEL_5BD2_
+	rrca
+	jr c, _LABEL_5BE0_
+	jr _LABEL_5BEE_
+
+_LABEL_5BC4_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_5BD2_
+	ld (ix+4), $01
+	jr _LABEL_5BFA_
+
+_LABEL_5BD2_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_5BE0_
+	ld (ix+4), $02
+	jr _LABEL_5BFA_
+
+_LABEL_5BE0_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_5BEE_
+	ld (ix+4), $04
+	jr _LABEL_5BFA_
+
+_LABEL_5BEE_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jr c, _LABEL_5B99_
+	ld (ix+4), $08
+_LABEL_5BFA_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $04
+	ld (ix+0), $0C
+	ld (ix+1), $5C
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_5C42_
+	ret
+
+_LABEL_5C18_:
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	ld (ix+0), $28
+	ld (ix+1), $5C
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_5C42_
+	ld a, (ix+30)
+	or a
+	ret z
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_5C3F_
+	call _LABEL_5302_
+_LABEL_5C3F_:
+	jp _LABEL_5643_
+
+_LABEL_5C42_:
+	dec (ix+25)
+	jr nz, _LABEL_5C5B_
+	call _LABEL_5655_
+	ld (ix+22), $25
+	ld (ix+23), $7B
+	ld (ix+0), $67
+	ld (ix+1), $5B
+	ret
+
+_LABEL_5C5B_:
+	ld a, (ix+7)
+	ld (ix+5), a
+	ld a, (ix+8)
+	ld (ix+6), a
+	ld (ix+0), $89
+	ld (ix+1), $5B
+	ret
+
+_LABEL_5C70_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_5C42_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld (ix+24), $08
+	ld (ix+25), $01
+	ld (ix+22), $2E
+	ld (ix+23), $7B
+	ld (ix+0), $18
+	ld (ix+1), $5C
+	jp _LABEL_5C18_
+
+; 2nd entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_5C9D_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10559,6 +12525,7 @@ _LABEL_5E81_:
 	ld (ix+1), $5D
 	jp _LABEL_5DBB_
 
+; 6th entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_5E90_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10573,11 +12540,22 @@ _LABEL_5E90_:
 	ld (ix+23), $7B
 	ret
 
-; Data from 5EBB to 5EE5 (43 bytes)
-.db $DD $36 $02 $01 $CD $0D $55 $DD $36 $13 $02 $DD $36 $1A $34 $DD
-.db $36 $1B $00 $DD $36 $03 $23 $CD $9C $56 $DD $36 $00 $C8 $DD $36
-.db $01 $5C $DD $36 $16 $37 $DD $36 $17 $7B $C9
+; 10th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_5EBB_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $34
+	ld (ix+27), $00
+	ld (ix+3), $23
+	call _LABEL_569C_
+	ld (ix+0), $C8
+	ld (ix+1), $5C
+	ld (ix+22), $37
+	ld (ix+23), $7B
+	ret
 
+; 3rd entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_5EE6_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10798,11 +12776,20 @@ _LABEL_60BB_:
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
-; Data from 60C4 to 60E6 (35 bytes)
-.db $DD $36 $02 $01 $CD $0D $55 $DD $36 $13 $02 $DD $36 $1A $60 $DD
-.db $36 $1B $00 $DD $36 $03 $2F $CD $9C $56 $DD $36 $00 $09 $DD $36
-.db $01 $5F $C9
+; 15th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_60C4_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $60
+	ld (ix+27), $00
+	ld (ix+3), $2F
+	call _LABEL_569C_
+	ld (ix+0), $09
+	ld (ix+1), $5F
+	ret
 
+; 4th entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_60E7_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -10899,7 +12886,6 @@ _LABEL_61A2_:
 _LABEL_61AC_:
 	ld hl, $0020
 	call _LABEL_5420_
-.incbin "dcsms_7a5b.inc"
 	jr c, _LABEL_61BA_
 	ld (ix+4), $02
 	jr _LABEL_61EB_
@@ -11043,40 +13029,230 @@ _LABEL_62EA_:
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
-; Data from 62F3 to 64E6 (500 bytes)
-.db $DD $36 $02 $01 $CD $0D $55 $DD $36 $13 $04 $DD $36 $1A $32 $DD
-.db $36 $1B $00 $CD $9C $56 $DD $36 $16 $92 $DD $36 $17 $7B $DD $36
-.db $00 $0E $DD $36 $01 $61 $C9 $DD $36 $02 $01 $CD $0D $55 $DD $36
-.db $1A $1E $DD $36 $1B $00 $DD $36 $03 $45 $CD $9C $56 $DD $36 $00
-.db $39 $DD $36 $01 $63 $C9 $CD $67 $55 $D8 $DD $7E $1C $E6 $02 $C2
-.db $1B $48 $3A $01 $C6 $FE $01 $28 $07 $FE $09 $28 $03 $C3 $1B $48
-.db $CD $B1 $1E $DA $1B $48 $CD $7D $55 $30 $10 $CD $BF $55 $38 $0B
-.db $DD $36 $00 $4E $DD $36 $01 $64 $C3 $4E $64 $CD $7B $0B $E6 $03
-.db $20 $02 $3E $04 $DD $77 $19 $CD $A1 $52 $DD $7E $04 $0F $38 $08
-.db $0F $38 $13 $0F $38 $1E $18 $2A $DD $36 $04 $01 $CD $8E $53 $CD
-.db $20 $54 $38 $02 $18 $27 $DD $36 $04 $02 $CD $8E $53 $CD $20 $54
-.db $38 $02 $18 $19 $DD $36 $04 $04 $CD $8E $53 $CD $20 $54 $38 $02
-.db $18 $0B $DD $36 $04 $08 $CD $8E $53 $CD $20 $54 $D8 $DD $75 $07
-.db $DD $74 $08 $DD $36 $18 $08 $DD $36 $16 $9B $DD $36 $17 $7B $DD
-.db $36 $00 $DA $DD $36 $01 $63 $CD $3A $55 $DD $35 $18 $28 $5C $DD
-.db $7E $18 $FE $04 $CC $EB $63 $C9 $DD $7E $07 $DD $77 $05 $DD $7E
-.db $08 $DD $77 $06 $C3 $0D $55 $CD $3A $55 $DD $35 $18 $28 $09 $DD
-.db $7E $18 $FE $06 $CC $A0 $64 $C9 $DD $36 $18 $10 $DD $36 $00 $17
-.db $DD $36 $01 $64 $3A $C2 $C3 $B7 $C0 $DD $36 $00 $2C $DD $36 $01
-.db $64 $3E $A0 $32 $05 $DD $CD $7B $56 $DD $35 $18 $28 $0D $DD $7E
-.db $18 $FE $01 $20 $03 $CD $02 $53 $C3 $43 $56 $CD $55 $56 $DD $36
-.db $19 $00 $DD $36 $00 $39 $DD $36 $01 $63 $C9 $2A $21 $C6 $7C $B5
-.db $28 $E9 $CD $F6 $1E $D8 $DD $36 $1E $01 $DD $7E $04 $0F $38 $08
-.db $0F $38 $0F $0F $38 $16 $18 $1E $DD $36 $16 $C1 $DD $36 $17 $7B
-.db $18 $1C $DD $36 $16 $AC $DD $36 $17 $7B $18 $12 $DD $36 $16 $B3
-.db $DD $36 $17 $7B $18 $08 $DD $36 $16 $BA $DD $36 $17 $7B $DD $36
-.db $18 $0C $DD $36 $00 $FA $DD $36 $01 $63 $C3 $FA $63 $21 $5B $7A
-.db $22 $C0 $C3 $C3 $A9 $56 $DD $36 $02 $01 $CD $0D $55 $DD $36 $1A
-.db $50 $DD $36 $1B $00 $DD $36 $03 $45 $CD $9C $56 $DD $36 $00 $39
-.db $DD $36 $01 $63 $C9 $DD $36 $02 $01 $CD $0D $55 $DD $36 $1A $B4
-.db $DD $36 $1B $00 $DD $36 $03 $45 $CD $9C $56 $DD $36 $00 $39 $DD
-.db $36 $01 $63 $C9
+; 16th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_62F3_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $04
+	ld (ix+26), $32
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $92
+	ld (ix+23), $7B
+	ld (ix+0), $0E
+	ld (ix+1), $61
+	ret
 
+; 7th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_631A_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $1E
+	ld (ix+27), $00
+	ld (ix+3), $45
+	call _LABEL_569C_
+	ld (ix+0), $39
+	ld (ix+1), $63
+	ret
+
+_LABEL_6339_:
+	call _LABEL_5567_
+	ret c
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_6353_
+	cp $09
+	jr z, _LABEL_6353_
+	jp _LABEL_481B_
+
+_LABEL_6353_:
+	call _LABEL_1EB1_
+	jp c, _LABEL_481B_
+	call _LABEL_557D_
+	jr nc, _LABEL_636E_
+	call _LABEL_55BF_
+	jr c, _LABEL_636E_
+	ld (ix+0), $4E
+	ld (ix+1), $64
+	jp _LABEL_644E_
+
+_LABEL_636E_:
+	call GetRandomNumber
+	and $03
+	jr nz, _LABEL_6377_
+	ld a, $04
+_LABEL_6377_:
+	ld (ix+25), a
+	call _LABEL_52A1_
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_638B_
+	rrca
+	jr c, _LABEL_6399_
+	rrca
+	jr c, _LABEL_63A7_
+	jr _LABEL_63B5_
+
+_LABEL_638B_:
+	ld (ix+4), $01
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_6399_
+	jr _LABEL_63C0_
+
+_LABEL_6399_:
+	ld (ix+4), $02
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_63A7_
+	jr _LABEL_63C0_
+
+_LABEL_63A7_:
+	ld (ix+4), $04
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_63B5_
+	jr _LABEL_63C0_
+
+_LABEL_63B5_:
+	ld (ix+4), $08
+	call _LABEL_538E_
+	call _LABEL_5420_
+	ret c
+_LABEL_63C0_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+22), $9B
+	ld (ix+23), $7B
+	ld (ix+0), $DA
+	ld (ix+1), $63
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_643E_
+	ld a, (ix+24)
+	cp $04
+	call z, _LABEL_63EB_
+	ret
+
+_LABEL_63EB_:
+	ld a, (ix+7)
+	ld (ix+5), a
+	ld a, (ix+8)
+	ld (ix+6), a
+	jp _LABEL_550D_
+
+_LABEL_63FA_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_640B_
+	ld a, (ix+24)
+	cp $06
+	call z, _LABEL_64A0_
+	ret
+
+_LABEL_640B_:
+	ld (ix+24), $10
+	ld (ix+0), $17
+	ld (ix+1), $64
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $2C
+	ld (ix+1), $64
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	dec (ix+24)
+	jr z, _LABEL_643E_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_643B_
+	call _LABEL_5302_
+_LABEL_643B_:
+	jp _LABEL_5643_
+
+_LABEL_643E_:
+	call _LABEL_5655_
+	ld (ix+25), $00
+	ld (ix+0), $39
+	ld (ix+1), $63
+	ret
+
+_LABEL_644E_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_643E_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_646B_
+	rrca
+	jr c, _LABEL_6475_
+	rrca
+	jr c, _LABEL_647F_
+	jr _LABEL_6489_
+
+_LABEL_646B_:
+	ld (ix+22), $C1
+	ld (ix+23), $7B
+	jr _LABEL_6491_
+
+_LABEL_6475_:
+	ld (ix+22), $AC
+	ld (ix+23), $7B
+	jr _LABEL_6491_
+
+_LABEL_647F_:
+	ld (ix+22), $B3
+	ld (ix+23), $7B
+	jr _LABEL_6491_
+
+_LABEL_6489_:
+	ld (ix+22), $BA
+	ld (ix+23), $7B
+_LABEL_6491_:
+	ld (ix+24), $0C
+	ld (ix+0), $FA
+	ld (ix+1), $63
+	jp _LABEL_63FA_
+
+_LABEL_64A0_:
+	ld hl, $7A5B
+	ld ($C3C0), hl
+	jp _LABEL_56A9_
+
+; 19th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_64A9_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $50
+	ld (ix+27), $00
+	ld (ix+3), $45
+	call _LABEL_569C_
+	ld (ix+0), $39
+	ld (ix+1), $63
+	ret
+
+; 27th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_64C8_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $B4
+	ld (ix+27), $00
+	ld (ix+3), $45
+	call _LABEL_569C_
+	ld (ix+0), $39
+	ld (ix+1), $63
+	ret
+
+; 8th entry of Jump Table from 2012 (indexed by unknown)
 _LABEL_64E7_:
 	ld (ix+2), $01
 	call _LABEL_550D_
@@ -11111,7 +13287,6 @@ _LABEL_652B_:
 	jr nz, _LABEL_6549_
 	ld (ix+25), $00
 	call _LABEL_5473_
-.incbin "dcsms_6730.inc"
 	jr nc, _LABEL_655F_
 	ld (ix+0), $D3
 	ld (ix+1), $66
@@ -11336,8 +13511,1025 @@ _LABEL_6719_:
 	ld (ix+1), $66
 	jp _LABEL_661F_
 
-; Data from 6730 to 6FFF (2256 bytes)
+; 20th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6730_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $50
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+0), $0E
+	ld (ix+1), $65
+	ld (ix+22), $D2
+	ld (ix+23), $7B
+	ret
 
+; 28th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6757_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $E6
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+0), $0E
+	ld (ix+1), $65
+	ld (ix+22), $D2
+	ld (ix+23), $7B
+	ret
+
+; 11th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_677E_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $3C
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $04
+	ld (ix+23), $7C
+	ld (ix+0), $A1
+	ld (ix+1), $67
+	ret
+
+_LABEL_67A1_:
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_67BE_
+	cp $09
+	jr z, _LABEL_67BE_
+	jp _LABEL_481B_
+
+_LABEL_67BE_:
+	call _LABEL_1EB1_
+	ret c
+	call _LABEL_557D_
+	jr nc, _LABEL_67DF_
+	call _LABEL_55BF_
+	jr c, _LABEL_67DF_
+	ld (ix+21), $00
+	ld (ix+20), $00
+	ld (ix+0), $74
+	ld (ix+1), $69
+	jp _LABEL_6974_
+
+_LABEL_67DF_:
+	call GetRandomNumber
+	and $03
+	jr nz, _LABEL_67E8_
+	ld a, $02
+_LABEL_67E8_:
+	ld (ix+25), a
+	call _LABEL_52A1_
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_67FC_
+	rrca
+	jr c, _LABEL_680A_
+	rrca
+	jr c, _LABEL_6818_
+	jr _LABEL_6826_
+
+_LABEL_67FC_:
+	ld (ix+4), $01
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_680A_
+	jr _LABEL_6831_
+
+_LABEL_680A_:
+	ld (ix+4), $02
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_6818_
+	jr _LABEL_6831_
+
+_LABEL_6818_:
+	ld (ix+4), $04
+	call _LABEL_538E_
+	call _LABEL_5420_
+	jr c, _LABEL_6826_
+	jr _LABEL_6831_
+
+_LABEL_6826_:
+	ld (ix+4), $08
+	call _LABEL_538E_
+	call _LABEL_5420_
+	ret c
+_LABEL_6831_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+22), $DC
+	ld (ix+23), $7B
+	ld (ix+0), $4B
+	ld (ix+1), $68
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_6931_
+	ld a, (ix+24)
+	cp $04
+	call z, _LABEL_685D_
+	ret
+
+_LABEL_685D_:
+	ld (ix+4), $00
+	ld (ix+22), $04
+	ld (ix+23), $7C
+	ld a, (ix+7)
+	ld (ix+5), a
+	ld a, (ix+8)
+	ld (ix+6), a
+	jp _LABEL_550D_
+
+_LABEL_6878_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6889_
+	ld a, (ix+24)
+	cp $08
+	call z, _LABEL_69C6_
+	ret
+
+_LABEL_6889_:
+	ld (ix+24), $10
+	ld (ix+0), $95
+	ld (ix+1), $68
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $AA
+	ld (ix+1), $68
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	dec (ix+24)
+	jr z, _LABEL_68BC_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_68B9_
+	call _LABEL_5302_
+_LABEL_68B9_:
+	jp _LABEL_5643_
+
+_LABEL_68BC_:
+	ld a, (ix+29)
+	or a
+	jr nz, _LABEL_6931_
+	ld a, $01
+	ld ($C102), a
+	call _LABEL_51A5_
+	jr c, _LABEL_6931_
+	ld a, ($C636)
+	or a
+	jr nz, _LABEL_6931_
+	ld a, ($C635)
+	or a
+	jr nz, _LABEL_6931_
+	call GetRandomNumber
+	cp $40
+	jp nc, _LABEL_6931_
+	ld (ix+24), $10
+	ld (ix+0), $EC
+	ld (ix+1), $68
+	dec (ix+24)
+	ret nz
+	call GetRandomNumber
+	and $07
+	ld b, $08
+	add a, b
+	push af
+	ld a, (ix+31)
+	cp $0A
+	jr z, _LABEL_6918_
+	pop af
+	call _LABEL_21BF_
+	ld a, $01
+	ld ($C60E), a
+	ld ($C606), a
+	ld a, $08
+	ld ($C635), a
+	ld a, $32
+	ld ($CAC4), a
+	jr _LABEL_6921_
+
+_LABEL_6918_:
+	pop af
+	ld ($C636), a
+	ld a, $33
+	ld ($CAC4), a
+_LABEL_6921_:
+	ld (ix+24), $10
+	ld (ix+0), $2D
+	ld (ix+1), $69
+	dec (ix+24)
+	ret nz
+_LABEL_6931_:
+	call _LABEL_5655_
+	ld (ix+25), $00
+	ld (ix+0), $A1
+	ld (ix+1), $67
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6950_
+	rrca
+	jr c, _LABEL_6959_
+	rrca
+	jr c, _LABEL_6962_
+	rrca
+	jr c, _LABEL_696B_
+	ret
+
+_LABEL_6950_:
+	ld (ix+22), $FF
+	ld (ix+23), $7B
+	ret
+
+_LABEL_6959_:
+	ld (ix+22), $04
+	ld (ix+23), $7C
+	ret
+
+_LABEL_6962_:
+	ld (ix+22), $09
+	ld (ix+23), $7C
+	ret
+
+_LABEL_696B_:
+	ld (ix+22), $0E
+	ld (ix+23), $7C
+	ret
+
+_LABEL_6974_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_6931_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6991_
+	rrca
+	jr c, _LABEL_699B_
+	rrca
+	jr c, _LABEL_69A5_
+	jr _LABEL_69AF_
+
+_LABEL_6991_:
+	ld (ix+22), $F8
+	ld (ix+23), $7B
+	jr _LABEL_69B7_
+
+_LABEL_699B_:
+	ld (ix+22), $E3
+	ld (ix+23), $7B
+	jr _LABEL_69B7_
+
+_LABEL_69A5_:
+	ld (ix+22), $EA
+	ld (ix+23), $7B
+	jr _LABEL_69B7_
+
+_LABEL_69AF_:
+	ld (ix+22), $F1
+	ld (ix+23), $7B
+_LABEL_69B7_:
+	ld (ix+24), $10
+	ld (ix+0), $78
+	ld (ix+1), $68
+	jp _LABEL_6878_
+
+_LABEL_69C6_:
+	ld hl, $7A70
+	ld ($C3C0), hl
+	jp _LABEL_56A9_
+
+; 23rd entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_69CF_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $A0
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $04
+	ld (ix+23), $7C
+	ld (ix+0), $A1
+	ld (ix+1), $67
+	ret
+
+; 12th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_69F2_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $5A
+	ld (ix+27), $00
+	ld (ix+28), $02
+	call _LABEL_569C_
+	ld (ix+22), $13
+	ld (ix+23), $7C
+	ld (ix+0), $1D
+	ld (ix+1), $6A
+	ret
+
+_LABEL_6A1D_:
+	call _LABEL_5567_
+	ret c
+	ld (ix+3), $65
+	ld a, (ix+28)
+	and $02
+	ret nz
+	ld a, (ix+31)
+	cp $0B
+	jr nz, _LABEL_6A38_
+	ld a, (ix+28)
+	and $10
+	ret z
+_LABEL_6A38_:
+	ld (ix+0), $40
+	ld (ix+1), $6A
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, (ix+31)
+	cp $0B
+	jr nz, _LABEL_6A5A_
+	ld a, (ix+28)
+	and $10
+	jp z, _LABEL_481B_
+_LABEL_6A5A_:
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_6A68_
+	cp $09
+	jr z, _LABEL_6A68_
+	jp _LABEL_481B_
+
+_LABEL_6A68_:
+	call _LABEL_5473_
+	jr nc, _LABEL_6A8E_
+	ld (ix+0), $76
+	ld (ix+1), $6B
+	jp _LABEL_6B76_
+
+_LABEL_6A78_:
+	ld (ix+24), $08
+	ld (ix+0), $84
+	ld (ix+1), $6A
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_6B6A_
+	ret
+
+_LABEL_6A8E_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_6AA6_
+	call _LABEL_51DE_
+_LABEL_6A98_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6AAB_
+	rrca
+	jr c, _LABEL_6AC3_
+	rrca
+	jr c, _LABEL_6ADB_
+	jr _LABEL_6AF5_
+
+_LABEL_6AA6_:
+	call _LABEL_52A1_
+	jr _LABEL_6A98_
+
+_LABEL_6AAB_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_6AB9_
+	ld (ix+4), $01
+	jr _LABEL_6B02_
+
+_LABEL_6AB9_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_6A98_
+
+_LABEL_6AC3_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_6AD1_
+	ld (ix+4), $02
+	jr _LABEL_6B02_
+
+_LABEL_6AD1_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_6A98_
+
+_LABEL_6ADB_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_6AE9_
+	ld (ix+4), $04
+	jr _LABEL_6B02_
+
+_LABEL_6AE9_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_6A98_
+
+_LABEL_6AF5_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_6A78_
+	ld (ix+4), $08
+_LABEL_6B02_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+0), $14
+	ld (ix+1), $6B
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6B6A_
+	ret
+
+_LABEL_6B20_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6B31_
+	ld a, (ix+24)
+	cp $08
+	call z, _LABEL_6B97_
+	ret
+
+_LABEL_6B31_:
+	ld (ix+24), $10
+	ld (ix+0), $3D
+	ld (ix+1), $6B
+	call _LABEL_553A_
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $55
+	ld (ix+1), $6B
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6B6A_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_6B67_
+	call _LABEL_5302_
+_LABEL_6B67_:
+	jp _LABEL_5643_
+
+_LABEL_6B6A_:
+	call _LABEL_5655_
+	ld (ix+0), $40
+	ld (ix+1), $6A
+	ret
+
+_LABEL_6B76_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_6B6A_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld (ix+24), $10
+	ld (ix+0), $20
+	ld (ix+1), $6B
+	jp _LABEL_6B20_
+
+_LABEL_6B97_:
+	ld hl, $7A8D
+	ld ($C3C0), hl
+	jp _LABEL_56A9_
+
+; 24th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6BA0_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $DC
+	ld (ix+27), $00
+	ld (ix+28), $02
+	call _LABEL_569C_
+	ld (ix+22), $13
+	ld (ix+23), $7C
+	ld (ix+0), $1D
+	ld (ix+1), $6A
+	ret
+
+; 13th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6BCB_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $04
+	ld (ix+26), $14
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $18
+	ld (ix+23), $7C
+	ld (ix+0), $F2
+	ld (ix+1), $6B
+	ret
+
+_LABEL_6BF2_:
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_6C0F_
+	cp $09
+	jr z, _LABEL_6C0F_
+	jp _LABEL_481B_
+
+_LABEL_6C0F_:
+	ld (ix+25), $02
+	call _LABEL_5473_
+	jr nc, _LABEL_6C39_
+	ld (ix+0), $26
+	ld (ix+1), $6D
+	jp _LABEL_6D26_
+
+_LABEL_6C23_:
+	ld (ix+24), $08
+	ld (ix+0), $2F
+	ld (ix+1), $6C
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_6D16_
+	ret
+
+_LABEL_6C39_:
+	call GetRandomNumber
+	cp $80
+	jr c, _LABEL_6C4C_
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_6C4C_
+	call _LABEL_51DE_
+	jr _LABEL_6C4F_
+
+_LABEL_6C4C_:
+	call _LABEL_52A1_
+_LABEL_6C4F_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6C5D_
+	rrca
+	jr c, _LABEL_6C75_
+	rrca
+	jr c, _LABEL_6C8D_
+	jr _LABEL_6CA7_
+
+_LABEL_6C5D_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_6C6B_
+	ld (ix+4), $01
+	jr _LABEL_6CB4_
+
+_LABEL_6C6B_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_6C4F_
+
+_LABEL_6C75_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_6C83_
+	ld (ix+4), $02
+	jr _LABEL_6CB4_
+
+_LABEL_6C83_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_6C4F_
+
+_LABEL_6C8D_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_6C9B_
+	ld (ix+4), $04
+	jr _LABEL_6CB4_
+
+_LABEL_6C9B_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_6C4F_
+
+_LABEL_6CA7_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_6C23_
+	ld (ix+4), $08
+_LABEL_6CB4_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $04
+	ld (ix+0), $C6
+	ld (ix+1), $6C
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6CD2_
+	ret
+
+_LABEL_6CD2_:
+	ld a, (ix+7)
+	ld (ix+5), a
+	ld a, (ix+8)
+	ld (ix+6), a
+	dec (ix+25)
+	jr z, _LABEL_6D16_
+	ld (ix+0), $13
+	ld (ix+1), $6C
+	ret
+
+_LABEL_6CEC_:
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	ld (ix+0), $FC
+	ld (ix+1), $6C
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6D16_
+	ld a, (ix+30)
+	or a
+	ret z
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_6D13_
+	call _LABEL_5302_
+_LABEL_6D13_:
+	jp _LABEL_5643_
+
+_LABEL_6D16_:
+	call _LABEL_5655_
+	ld (ix+25), $00
+	ld (ix+0), $F2
+	ld (ix+1), $6B
+	ret
+
+_LABEL_6D26_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_6D16_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld (ix+24), $10
+	ld (ix+0), $EC
+	ld (ix+1), $6C
+	jp _LABEL_6CEC_
+
+; 14th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6D47_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $64
+	ld (ix+27), $00
+	ld (ix+3), $6C
+	call _LABEL_569C_
+	ld (ix+0), $6A
+	ld (ix+1), $6D
+	ret
+
+_LABEL_6D6A_:
+	call _LABEL_5567_
+	ret c
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_6D84_
+	cp $09
+	jr z, _LABEL_6D84_
+	jp _LABEL_481B_
+
+_LABEL_6D84_:
+	call _LABEL_5473_
+	jr nc, _LABEL_6DA7_
+	ld (ix+0), $F6
+	ld (ix+1), $6E
+	jp _LABEL_6EF6_
+
+_LABEL_6D94_:
+	ld (ix+24), $08
+	ld (ix+0), $A0
+	ld (ix+1), $6D
+	dec (ix+24)
+	jp z, _LABEL_6EE6_
+	ret
+
+_LABEL_6DA7_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_6DC4_
+	call _LABEL_568C_
+	jr nc, _LABEL_6DC4_
+	call _LABEL_51DE_
+_LABEL_6DB6_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6DC9_
+	rrca
+	jr c, _LABEL_6DEA_
+	rrca
+	jr c, _LABEL_6E0B_
+	jr _LABEL_6E2E_
+
+_LABEL_6DC4_:
+	call _LABEL_52A1_
+	jr _LABEL_6DB6_
+
+_LABEL_6DC9_:
+	ld hl, $FFE0
+	call _LABEL_5445_
+	jr c, _LABEL_6DE0_
+	call _LABEL_5420_
+	jr c, _LABEL_6DE0_
+	ld (ix+4), $01
+	ld (ix+3), $6F
+	jr _LABEL_6E45_
+
+_LABEL_6DE0_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_6DB6_
+
+_LABEL_6DEA_:
+	ld hl, $0020
+	call _LABEL_5445_
+	jr c, _LABEL_6E01_
+	call _LABEL_5420_
+	jr c, _LABEL_6E01_
+	ld (ix+4), $02
+	ld (ix+3), $6E
+	jr _LABEL_6E45_
+
+_LABEL_6E01_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_6DB6_
+
+_LABEL_6E0B_:
+	ld hl, $FFFF
+	call _LABEL_5445_
+	jr c, _LABEL_6E22_
+	call _LABEL_5420_
+	jr c, _LABEL_6E22_
+	ld (ix+4), $04
+	ld (ix+3), $6C
+	jr _LABEL_6E45_
+
+_LABEL_6E22_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_6DB6_
+
+_LABEL_6E2E_:
+	ld hl, $0001
+	call _LABEL_5445_
+	jp c, _LABEL_6D94_
+	call _LABEL_5420_
+	jp c, _LABEL_6D94_
+	ld (ix+4), $08
+	ld (ix+3), $6D
+_LABEL_6E45_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+0), $57
+	ld (ix+1), $6E
+	call _LABEL_47BB_
+	dec (ix+24)
+	jp z, _LABEL_6EE6_
+	ret
+
+_LABEL_6E61_:
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	ld (ix+0), $71
+	ld (ix+1), $6E
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6E8B_
+	ld a, (ix+30)
+	or a
+	ret z
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_6E88_
+	call _LABEL_5302_
+_LABEL_6E88_:
+	jp _LABEL_5643_
+
+_LABEL_6E8B_:
+	ld a, (ix+29)
+	or a
+	jr nz, _LABEL_6EE6_
+	ld a, $01
+	ld ($C102), a
+	ld a, (ix+28)
+	and $08
+	jr nz, _LABEL_6EE6_
+	call GetRandomNumber
+	cp $80
+	jr nc, _LABEL_6EE6_
+	ld a, ($C620)
+	or a
+	jr z, _LABEL_6EE6_
+	call GetRandomNumber
+	and $07
+	ld b, $08
+	add a, b
+	daa
+	ld b, a
+	ld a, ($C620)
+	sub b
+	daa
+	jr c, _LABEL_6EBD_
+	jr _LABEL_6EBE_
+
+_LABEL_6EBD_:
+	xor a
+_LABEL_6EBE_:
+	ld ($C620), a
+	ld (ix+24), $10
+	ld (ix+0), $CD
+	ld (ix+1), $6E
+	dec (ix+24)
+	ret nz
+	ld a, $45
+	ld ($CAC4), a
+	ld (ix+24), $10
+	ld (ix+0), $E2
+	ld (ix+1), $6E
+	dec (ix+24)
+	ret nz
+_LABEL_6EE6_:
+	call _LABEL_5655_
+	ld (ix+25), $00
+	ld (ix+0), $6A
+	ld (ix+1), $6D
+	ret
+
+_LABEL_6EF6_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_6EE6_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_6F13_
+	rrca
+	jr c, _LABEL_6F1D_
+	rrca
+	jr c, _LABEL_6F27_
+	jr _LABEL_6F31_
+
+_LABEL_6F13_:
+	ld (ix+22), $39
+	ld (ix+23), $7C
+	jr _LABEL_6F39_
+
+_LABEL_6F1D_:
+	ld (ix+22), $46
+	ld (ix+23), $7C
+	jr _LABEL_6F39_
+
+_LABEL_6F27_:
+	ld (ix+22), $1F
+	ld (ix+23), $7C
+	jr _LABEL_6F39_
+
+_LABEL_6F31_:
+	ld (ix+22), $2C
+	ld (ix+23), $7C
+_LABEL_6F39_:
+	ld (ix+24), $12
+	ld (ix+0), $61
+	ld (ix+1), $6E
+	jp _LABEL_6E61_
+
+; 30th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6F48_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $FA
+	ld (ix+27), $00
+	ld (ix+3), $6C
+	call _LABEL_569C_
+	ld (ix+0), $6A
+	ld (ix+1), $6D
+	ret
+
+; 17th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_6F6B_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $5A
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $53
+	ld (ix+23), $7C
+	ld (ix+0), $8E
+	ld (ix+1), $6F
+	ret
+
+_LABEL_6F8E_:
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_6FAB_
+	cp $09
+	jr z, _LABEL_6FAB_
+	jp _LABEL_481B_
+
+_LABEL_6FAB_:
+	call _LABEL_1EB1_
+	ret c
+	call _LABEL_557D_
+	ret nc
+	call _LABEL_55BF_
+	ret c
+	call GetRandomNumber
+	cp $40
+	ret c
+	ld (ix+0), $B4
+	ld (ix+1), $70
+	jp _LABEL_70B4_
+
+_LABEL_6FC8_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_6FD9_
+	ld a, (ix+24)
+	cp $08
+	call z, _LABEL_70D5_
+	ret
+
+_LABEL_6FD9_:
+	ld (ix+24), $10
+	ld (ix+0), $E5
+	ld (ix+1), $6F
+	call _LABEL_553A_
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $FD
+	ld (ix+1), $6F
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	call _LABEL_553A_
 ; 5th entry of Jump Table from 1C108 (indexed by $DD03)
 _LABEL_7000_:
 	dec (ix+24)
@@ -11428,7 +14620,1085 @@ _LABEL_709E_:
 	ld (ix+1), $6F
 	ret
 
-; Data from 70B4 to 7A1B (2408 bytes)
+_LABEL_70B4_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_709E_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld (ix+24), $10
+	ld (ix+0), $C8
+	ld (ix+1), $6F
+	jp _LABEL_6FC8_
+
+_LABEL_70D5_:
+	ld hl, $7AA2
+	ld ($C3C0), hl
+	jp _LABEL_56A9_
+
+; 21st entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_70DE_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $5F
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $53
+	ld (ix+23), $7C
+	ld (ix+0), $8E
+	ld (ix+1), $6F
+	ret
+
+; 25th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_7101_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+26), $64
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $53
+	ld (ix+23), $7C
+	ld (ix+0), $8E
+	ld (ix+1), $6F
+	ret
+
+; 31st entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_7124_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $E0
+	ld (ix+27), $01
+	ld (ix+3), $88
+	call _LABEL_569C_
+	ld (ix+0), $47
+	ld (ix+1), $71
+	ret
+
+_LABEL_7147_:
+	call _LABEL_5567_
+	ret c
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_7159_
+	cp $09
+	jr z, _LABEL_7159_
+	jp _LABEL_481B_
+
+_LABEL_7159_:
+	call _LABEL_1EB1_
+	ret c
+	call _LABEL_5473_
+	jr c, _LABEL_7173_
+	call _LABEL_557D_
+	jr nc, _LABEL_7192_
+	call _LABEL_55BF_
+	jr c, _LABEL_7192_
+	call GetRandomNumber
+	cp $80
+	jr nc, _LABEL_7192_
+_LABEL_7173_:
+	ld (ix+0), $88
+	ld (ix+1), $72
+	jp _LABEL_7288_
+
+_LABEL_717E_:
+	ld (ix+24), $08
+	ld (ix+0), $8B
+	ld (ix+1), $71
+	ret
+
+_LABEL_718B_:
+	dec (ix+24)
+	jp z, _LABEL_727C_
+	ret
+
+_LABEL_7192_:
+	call _LABEL_51DE_
+_LABEL_7195_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_71A3_
+	rrca
+	jr c, _LABEL_71C3_
+	rrca
+	jr c, _LABEL_71E3_
+	jr _LABEL_7205_
+
+_LABEL_71A3_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_71B9_
+	ld (ix+4), $01
+	ld (ix+22), $62
+	ld (ix+23), $7C
+	jr _LABEL_721A_
+
+_LABEL_71B9_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_7195_
+
+_LABEL_71C3_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_71D9_
+	ld (ix+4), $02
+	ld (ix+22), $67
+	ld (ix+23), $7C
+	jr _LABEL_721A_
+
+_LABEL_71D9_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_7195_
+
+_LABEL_71E3_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_71F9_
+	ld (ix+4), $04
+	ld (ix+22), $58
+	ld (ix+23), $7C
+	jr _LABEL_721A_
+
+_LABEL_71F9_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_7195_
+
+_LABEL_7205_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_717E_
+	ld (ix+4), $08
+	ld (ix+22), $5D
+	ld (ix+23), $7C
+_LABEL_721A_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+0), $2C
+	ld (ix+1), $72
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_727C_
+	ret
+
+_LABEL_7238_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_7249_
+	ld a, (ix+24)
+	cp $08
+	call z, _LABEL_72DA_
+	ret
+
+_LABEL_7249_:
+	ld (ix+24), $10
+	ld (ix+0), $55
+	ld (ix+1), $72
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $6A
+	ld (ix+1), $72
+	ld a, $A4
+	ld ($DD05), a
+	call _LABEL_567B_
+	dec (ix+24)
+	jr z, _LABEL_727C_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_7279_
+	call _LABEL_5302_
+_LABEL_7279_:
+	jp _LABEL_5643_
+
+_LABEL_727C_:
+	call _LABEL_5655_
+	ld (ix+0), $47
+	ld (ix+1), $71
+	ret
+
+_LABEL_7288_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_727C_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_72A5_
+	rrca
+	jr c, _LABEL_72AF_
+	rrca
+	jr c, _LABEL_72B9_
+	jr _LABEL_72C3_
+
+_LABEL_72A5_:
+	ld (ix+22), $76
+	ld (ix+23), $7C
+	jr _LABEL_72CB_
+
+_LABEL_72AF_:
+	ld (ix+22), $7B
+	ld (ix+23), $7C
+	jr _LABEL_72CB_
+
+_LABEL_72B9_:
+	ld (ix+22), $6C
+	ld (ix+23), $7C
+	jr _LABEL_72CB_
+
+_LABEL_72C3_:
+	ld (ix+22), $71
+	ld (ix+23), $7C
+_LABEL_72CB_:
+	ld (ix+24), $0A
+	ld (ix+0), $38
+	ld (ix+1), $72
+	jp _LABEL_7238_
+
+_LABEL_72DA_:
+	ld hl, $7ABF
+	ld ($C3C0), hl
+	jp _LABEL_56A9_
+
+; 18th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_72E3_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $40
+	ld (ix+27), $00
+	ld (ix+3), $78
+	call _LABEL_569C_
+	ld (ix+0), $06
+	ld (ix+1), $73
+	ret
+
+_LABEL_7306_:
+	call _LABEL_5567_
+	ret c
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_7320_
+	cp $09
+	jr z, _LABEL_7320_
+	jp _LABEL_481B_
+
+_LABEL_7320_:
+	call _LABEL_1EB1_
+	jr c, _LABEL_7348_
+	call _LABEL_5473_
+	jr nc, _LABEL_7348_
+	ld (ix+0), $E5
+	ld (ix+1), $74
+	jp _LABEL_74E5_
+
+_LABEL_7335_:
+	ld (ix+24), $08
+	ld (ix+0), $41
+	ld (ix+1), $73
+	dec (ix+24)
+	jp z, _LABEL_74D9_
+	ret
+
+_LABEL_7348_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_7360_
+	call _LABEL_51DE_
+_LABEL_7352_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_7365_
+	rrca
+	jr c, _LABEL_7385_
+	rrca
+	jr c, _LABEL_73A5_
+	jr _LABEL_73C7_
+
+_LABEL_7360_:
+	call _LABEL_52A1_
+	jr _LABEL_7352_
+
+_LABEL_7365_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_737B_
+	ld (ix+4), $01
+	ld (ix+22), $8A
+	ld (ix+23), $7C
+	jr _LABEL_73DC_
+
+_LABEL_737B_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_7352_
+
+_LABEL_7385_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_739B_
+	ld (ix+4), $02
+	ld (ix+22), $8F
+	ld (ix+23), $7C
+	jr _LABEL_73DC_
+
+_LABEL_739B_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_7352_
+
+_LABEL_73A5_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_73BB_
+	ld (ix+4), $04
+	ld (ix+22), $80
+	ld (ix+23), $7C
+	jr _LABEL_73DC_
+
+_LABEL_73BB_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jr _LABEL_7352_
+
+_LABEL_73C7_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_7335_
+	ld (ix+4), $08
+	ld (ix+22), $85
+	ld (ix+23), $7C
+_LABEL_73DC_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+0), $EE
+	ld (ix+1), $73
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_74D9_
+	ret
+
+_LABEL_73FB_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_740C_
+	ld a, (ix+24)
+	cp $08
+	call z, _LABEL_7537_
+	ret
+
+_LABEL_740C_:
+	ld (ix+0), $14
+	ld (ix+1), $74
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+24), $10
+	ld (ix+0), $2D
+	ld (ix+1), $74
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	dec (ix+24)
+	jr z, _LABEL_743B_
+	ld a, (ix+24)
+	cp $01
+	ret nz
+	jp _LABEL_5302_
+
+_LABEL_743B_:
+	ld a, (ix+29)
+	or a
+	jp nz, _LABEL_74D9_
+	ld a, (ix+28)
+	and $08
+	jp nz, _LABEL_74D9_
+	ld a, (ix+31)
+	cp $19
+	jr z, _LABEL_7489_
+	ld a, ($C928)
+	cp $55
+	jp z, _LABEL_74D9_
+	ld a, (ix+31)
+	cp $15
+	jr z, _LABEL_7473_
+	call GetRandomNumber
+	cp $40
+	jr nc, _LABEL_74D9_
+	ld a, ($C62F)
+	or a
+	jr z, _LABEL_74D9_
+	dec a
+	ld ($C62F), a
+	jr _LABEL_749E_
+
+_LABEL_7473_:
+	call GetRandomNumber
+	cp $80
+	jr nc, _LABEL_74D9_
+	ld a, ($C62F)
+	or a
+	jr z, _LABEL_74D9_
+	dec a
+	jr z, _LABEL_7484_
+	dec a
+_LABEL_7484_:
+	ld ($C62F), a
+	jr _LABEL_749E_
+
+_LABEL_7489_:
+	call GetRandomNumber
+	cp $20
+	jr nc, _LABEL_74D9_
+	ld a, ($C61F)
+	cp $01
+	jr z, _LABEL_74D9_
+	dec a
+	ld ($C61F), a
+	call _LABEL_496B_
+_LABEL_749E_:
+	ld a, $A3
+	ld ($DD05), a
+	call _LABEL_567B_
+	ld (ix+24), $10
+	ld (ix+0), $B2
+	ld (ix+1), $74
+	dec (ix+24)
+	ret nz
+	ld a, (ix+31)
+	cp $19
+	jr z, _LABEL_74C4_
+	ld a, $46
+	ld ($CAC4), a
+	jr _LABEL_74C9_
+
+_LABEL_74C4_:
+	ld a, $47
+	ld ($CAC4), a
+_LABEL_74C9_:
+	ld (ix+24), $10
+	ld (ix+0), $D5
+	ld (ix+1), $74
+	dec (ix+24)
+	ret nz
+_LABEL_74D9_:
+	call _LABEL_5655_
+	ld (ix+0), $06
+	ld (ix+1), $73
+	ret
+
+_LABEL_74E5_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_74D9_
+	call _LABEL_1EF6_
+	ret c
+	ld (ix+30), $01
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_7502_
+	rrca
+	jr c, _LABEL_750C_
+	rrca
+	jr c, _LABEL_7516_
+	jr _LABEL_7520_
+
+_LABEL_7502_:
+	ld (ix+22), $8A
+	ld (ix+23), $7C
+	jr _LABEL_7528_
+
+_LABEL_750C_:
+	ld (ix+22), $8F
+	ld (ix+23), $7C
+	jr _LABEL_7528_
+
+_LABEL_7516_:
+	ld (ix+22), $80
+	ld (ix+23), $7C
+	jr _LABEL_7528_
+
+_LABEL_7520_:
+	ld (ix+22), $85
+	ld (ix+23), $7C
+_LABEL_7528_:
+	ld (ix+24), $10
+	ld (ix+0), $FB
+	ld (ix+1), $73
+	jp _LABEL_73FB_
+
+_LABEL_7537_:
+	ld hl, $7AD3
+	ld ($C3C0), hl
+	ld hl, ($C10A)
+	ld ($C3CA), hl
+	ld hl, ($C10D)
+	ld ($C3CD), hl
+	ld a, (ix+4)
+	ld ($C3C4), a
+	ret
+
+; 22nd entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_7550_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $4E
+	ld (ix+27), $00
+	ld (ix+3), $78
+	call _LABEL_569C_
+	ld (ix+0), $06
+	ld (ix+1), $73
+	ret
+
+; 26th entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_7573_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $78
+	ld (ix+27), $00
+	ld (ix+3), $78
+	call _LABEL_569C_
+	ld (ix+0), $06
+	ld (ix+1), $73
+	ret
+
+; 32nd entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_7596_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $B4
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $BD
+	ld (ix+23), $7C
+	ld (ix+0), $BD
+	ld (ix+1), $75
+	ret
+
+_LABEL_75BD_:
+	call _LABEL_1EB1_
+	jp c, _LABEL_481B_
+	call _LABEL_5567_
+	ret c
+	ld a, ($CAC5)
+	or a
+	ret nz
+	ld a, ($C110)
+	cp (ix+16)
+	ret nz
+	ld a, ($C112)
+	cp (ix+18)
+	ret nz
+	ld e, (ix+15)
+	ld d, (ix+17)
+	call _LABEL_1ECB_
+	ex de, hl
+	ld hl, $7A0C
+	ld bc, $0204
+	call _LABEL_681_
+	call _LABEL_5473_
+	ret nc
+	ld e, (iy+15)
+	ld d, (iy+17)
+	call _LABEL_1ECB_
+	ex de, hl
+	ld l, (iy+5)
+	ld h, (iy+6)
+	ld bc, $0400
+	add hl, bc
+	ld a, (hl)
+	add a, a
+	add a, a
+	add a, a
+	ld c, a
+	ld b, $00
+	ld hl, $C800
+	add hl, bc
+	ld bc, $0204
+	call _LABEL_681_
+	ld (ix+0), $1E
+	ld (ix+1), $76
+	call _LABEL_1EB1_
+	jp c, _LABEL_481B_
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_7641_
+	cp $09
+	jr z, _LABEL_7641_
+	jp _LABEL_481B_
+
+_LABEL_7641_:
+	call _LABEL_5473_
+	jr nc, _LABEL_7667_
+	ld (ix+0), $74
+	ld (ix+1), $77
+	jp _LABEL_7774_
+
+_LABEL_7651_:
+	ld (ix+24), $08
+	ld (ix+0), $5D
+	ld (ix+1), $76
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_7768_
+	ret
+
+_LABEL_7667_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_7680_
+	call _LABEL_51DE_
+_LABEL_7671_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_7685_
+	rrca
+	jr c, _LABEL_76A5_
+	rrca
+	jr c, _LABEL_76C5_
+	jp _LABEL_76E8_
+
+_LABEL_7680_:
+	call _LABEL_52A1_
+	jr _LABEL_7671_
+
+_LABEL_7685_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_769B_
+	ld (ix+4), $01
+	ld (ix+22), $C6
+	ld (ix+23), $7C
+	jr _LABEL_76FD_
+
+_LABEL_769B_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_7671_
+
+_LABEL_76A5_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_76BB_
+	ld (ix+4), $02
+	ld (ix+22), $CF
+	ld (ix+23), $7C
+	jr _LABEL_76FD_
+
+_LABEL_76BB_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_7671_
+
+_LABEL_76C5_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_76DB_
+	ld (ix+4), $04
+	ld (ix+22), $B4
+	ld (ix+23), $7C
+	jr _LABEL_76FD_
+
+_LABEL_76DB_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jp _LABEL_7671_
+
+_LABEL_76E8_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_7651_
+	ld (ix+22), $BD
+	ld (ix+23), $7C
+	ld (ix+4), $08
+_LABEL_76FD_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+21), $00
+	ld (ix+20), $00
+	ld (ix+0), $17
+	ld (ix+1), $77
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_7768_
+	ret
+
+_LABEL_7723_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_772F_
+	ld a, (ix+24)
+	ret
+
+_LABEL_772F_:
+	ld (ix+24), $10
+	ld (ix+0), $3B
+	ld (ix+1), $77
+	call _LABEL_553A_
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $53
+	ld (ix+1), $77
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_7768_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_7765_
+	call _LABEL_5302_
+_LABEL_7765_:
+	jp _LABEL_5643_
+
+_LABEL_7768_:
+	call _LABEL_5655_
+	ld (ix+0), $1E
+	ld (ix+1), $76
+	ret
+
+_LABEL_7774_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_7768_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_7790_
+	rrca
+	jr c, _LABEL_779A_
+	rrca
+	jr c, _LABEL_77A4_
+	jr _LABEL_77AE_
+
+_LABEL_7790_:
+	ld (ix+22), $C6
+	ld (ix+23), $7C
+	jr _LABEL_77B6_
+
+_LABEL_779A_:
+	ld (ix+22), $CF
+	ld (ix+23), $7C
+	jr _LABEL_77B6_
+
+_LABEL_77A4_:
+	ld (ix+22), $B4
+	ld (ix+23), $7C
+	jr _LABEL_77B6_
+
+_LABEL_77AE_:
+	ld (ix+22), $BD
+	ld (ix+23), $7C
+_LABEL_77B6_:
+	ld (ix+30), $01
+	ld (ix+24), $10
+	ld (ix+21), $00
+	ld (ix+20), $00
+	ld (ix+0), $23
+	ld (ix+1), $77
+	jp _LABEL_7723_
+
+; 33rd entry of Jump Table from 2012 (indexed by unknown)
+_LABEL_77D1_:
+	ld (ix+2), $01
+	call _LABEL_550D_
+	ld (ix+19), $02
+	ld (ix+26), $82
+	ld (ix+27), $00
+	call _LABEL_569C_
+	ld (ix+22), $E1
+	ld (ix+23), $7C
+	ld (ix+0), $F8
+	ld (ix+1), $77
+	ret
+
+_LABEL_77F8_:
+	call _LABEL_1EB1_
+	jp c, _LABEL_481B_
+	call _LABEL_5567_
+	ret c
+	ld a, ($CAC5)
+	or a
+	ret nz
+	ld a, ($C110)
+	cp (ix+16)
+	ret nz
+	ld a, ($C112)
+	cp (ix+18)
+	ret nz
+	ld e, (ix+15)
+	ld d, (ix+17)
+	call _LABEL_1ECB_
+	ex de, hl
+	ld hl, $7A14
+	ld bc, $0204
+	call _LABEL_681_
+	call _LABEL_5473_
+	ret nc
+	ld e, (iy+15)
+	ld d, (iy+17)
+	call _LABEL_1ECB_
+	ex de, hl
+	ld l, (iy+5)
+	ld h, (iy+6)
+	ld bc, $0400
+	add hl, bc
+	ld a, (hl)
+	add a, a
+	add a, a
+	add a, a
+	ld c, a
+	ld b, $00
+	ld hl, $C800
+	add hl, bc
+	ld bc, $0204
+	call _LABEL_681_
+	ld (ix+0), $59
+	ld (ix+1), $78
+	call _LABEL_1EB1_
+	jp c, _LABEL_481B_
+	call _LABEL_5567_
+	ret c
+	call _LABEL_553A_
+	ld a, (ix+28)
+	and $02
+	jp nz, _LABEL_481B_
+	ld a, ($C601)
+	cp $01
+	jr z, _LABEL_787C_
+	cp $09
+	jr z, _LABEL_787C_
+	jp _LABEL_481B_
+
+_LABEL_787C_:
+	call _LABEL_5473_
+	jr nc, _LABEL_78A2_
+	ld (ix+0), $AF
+	ld (ix+1), $79
+	jp _LABEL_79AF_
+
+_LABEL_788C_:
+	ld (ix+24), $08
+	ld (ix+0), $98
+	ld (ix+1), $78
+	call _LABEL_553A_
+	dec (ix+24)
+	jp z, _LABEL_79A3_
+	ret
+
+_LABEL_78A2_:
+	ld a, (ix+28)
+	and $01
+	jr nz, _LABEL_78BB_
+	call _LABEL_51DE_
+_LABEL_78AC_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_78C0_
+	rrca
+	jr c, _LABEL_78E0_
+	rrca
+	jr c, _LABEL_7900_
+	jp _LABEL_7923_
+
+_LABEL_78BB_:
+	call _LABEL_52A1_
+	jr _LABEL_78AC_
+
+_LABEL_78C0_:
+	ld hl, $FFE0
+	call _LABEL_5420_
+	jr c, _LABEL_78D6_
+	ld (ix+4), $01
+	ld (ix+22), $EA
+	ld (ix+23), $7C
+	jr _LABEL_7938_
+
+_LABEL_78D6_:
+	ld a, (ix+4)
+	and $FE
+	ld (ix+4), a
+	jr _LABEL_78AC_
+
+_LABEL_78E0_:
+	ld hl, $0020
+	call _LABEL_5420_
+	jr c, _LABEL_78F6_
+	ld (ix+4), $02
+	ld (ix+22), $F3
+	ld (ix+23), $7C
+	jr _LABEL_7938_
+
+_LABEL_78F6_:
+	ld a, (ix+4)
+	and $FD
+	ld (ix+4), a
+	jr _LABEL_78AC_
+
+_LABEL_7900_:
+	ld hl, $FFFF
+	call _LABEL_5420_
+	jr c, _LABEL_7916_
+	ld (ix+4), $04
+	ld (ix+22), $D8
+	ld (ix+23), $7C
+	jr _LABEL_7938_
+
+_LABEL_7916_:
+	ld a, (ix+4)
+	and $FB
+	or $03
+	ld (ix+4), a
+	jp _LABEL_78AC_
+
+_LABEL_7923_:
+	ld hl, $0001
+	call _LABEL_5420_
+	jp c, _LABEL_788C_
+	ld (ix+22), $E1
+	ld (ix+23), $7C
+	ld (ix+4), $08
+_LABEL_7938_:
+	ld (ix+7), l
+	ld (ix+8), h
+	ld (ix+24), $08
+	ld (ix+21), $00
+	ld (ix+20), $00
+	ld (ix+0), $52
+	ld (ix+1), $79
+	call _LABEL_47BB_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_79A3_
+	ret
+
+_LABEL_795E_:
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_796A_
+	ld a, (ix+24)
+	ret
+
+_LABEL_796A_:
+	ld (ix+24), $10
+	ld (ix+0), $76
+	ld (ix+1), $79
+	call _LABEL_553A_
+	ld a, ($C3C2)
+	or a
+	ret nz
+	ld (ix+0), $8E
+	ld (ix+1), $79
+	ld a, $A0
+	ld ($DD05), a
+	call _LABEL_567B_
+	call _LABEL_553A_
+	dec (ix+24)
+	jr z, _LABEL_79A3_
+	ld a, (ix+24)
+	cp $01
+	jr nz, _LABEL_79A0_
+	call _LABEL_5302_
+_LABEL_79A0_:
+	jp _LABEL_5643_
+
+_LABEL_79A3_:
+	call _LABEL_5655_
+	ld (ix+0), $59
+	ld (ix+1), $78
+	ret
+
+_LABEL_79AF_:
+	ld hl, ($C621)
+	ld a, h
+	or l
+	jr z, _LABEL_79A3_
+	call _LABEL_553A_
+	call _LABEL_1EF6_
+	ret c
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_79CB_
+	rrca
+	jr c, _LABEL_79D5_
+	rrca
+	jr c, _LABEL_79DF_
+	jr _LABEL_79E9_
+
+_LABEL_79CB_:
+	ld (ix+22), $EA
+	ld (ix+23), $7C
+	jr _LABEL_79F1_
+
+_LABEL_79D5_:
+	ld (ix+22), $F3
+	ld (ix+23), $7C
+	jr _LABEL_79F1_
+
+_LABEL_79DF_:
+	ld (ix+22), $D8
+	ld (ix+23), $7C
+	jr _LABEL_79F1_
+
+_LABEL_79E9_:
+	ld (ix+22), $E1
+	ld (ix+23), $7C
+_LABEL_79F1_:
+	ld (ix+30), $01
+	ld (ix+24), $10
+	ld (ix+21), $00
+	ld (ix+20), $00
+	ld (ix+0), $5E
+	ld (ix+1), $79
+	jp _LABEL_795E_
+
+; Data from 7A0C to 7A1B (16 bytes)
+.db $01 $01 $02 $01 $03 $01 $04 $01 $0D $01 $0E $01 $0F $01 $10 $01
 
 _LABEL_7A1C_:
 	ld (ix+2), $01
@@ -11438,10 +15708,8 @@ _LABEL_7A1C_:
 	ld (ix+1), $7A
 	ret
 
-; Data from 7A31 to 7A33 (3 bytes)
-.db $CD $3A $55
-
-_LABEL_7A34_:
+_LABEL_7A31_:
+	call _LABEL_553A_
 	call _LABEL_47BB_
 	call _LABEL_52C6_
 	jr c, _LABEL_7A3D_
@@ -11460,32 +15728,126 @@ _LABEL_7A46_:
 	ld (ix+1), $7A
 	ret
 
-; Data from 7A5B to 7FFF (1445 bytes)
+_LABEL_7A5B_:
+	ld (ix+2), $01
+	ld (ix+3), $4D
+	ld (ix+19), $04
+	ld (ix+0), $34
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7A70_:
+	ld (ix+2), $01
+	ld (ix+3), $63
+	ld (ix+19), $04
+	ld (ix+22), $94
+	ld (ix+23), $7C
+	ld (ix+0), $31
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7A8D_:
+	ld (ix+2), $01
+	ld (ix+3), $68
+	ld (ix+19), $04
+	ld (ix+0), $34
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7AA2_:
+	ld (ix+2), $01
+	ld (ix+3), $75
+	ld (ix+19), $04
+	ld (ix+22), $99
+	ld (ix+23), $7C
+	ld (ix+0), $31
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7ABF_:
+	ld (ix+2), $01
+	ld (ix+19), $04
+	call _LABEL_7AF3_
+	ld (ix+0), $31
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7AD3_:
+	ld (ix+2), $01
+	ld (ix+3), $80
+	ld (ix+19), $04
+	ld (ix+24), $10
+	ld (ix+0), $EC
+	ld (ix+1), $7A
+	ret
+
+_LABEL_7AEC_:
+	dec (ix+24)
+	jp z, _LABEL_7A3D_
+	ret
+
+_LABEL_7AF3_:
+	ld a, (ix+4)
+	rrca
+	jr c, _LABEL_7B01_
+	rrca
+	jr c, _LABEL_7B0A_
+	rrca
+	jr c, _LABEL_7B13_
+	jr _LABEL_7B1C_
+
+_LABEL_7B01_:
+	ld (ix+22), $A0
+	ld (ix+23), $7C
+	ret
+
+_LABEL_7B0A_:
+	ld (ix+22), $A5
+	ld (ix+23), $7C
+	ret
+
+_LABEL_7B13_:
+	ld (ix+22), $AA
+	ld (ix+23), $7C
+	ret
+
+_LABEL_7B1C_:
+	ld (ix+22), $AF
+	ld (ix+23), $7C
+	ret
+
+; Data from 7B25 to 7FFF (1243 bytes)
+.incbin "dcsms_7b25.inc"
 
 .BANK 2
 .ORG $0000
 
 ; Data from 8000 to BFFF (16384 bytes)
+.incbin "dcsms_8000.inc"
 
 .BANK 3
 .ORG $0000
 
 ; Data from C000 to FFFF (16384 bytes)
+.incbin "dcsms_c000.inc"
 
 .BANK 4
 .ORG $0000
 
 ; Data from 10000 to 13FFF (16384 bytes)
+.incbin "dcsms_10000.inc"
 
 .BANK 5
 .ORG $0000
 
 ; Data from 14000 to 17FFF (16384 bytes)
+.incbin "dcsms_14000.inc"
 
 .BANK 6
 .ORG $0000
 
 ; Data from 18000 to 1BFFF (16384 bytes)
+.incbin "dcsms_18000.inc"
 
 .BANK 7
 .ORG $0000
@@ -11758,6 +16120,7 @@ _LABEL_1C1E3_:
 	ld iy, $DD0C
 	call _LABEL_1C098_
 	ld a, (iy+0)
+_LABEL_1C1FC_:
 	call _LABEL_1C24C_
 	sub $90
 	ld hl, $899A
@@ -12399,14 +16762,11 @@ _LABEL_1C6B7_:
 	inc de
 	jp _LABEL_1C327_
 
-; Jump Table from 1C6BB to 1C6C4 (5 entries, indexed by unknown)
-.dw _LABEL_1C872_ _LABEL_1C86B_ _LABEL_1C6FB_ _LABEL_1C86B_ _LABEL_1C74B_
-
-; Data from 1C6C5 to 1C6FA (54 bytes)
-.db $8C $88 $3B $87 $65 $88 $57 $88 $72 $88 $6B $88 $72 $88 $72 $88
-.db $6B $88 $72 $88 $8C $88 $57 $88 $8C $88 $C4 $87 $61 $87 $BE $87
-.db $BA $87 $BE $87 $40 $88 $13 $88 $2D $88 $5D $87 $56 $87 $8C $88
-.db $C4 $87 $72 $88 $72 $88
+; Jump Table from 1C6BB to 1C6FA (32 entries, indexed by unknown)
+.dw _LABEL_1C872_ _LABEL_1C86B_ _LABEL_1C6FB_ _LABEL_1C86B_ _LABEL_1C74B_ $888C _LABEL_1C73B_ _LABEL_1C865_
+.dw _LABEL_1C857_ _LABEL_1C872_ _LABEL_1C86B_ _LABEL_1C872_ _LABEL_1C872_ _LABEL_1C86B_ _LABEL_1C872_ $888C
+.dw _LABEL_1C857_ $888C _LABEL_1C7C4_ _LABEL_1C761_ _LABEL_1C7BE_ _LABEL_1C7BA_ _LABEL_1C7BE_ _LABEL_1C840_
+.dw _LABEL_1C813_ _LABEL_1C82D_ _LABEL_1C75D_ _LABEL_1C756_ $888C _LABEL_1C7C4_ _LABEL_1C872_ _LABEL_1C872_
 
 ; 3rd entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C6FB_:
@@ -12446,6 +16806,7 @@ _LABEL_1C731_:
 	out ($06), a
 	ret
 
+; 7th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C73B_:
 	ex af, af'
 	ld a, ($DD09)
@@ -12466,9 +16827,18 @@ _LABEL_1C74B_:
 	ld ($DD16), a
 	ret
 
-; Data from 1C756 to 1C760 (11 bytes)
-.db $DD $86 $05 $DD $77 $05 $C9 $DD $77 $02 $C9
+; 28th entry of Jump Table from 1C6BB (indexed by unknown)
+_LABEL_1C756_:
+	add a, (ix+5)
+	ld (ix+5), a
+	ret
 
+; 27th entry of Jump Table from 1C6BB (indexed by unknown)
+_LABEL_1C75D_:
+	ld (ix+2), a
+	ret
+
+; 20th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C761_:
 	ex af, af'
 	ld a, ($DD0D)
@@ -12519,9 +16889,12 @@ _LABEL_1C7B5_:
 	res 2, (iy+0)
 	ret
 
-; Data from 1C7BA to 1C7BD (4 bytes)
-.db $DD $77 $07 $C9
+; 22nd entry of Jump Table from 1C6BB (indexed by unknown)
+_LABEL_1C7BA_:
+	ld (ix+7), a
+	ret
 
+; 21st entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C7BE_:
 	ex de, hl
 	ld e, (hl)
@@ -12530,6 +16903,7 @@ _LABEL_1C7BE_:
 	dec de
 	ret
 
+; 19th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C7C4_:
 	ld a, (ix+1)
 	cp $A0
@@ -12575,6 +16949,7 @@ _LABEL_1C810_:
 	pop bc
 	ret
 
+; 25th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C813_:
 	ld c, a
 	inc de
@@ -12595,6 +16970,7 @@ _LABEL_1C813_:
 	dec de
 	ret
 
+; 26th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C82D_:
 	push ix
 	pop hl
@@ -12608,6 +16984,7 @@ _LABEL_1C82D_:
 	inc (ix+9)
 	ret
 
+; 24th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C840_:
 	inc de
 	add a, $27
@@ -12628,6 +17005,7 @@ _LABEL_1C850_:
 	inc de
 	ret
 
+; 9th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C857_:
 	ld (ix+16), e
 	ld (ix+17), d
@@ -12637,6 +17015,7 @@ _LABEL_1C857_:
 	inc de
 	ret
 
+; 8th entry of Jump Table from 1C6BB (indexed by unknown)
 _LABEL_1C865_:
 	set 1, (ix+0)
 	dec de
@@ -12667,4 +17046,5 @@ _LABEL_1C872_:
 	ret
 
 ; Data from 1C88C to 1FFFF (14196 bytes)
+.incbin "dcsms_1c88c.inc"
 
