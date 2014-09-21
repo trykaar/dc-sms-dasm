@@ -77,7 +77,9 @@ _LABEL_3B_:
 .db $00 $88 $00 $89 $00 $8A $FF $FF $FF $FF $FF $FF $FF $FF $FF $FF
 .db $FF $FF $FF $FF
 
-_LABEL_66_:
+; Pause handler- must be at $0066
+.org $0066
+PAUSE_HANDLER:
 	push af
 	ld a, ($C019)
 	cp $0A
@@ -85,9 +87,9 @@ _LABEL_66_:
 	ld a, ($C006)
 	or a
 	jr nz, _LABEL_7B_
-	ld a, ($C0CF)
-	cpl
-	ld ($C0CF), a
+	ld a, (PlayerSpeed)		; Get player speed
+	cpl						; Toggle between fast speed ($FF) and slow speed ($00)
+	ld (PlayerSpeed), a		; Save player speed
 _LABEL_7B_:
 	pop af
 	retn
@@ -154,7 +156,7 @@ _LABEL_B9_:
 	call _LABEL_771_
 	call _LABEL_59D_
 	ld a, $FF
-	ld ($C0CF), a
+	ld (PlayerSpeed), a		; Set speed to fast ($FF)
 	ld a, $00
 	ld ($C019), a
 	ld ($C018), a
@@ -339,9 +341,9 @@ _LABEL_22F_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld a, ($C0CF)
-	or a
-	jr nz, _LABEL_263_
+	ld a, (PlayerSpeed)		; Get player speed
+	or a					; Is player speed slow ($00)?
+	jr nz, _LABEL_263_		; If not (speed is fast/$FF), go here
 	ld hl, $C011
 	inc (hl)
 	jp _LABEL_1E7_
