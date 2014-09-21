@@ -1,10 +1,8 @@
 ; Dragon Crystal Disassembly
 ; Disassembled with Emulicious 
 
-; Definitions
-
-; Random Number Generation
-.define RNGSeed	$C016
+; Variable Definitions
+.include "defines.i"
 
 ; End Definitions
 
@@ -1838,7 +1836,7 @@ _LABEL_C8F_:
 	xor a
 	ld ($C0D6), a
 	ld a, $01
-	ld ($C01C), a
+	ld (Floor), a
 	ld a, $01
 	ld ($C61F), a
 	ld a, $30
@@ -2124,7 +2122,7 @@ _LABEL_EF3_:
 	ld ($C62F), a
 	ld ($C630), a
 	ld a, $01
-	ld ($C01C), a
+	ld (Floor), a
 	ld a, $01
 	ld ($C900), a
 	ld a, $10
@@ -2177,7 +2175,7 @@ _LABEL_F76_:
 	ld a, $01
 	ld ($C61F), a
 	ld a, $01
-	ld ($C01C), a
+	ld (Floor), a
 	ld a, $30
 	ld ($C620), a
 	ld hl, $0064
@@ -2273,7 +2271,7 @@ _LABEL_1058_:
 	ld hl, $8000
 	ld de, $2A80
 	call _LABEL_793_
-	ld a, ($C01C)
+	ld a, (Floor)
 	dec a
 	jr z, _LABEL_108F_
 	call GetRandomNumber
@@ -2321,7 +2319,7 @@ _LABEL_108F_:
 	call _LABEL_40F_
 	ld a, $02
 	ld ($C014), a
-	ld a, ($C01C)
+	ld a, (Floor)
 	ld d, $84
 	cp $0B
 	jr c, _LABEL_110A_
@@ -2480,7 +2478,7 @@ _LABEL_1256_:
 	ld c, $BE
 	ld hl, $1990
 	call OUTI8
-	ld hl, ($C01C)
+	ld hl, (Floor)
 	ld h, $00
 	call _LABEL_2C98_
 	ld e, $00
@@ -2605,7 +2603,7 @@ _LABEL_131F_:
 	cp $03
 	jp nc, _LABEL_13B9_
 	ld d, a
-	ld a, ($C01C)
+	ld a, (Floor)
 	and $FC
 	rrca
 	rrca
@@ -3064,7 +3062,7 @@ _LABEL_16F4_:
 	ld c, $BE
 	ld hl, $1990
 	call OUTI8
-	ld hl, ($C01C)
+	ld hl, (Floor)
 	ld h, $00
 	call _LABEL_2C98_
 	ld e, $00
@@ -3314,7 +3312,7 @@ _LABEL_1B20_:
 	ld hl, $1C90
 	add hl, de
 	ld a, (hl)
-	ld ($C01C), a
+	ld (Floor), a
 	inc hl
 	ld a, (hl)
 	ld ($C61F), a
@@ -3326,7 +3324,7 @@ _LABEL_1B20_:
 	ld ($C908), a
 	ld a, $02
 	ld ($FFFF), a
-	ld a, ($C01C)
+	ld a, (Floor)
 	dec a
 	jr z, _LABEL_1B80_
 	call GetRandomNumber
@@ -3944,7 +3942,7 @@ _LABEL_1FB4_:
 
 _LABEL_1FB8_:
 	ld iy, $C140
-	ld hl, ($C01C)
+	ld hl, (Floor)
 	ld h, $00
 	dec hl
 	add hl, hl
@@ -4006,7 +4004,7 @@ _LABEL_1FDD_:
 _LABEL_2054_:
 	ld a, $02
 	ld ($FFFF), a
-	ld hl, ($C01C)
+	ld hl, (Floor)
 	dec hl
 	ld h, $00
 	add hl, hl
@@ -4808,7 +4806,7 @@ _LABEL_2523_:
 	ld (hl), $00
 	add hl, de
 	djnz _LABEL_2523_
-	ld a, ($C01C)
+	ld a, (Floor)
 	cp $1E
 	ld a, $01
 	jr z, _LABEL_2535_
@@ -4859,7 +4857,7 @@ _LABEL_257A_:
 
 _LABEL_257E_:
 	push hl
-	ld a, ($C01C)
+	ld a, (Floor)
 	sub $04
 	jr c, _LABEL_2595_
 	inc a
@@ -5090,7 +5088,7 @@ _LABEL_265E_:
 	call LDI112
 	ld a, $02
 	ld ($FFFF), a
-	ld a, ($C01C)
+	ld a, (Floor)
 	dec a
 	and $1E
 	ld e, a
@@ -5105,7 +5103,7 @@ _LABEL_265E_:
 	call GetRandomNumber
 	and $07
 	ld b, a
-	ld a, ($C01C)
+	ld a, (Floor)
 	cp $0B
 	jr c, _LABEL_269C_
 	dec b
@@ -5148,7 +5146,7 @@ _LABEL_26C1_:
 	inc c
 	pop hl
 	djnz _LABEL_26A8_
-	ld a, ($C01C)
+	ld a, (Floor)
 	cp $1E
 	ret nz
 	call _LABEL_26DD_
@@ -5234,7 +5232,7 @@ _LABEL_2712_:
 	ret
 
 _LABEL_2756_:
-	ld a, ($C01C)
+	ld a, (Floor)
 	dec a
 	and $FE
 	add a, a
@@ -5379,7 +5377,7 @@ _LABEL_290C_:
 .db $C7 $A6 $C7 $A7 $C7 $A4 $C7 $A5 $C7 $A8 $C7 $A9 $C7 $AA $C7 $AB
 
 _LABEL_2941_:
-	ld hl, ($C01C)
+	ld hl, (Floor)
 	ld h, $00
 	add hl, hl
 	ld de, $2975
@@ -6992,7 +6990,7 @@ _LABEL_34CF_:
 	and $03
 	inc a
 	ld b, a
-	ld a, ($C01C)
+	ld a, (Floor)
 	ld d, a
 	xor a
 _LABEL_34DD_:
@@ -7659,7 +7657,7 @@ _LABEL_3A01_:
 	ld ($C62F), a
 	ld a, ($C61F)
 	ld d, a
-	ld a, ($C01C)
+	ld a, (Floor)
 	add a, d
 	add a, a
 	ld e, a
@@ -7990,7 +7988,7 @@ _LABEL_3C74_:
 .dw _LABEL_3C44_ _LABEL_3C6C_ _LABEL_3C70_
 
 _LABEL_3CD6_:
-	ld hl, $C01C
+	ld hl, Floor
 	inc (hl)
 	ld a, (hl)
 	call _LABEL_42C_
@@ -8845,7 +8843,7 @@ _LABEL_43D2_:
 
 ; 23rd entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_43EE_:
-	ld a, ($C01C)
+	ld a, (Floor)
 	cp $1E
 	jr c, _LABEL_43FD_
 	ld a, $22
@@ -8876,7 +8874,7 @@ _LABEL_4412_:
 _LABEL_442C_:
 	dec (ix+24)
 	ret nz
-	ld hl, $C01C
+	ld hl, Floor
 	inc (hl)
 	xor a
 	ld ($CAC4), a
@@ -9646,7 +9644,7 @@ _LABEL_4916_:
 _LABEL_496B_:
 	ld a, ($C61F)
 	ld d, a
-	ld a, ($C01C)
+	ld a, (Floor)
 	add a, d
 	inc a
 	ld e, a
