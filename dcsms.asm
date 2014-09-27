@@ -29,8 +29,8 @@ BANKS 6
 .BANK 0 SLOT 0
 .ORG $0000
 
-_LABEL_0_:
-	jp _LABEL_81_
+Start:
+	jp Initialize
 
 ; Data from 3 to 7 (5 bytes)
 .db $FF $FF $FF $FF $FF
@@ -84,7 +84,7 @@ PAUSE_HANDLER:
 	ld a, ($C019)
 	cp $0A
 	jr nz, _LABEL_7E_
-	ld a, ($C006)
+	ld a, (Autoplay)
 	or a
 	jr nz, _LABEL_7B_
 	ld a, (PlayerSpeed)		; Get player speed
@@ -98,75 +98,75 @@ _LABEL_7E_:
 	pop af
 	retn
 
-_LABEL_81_:
+Initialize:
 	di
 	ld sp, $DFF0
 	im 1
-	ld hl, $FFFC
+	ld hl, $FFFC			; Initialize mapper
 	ld (hl), $00
-	inc hl
+	inc hl					; $FFFD
 	ld (hl), $00
-	inc hl
+	inc hl					; $FFFE
 	ld (hl), $01
-	inc hl
+	inc hl					; $FFFF
 	ld (hl), $02
-	ld hl, $C001
+	ld hl, $C001			; Zero out C001-C100
 	ld de, $C002
 	ld bc, $00FE
 	ld (hl), $00
 	ldir
-_LABEL_A2_:
-	in a, ($7E)
-	cp $B0
-	jr nz, _LABEL_A2_
-	xor a
-	out ($BF), a
+WaitForLineB0:
+	in a, ($7E)				; Get scan line currently being drawn
+	cp $B0					; Is it $B0?
+	jr nz, WaitForLineB0	; If not, go back and wait
+	xor a					; Zero out a
+	out ($BF), a			; Write $C000 out to the VDP, set address to VDP $00000
 	ld a, $C0
 	out ($BF), a
-	xor a
-	ld b, $20
-	ex (sp), hl
+	xor a					; Zero out a again
+	ld b, $20				; Load counter with $20
+	ex (sp), hl				; Wait
 	ex (sp), hl
 _LABEL_B4_:
-	out ($BE), a
-	nop
-	djnz _LABEL_B4_
+	out ($BE), a			; Output zero to $BE
+	nop						; Wait
+	djnz _LABEL_B4_			; Do this $20 times (32 times)
 _LABEL_B9_:
 	di
-	ld sp, $DFF0
-	xor a
-	ld ($C005), a
-	ld ($C002), a
-	in a, ($BF)
-	ld b, $16
+	ld sp, $DFF0			; Initialize stack pointer
+	xor a					; Zero out a
+	ld ($C005), a			; Set $C005 to zero
+	ld ($C002), a			; Set $C002 to zero
+	in a, ($BF)				; Clear VDP status flags by reading from port
+	ld b, $16				; Read $16 from $0042 and output to VDP
 	ld c, $BF
 	ld hl, $0042
 	otir
-	ld hl, $C100
+	ld hl, $C100			; Zero out $C100-D000
 	ld de, $C101
 	ld bc, $0EFF
 	ld (hl), $00
 	ldir
-	ld hl, $DD00
+	ld hl, $DD00			; Zero out $DD00-DFF0
 	ld de, $DD01
 	ld bc, $02EF
 	ld (hl), $00
 	ldir
-	rst $30	; _LABEL_30_
-	call _LABEL_771_
-	call _LABEL_59D_
+	rst $30					; _LABEL_30_- write $A2, $81 to $BF
+	call _LABEL_771_		; Initializes more memory, sets a flag in $C01E
+	call _LABEL_59D_		; Some sort of display? Title screen, maybe?
 	ld a, $FF
 	ld (PlayerSpeed), a		; Set speed to fast ($FF)
-	ld a, $00
+	ld a, $00				; Zero out $C019 and TableIndex1...
 	ld ($C019), a
-	ld ($C018), a
-	ei
-	in a, ($DC)
-	cpl
-	and $3F
-	cp $05
-	jp nz, _LABEL_111_
-	ld a, $01
+	ld (TableIndex1), a
+	ei						; Done with setup?
+	in a, ($DC)				; Read controller 1 input
+	cpl						; Invert so 1 means button pressed
+	and %00111111			; Ignore bits used for Player 2 controller up and down input- not useful
+	cp %00000101			; %00000101 Up and left pressed together? Cheat?
+	jp nz, _LABEL_111_		; If not, go here
+	ld a, $01				; If pressed, set $C0D6 to $01
 	ld ($C0D6), a
 	jp _LABEL_111_
 
@@ -178,7 +178,7 @@ _LABEL_111_:
 	call _LABEL_4BD_
 	ld hl, $0111
 	push hl
-	ld hl, $C018
+	ld hl, TableIndex1
 	ld a, ($C019)
 	xor (hl)
 	and $7F
@@ -187,9 +187,9 @@ _LABEL_111_:
 	ld ($C019), a
 _LABEL_12A_:
 	ld hl, $017F
-_LABEL_12D_:
-	ld e, a
-	ld d, $00
+CallJumpTable:
+	ld e, a				; Load index passed in a into lower byte
+	ld d, $00			; $00XX where XX is index
 	add hl, de
 	add hl, de
 	ld a, (hl)
@@ -200,56 +200,56 @@ _LABEL_12D_:
 
 _LABEL_137_:
 	ld a, $01
-	ld ($C011), a
+	ld (TableIndex2), a
 _LABEL_13C_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	or a
 	jr nz, _LABEL_13C_
 	ret
 
 _LABEL_143_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	or a
 	jr nz, _LABEL_143_
 	ld a, $02
-	ld ($C011), a
+	ld (TableIndex2), a
 _LABEL_14E_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	cp $02
 	jr z, _LABEL_14E_
 	ret
 
 _LABEL_156_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	or a
 	jr nz, _LABEL_156_
 	ld a, $04
-	ld ($C011), a
+	ld (TableIndex2), a
 _LABEL_161_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	cp $04
 	jr z, _LABEL_161_
 	ret
 
 _LABEL_169_:
 	ld a, $06
-	ld ($C011), a
+	ld (TableIndex2), a
 _LABEL_16E_:
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	or a
 	jr nz, _LABEL_16E_
 	ret
 
 _LABEL_175_:
-	ld hl, ($C012)
+	ld hl, (TitleScreenCounterLow)
 	dec hl
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, l
 	or h
 	ret
 
-; Jump Table from 17F to 1AE (24 entries, indexed by $C018)
-.dw _LABEL_BD7_ _LABEL_BD7_ _LABEL_BEA_ _LABEL_C6D_ _LABEL_EF3_ $0000 _LABEL_F4C_ _LABEL_F4C_
+; Jump Table from 17F to 1AE (24 entries, indexed by TableIndex1)
+.dw _LABEL_BD7_ _LABEL_BD7_ _LABEL_BEA_ _LABEL_C6D_ SetUpGameAutoplay $0000 _LABEL_F4C_ _LABEL_F4C_
 .dw _LABEL_1058_ _LABEL_1127_ _LABEL_11A0_ _LABEL_11DB_ _LABEL_1424_ _LABEL_1435_ _LABEL_152F_ _LABEL_16F4_
 .dw _LABEL_192B_ _LABEL_1B20_ _LABEL_1CA8_ _LABEL_1CD0_ _LABEL_1D11_ _LABEL_1D4B_ _LABEL_153B_ _LABEL_1566_
 
@@ -271,15 +271,15 @@ _LABEL_1AF_:
 	push hl
 	push ix
 	push iy
-	ld a, ($C011)
+	ld a, (TableIndex2)
 	ld hl, $01D1
-	jp _LABEL_12D_
+	jp CallJumpTable
 
-; Jump Table from 1D1 to 1E6 (11 entries, indexed by $C011)
+; Jump Table from 1D1 to 1E6 (11 entries, indexed by TableIndex2)
 .dw _LABEL_1E7_ _LABEL_20E_ _LABEL_22F_ _LABEL_26B_ _LABEL_275_ _LABEL_29D_ _LABEL_2AC_ _LABEL_1E7_
 .dw _LABEL_1E7_ _LABEL_1E7_ _LABEL_1E7_
 
-; 1st entry of Jump Table from 1D1 (indexed by $C011)
+; 1st entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_1E7_:
 	ld hl, $01FA
 	push hl
@@ -308,7 +308,7 @@ _LABEL_1FA_:
 	ei
 	ret
 
-; 2nd entry of Jump Table from 1D1 (indexed by $C011)
+; 2nd entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_20E_:
 	call _LABEL_308_
 	call _LABEL_2DD_
@@ -322,10 +322,10 @@ _LABEL_219_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld ($C011), a
+	ld (TableIndex2), a
 	jr _LABEL_1E7_
 
-; 3rd entry of Jump Table from 1D1 (indexed by $C011)
+; 3rd entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_22F_:
 	call _LABEL_308_
 	call _LABEL_2DD_
@@ -344,23 +344,23 @@ _LABEL_22F_:
 	ld a, (PlayerSpeed)		; Get player speed
 	or a					; Is player speed slow ($00)?
 	jr nz, _LABEL_263_		; If not (speed is fast/$FF), go here
-	ld hl, $C011
+	ld hl, TableIndex2
 	inc (hl)
 	jp _LABEL_1E7_
 
 _LABEL_263_:
-	ld hl, $C011
+	ld hl, TableIndex2
 	ld (hl), $00
 	jp _LABEL_1E7_
 
-; 4th entry of Jump Table from 1D1 (indexed by $C011)
+; 4th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_26B_:
 	call _LABEL_308_
 	xor a
-	ld ($C011), a
+	ld (TableIndex2), a
 	jp _LABEL_1E7_
 
-; 5th entry of Jump Table from 1D1 (indexed by $C011)
+; 5th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_275_:
 	ld a, $00
 	out ($BF), a
@@ -377,21 +377,21 @@ _LABEL_285_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld hl, $C011
+	ld hl, TableIndex2
 	inc (hl)
 	jp _LABEL_1E7_
 
-; 6th entry of Jump Table from 1D1 (indexed by $C011)
+; 6th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_29D_:
 	ld a, $00
 	out ($BF), a
 	ld a, $88
 	out ($BF), a
 	xor a
-	ld ($C011), a
+	ld (TableIndex2), a
 	jp _LABEL_1E7_
 
-; 7th entry of Jump Table from 1D1 (indexed by $C011)
+; 7th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_2AC_:
 	ld a, ($C0D2)
 	out ($BF), a
@@ -407,7 +407,7 @@ _LABEL_2BA_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld ($C011), a
+	ld (TableIndex2), a
 	jp _LABEL_1E7_
 
 _LABEL_2D1_:
@@ -449,33 +449,33 @@ _LABEL_2E9_:
 	ret
 
 _LABEL_308_:
-	in a, ($DD)
-	cpl
-	and $10
-	jr z, _LABEL_31C_
-	ld a, ($C004)
-	or a
-	ret nz
-	ld a, $FF
+	in a, ($DD)				; Read input from port $DD
+	cpl						; Invert- now 1 is on
+	and %00010000			; Check if RESET is on
+	jr z, _LABEL_31C_		; If not, jump down
+	ld a, ($C004)			; If it is set, check $C004
+	or a					; Is it zero?
+	ret nz					; If already set, return
+	ld a, $FF				; If it is zero, set it to $FF
 	ld ($C004), a
 	jp _LABEL_B9_
 
 _LABEL_31C_:
-	xor a
-	ld ($C004), a
+	xor a					; Zero out a
+	ld ($C004), a			; Set $C004 flag to zero
 	ret
 
 _LABEL_321_:
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 	cpl
 	ld d, a
 	in a, ($DC)
 	cpl
 	and $3F
-	ld ($C00C), a
+	ld (ControllerDirection), a
 	and d
 	ld ($C00D), a
-	ld a, ($C006)
+	ld a, (Autoplay)
 	or a
 	ret z
 	dec a
@@ -487,46 +487,46 @@ _LABEL_33C_:
 	and $30
 	jr z, _LABEL_35C_
 	xor a
-	ld ($C006), a
-	ld ($C007), a
-	ld ($C008), a
-	ld ($C009), a
-	ld ($C00A), a
+	ld (Autoplay), a
+	ld (AutoplayDirection), a
+	ld (AutoplayCountdownLow), a
+	ld (AutoplayCountdownHigh), a
+	ld (AutoplayVar3), a
 	call _LABEL_42C_
 	ld a, $02
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_35C_:
-	ld hl, ($C008)
+	ld hl, (AutoplayCountdownLow)
 	ld a, l
 	or h
 	jr nz, _LABEL_37C_
 	xor a
-	ld ($C006), a
-	ld ($C007), a
-	ld ($C008), a
-	ld ($C009), a
-	ld ($C00A), a
+	ld (Autoplay), a
+	ld (AutoplayDirection), a
+	ld (AutoplayCountdownLow), a
+	ld (AutoplayCountdownHigh), a
+	ld (AutoplayVar3), a
 	call _LABEL_42C_
 	ld a, $00
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_37C_:
 	dec hl
-	ld ($C008), hl
+	ld (AutoplayCountdownLow), hl
 	ld a, h
 	cp $02
 	ret nc
 _LABEL_384_:
-	ld a, ($C00A)
+	ld a, (AutoplayVar3)
 	or a
 	jr z, _LABEL_3BE_
 	dec a
-	ld ($C00A), a
+	ld (AutoplayVar3), a
 _LABEL_38E_:
-	ld a, ($C007)
+	ld a, (AutoplayDirection)
 	ld hl, $03DE
 	ld b, $04
 _LABEL_396_:
@@ -551,8 +551,8 @@ _LABEL_39F_:
 	cp $0C
 	jr c, _LABEL_3BE_
 _LABEL_3B3_:
-	ld a, ($C007)
-	ld ($C00C), a
+	ld a, (AutoplayDirection)
+	ld (ControllerDirection), a
 	xor a
 	ld ($C00D), a
 	ret
@@ -570,11 +570,11 @@ _LABEL_3C5_:
 
 _LABEL_3CD_:
 	ld a, d
-	ld ($C007), a
+	ld (AutoplayDirection), a
 	call GetRandomNumber
 	and $1F
 	add a, $10
-	ld ($C00A), a
+	ld (AutoplayVar3), a
 	jp _LABEL_38E_
 
 ; Data from 3DE to 3E5 (8 bytes)
@@ -610,7 +610,7 @@ _LABEL_40C_:
 	call _LABEL_750_
 _LABEL_40F_:
 	ld a, $01
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld hl, $C020
 	ld de, $C021
 	ld bc, $001F
@@ -624,7 +624,7 @@ _LABEL_40F_:
 
 _LABEL_42C_:
 	ld a, $02
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld hl, $C020
 	ld de, $C060
 	call LDI32
@@ -637,7 +637,7 @@ _LABEL_42C_:
 
 _LABEL_443_:
 	ld a, $03
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld a, $3F
 	ld ($C020), a
 	ld hl, $C020
@@ -651,7 +651,7 @@ _LABEL_443_:
 
 _LABEL_461_:
 	ld a, $04
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld hl, $C020
 	ld de, $C060
 	call LDI32
@@ -673,7 +673,7 @@ _LABEL_475_:
 	ex de, hl
 	call _LABEL_750_
 	ld a, $05
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld a, ($C0A3)
 	or a
 	jr z, _LABEL_4DC_
@@ -692,7 +692,7 @@ _LABEL_49A_:
 
 _LABEL_4A9_:
 	ld a, $06
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ld hl, $C020
 	ld de, $C060
 	call LDI32
@@ -706,7 +706,7 @@ _LABEL_4BD_:
 	ret nz
 	ld a, $04
 	ld ($C0A2), a
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ret z
 	call _LABEL_4E4_
@@ -720,18 +720,18 @@ _LABEL_4BD_:
 _LABEL_4DC_:
 	xor a
 	ld ($C0A1), a
-	ld ($C0A0), a
+	ld (TableIndex3), a
 	ret
 
 _LABEL_4E4_:
-	ld a, ($C0A0)
+	ld a, (TableIndex3)			; Call func in jumptable based on TableIndex3
 	ld hl, $04ED
-	jp _LABEL_12D_
+	jp CallJumpTable
 
-; Jump Table from 4ED to 4FA (7 entries, indexed by $C0A0)
+; Jump Table from 4ED to 4FA (7 entries, indexed by TableIndex3)
 .dw $0000 _LABEL_4FB_ _LABEL_504_ _LABEL_539_ _LABEL_542_ _LABEL_580_ _LABEL_589_
 
-; 2nd entry of Jump Table from 4ED (indexed by $C0A0)
+; 2nd entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_4FB_:
 	ld a, ($C0A1)
 	ld d, a
@@ -739,7 +739,7 @@ _LABEL_4FB_:
 	sub d
 	jr _LABEL_507_
 
-; 3rd entry of Jump Table from 4ED (indexed by $C0A0)
+; 3rd entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_504_:
 	ld a, ($C0A1)
 _LABEL_507_:
@@ -782,7 +782,7 @@ _LABEL_531_:
 	djnz _LABEL_510_
 	ret
 
-; 4th entry of Jump Table from 4ED (indexed by $C0A0)
+; 4th entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_539_:
 	ld a, ($C0A1)
 	ld d, a
@@ -790,7 +790,7 @@ _LABEL_539_:
 	sub d
 	jr _LABEL_545_
 
-; 5th entry of Jump Table from 4ED (indexed by $C0A0)
+; 5th entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_542_:
 	ld a, ($C0A1)
 _LABEL_545_:
@@ -836,7 +836,7 @@ _LABEL_578_:
 	djnz _LABEL_54E_
 	ret
 
-; 6th entry of Jump Table from 4ED (indexed by $C0A0)
+; 6th entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_580_:
 	ld a, ($C0A1)
 	ld d, a
@@ -844,7 +844,7 @@ _LABEL_580_:
 	sub d
 	jr _LABEL_58C_
 
-; 7th entry of Jump Table from 4ED (indexed by $C0A0)
+; 7th entry of Jump Table from 4ED (indexed by TableIndex3)
 _LABEL_589_:
 	ld a, ($C0A1)
 _LABEL_58C_:
@@ -1108,13 +1108,13 @@ _LABEL_760_:
 	ret
 
 _LABEL_771_:
-	ld hl, $C020
+	ld hl, $C020		; Zero out $C020-C040
 	ld de, $C021
 	ld bc, $001F
 	ld (hl), $00
 	ldir
 	ld hl, $C01E
-	set 0, (hl)
+	set 0, (hl)			; sets $C01E least significant byte to 1- when this is on, various functions will call _LABEL_784_
 	ret
 
 _LABEL_784_:
@@ -1724,7 +1724,7 @@ _LABEL_B92_:
 	ret
 
 _LABEL_B9A_:
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ret z
 	pop hl
@@ -1753,7 +1753,7 @@ _LABEL_BC8_:
 	out ($BF), a
 	ret
 
-; 1st entry of Jump Table from 17F (indexed by $C018)
+; 1st entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_BD7_:
 	call _LABEL_B9A_
 	ld a, $26
@@ -1761,10 +1761,10 @@ _LABEL_BD7_:
 	ld a, $80
 	out ($BF), a
 	ld a, $02
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 3rd entry of Jump Table from 17F (indexed by $C018)
+; 3rd entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_BEA_:
 	call _LABEL_B9A_
 	ld a, $07
@@ -1808,31 +1808,31 @@ _LABEL_BEA_:
 	ld ($C014), a
 	ei
 	ld hl, $0384
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $03
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 4th entry of Jump Table from 17F (indexed by $C018)
+; 4th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_C6D_:
 	call _LABEL_137_
 	ld a, ($C00D)
 	and $30
 	jr z, _LABEL_CF5_
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 	and $0F
 	cp $0A
-	jr z, _LABEL_C8F_
+	jr z, SetUpGame
 _LABEL_C80_:
 	xor a
 	ld ($C0D6), a
 	call _LABEL_42C_
 	ld a, $06
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-_LABEL_C8F_:
-	ld a, ($C0D6)
+SetUpGame:
+	ld a, ($C0D6)				; If $C0D6 is zero, jump to _LABEL_C80_
 	or a
 	jr z, _LABEL_C80_
 	xor a
@@ -1840,25 +1840,25 @@ _LABEL_C8F_:
 	ld a, $01
 	ld (Floor), a
 	ld a, $01
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	ld a, $30
-	ld ($C620), a
+	ld (Food), a
 	ld hl, $03E7
-	ld ($C621), hl
-	ld ($C623), hl
+	ld (CurrentHPLow), hl
+	ld (MaxHPLow), hl
 	ld hl, $FFFF
-	ld ($C628), hl
+	ld (NextLevelLow), hl
 	xor a
 	ld ($C62A), a
-	ld ($C625), a
-	ld ($C626), a
+	ld (ExperienceLow), a
+	ld (ExperienceHigh), a
 	ld ($C627), a
-	ld ($C62B), a
-	ld ($C62C), a
-	ld ($C62D), a
+	ld (MoneyLow), a
+	ld (MoneyMid), a
+	ld (MoneyHigh), a
 	ld a, $1E
-	ld ($C62F), a
-	ld ($C630), a
+	ld (BasePW), a
+	ld (BaseAC), a
 	ld a, $01
 	ld ($C900), a
 	ld a, $10
@@ -1869,7 +1869,7 @@ _LABEL_C8F_:
 	call _LABEL_1C3B1_
 	call _LABEL_461_
 	ld a, $0D
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_CF5_:
@@ -1879,7 +1879,7 @@ _LABEL_CF5_:
 	jp nz, _LABEL_137_
 	call _LABEL_42C_
 	ld a, $04
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_D0C_:
@@ -2068,7 +2068,7 @@ _LABEL_E95_:
 	ret
 
 _LABEL_EA9_:
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ret nz
 	ld a, $06
@@ -2097,32 +2097,32 @@ _LABEL_ED7_:
 .db $B9 $BA $BB $BC $BB $BA $B9 $00 $C1 $C0 $BF $BE $BF $C0 $C1 $C2
 .db $C1 $C2 $C1
 
-; 5th entry of Jump Table from 17F (indexed by $C018)
-_LABEL_EF3_:
+; 5th entry of Jump Table from 17F (indexed by TableIndex1)
+SetUpGameAutoplay:
 	ld a, $01
-	ld ($C006), a
+	ld (Autoplay), a
 	ld hl, $0210
-	ld ($C008), hl
+	ld (AutoplayCountdownLow), hl
 	ld a, $01
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	ld a, $30
-	ld ($C620), a
+	ld (Food), a
 	ld hl, $0064
-	ld ($C621), hl
-	ld ($C623), hl
+	ld (CurrentHPLow), hl
+	ld (MaxHPLow), hl
 	ld hl, $FFFF
-	ld ($C628), hl
+	ld (NextLevelLow), hl
 	xor a
 	ld ($C62A), a
-	ld ($C625), a
-	ld ($C626), a
+	ld (ExperienceLow), a
+	ld (ExperienceHigh), a
 	ld ($C627), a
-	ld ($C62B), a
-	ld ($C62C), a
-	ld ($C62D), a
+	ld (MoneyLow), a
+	ld (MoneyMid), a
+	ld (MoneyHigh), a
 	ld a, $0A
-	ld ($C62F), a
-	ld ($C630), a
+	ld (BasePW), a
+	ld (BaseAC), a
 	ld a, $01
 	ld (Floor), a
 	ld a, $01
@@ -2130,10 +2130,10 @@ _LABEL_EF3_:
 	ld a, $10
 	ld ($C908), a
 	ld a, $08
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 7th entry of Jump Table from 17F (indexed by $C018)
+; 7th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_F4C_:
 	call _LABEL_B9A_
 	ld a, $02
@@ -2175,26 +2175,26 @@ _LABEL_F76_:
 	ld hl, $C965
 	call _LABEL_1000_
 	ld a, $01
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	ld a, $01
 	ld (Floor), a
 	ld a, $30
-	ld ($C620), a
+	ld (Food), a
 	ld hl, $0064
-	ld ($C621), hl
-	ld ($C623), hl
+	ld (CurrentHPLow), hl
+	ld (MaxHPLow), hl
 	ld hl, $0014
-	ld ($C628), hl
+	ld (NextLevelLow), hl
 	xor a
 	ld ($C62A), a
-	ld ($C625), a
-	ld ($C626), a
+	ld (ExperienceLow), a
+	ld (ExperienceHigh), a
 	ld ($C627), a
-	ld ($C62B), a
-	ld ($C62C), a
-	ld ($C62D), a
-	ld ($C62F), a
-	ld ($C630), a
+	ld (MoneyLow), a
+	ld (MoneyMid), a
+	ld (MoneyHigh), a
+	ld (BasePW), a
+	ld (BaseAC), a
 	ld a, $01
 	ld ($C900), a
 	ld a, $10
@@ -2202,7 +2202,7 @@ _LABEL_F76_:
 	call _LABEL_101A_
 	call _LABEL_42C_
 	ld a, $08
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_1000_:
@@ -2256,7 +2256,7 @@ _LABEL_1034_:
 ; Data from 1050 to 1057 (8 bytes)
 .db $61 $11 $66 $11 $61 $11 $6C $11
 
-; 9th entry of Jump Table from 17F (indexed by $C018)
+; 9th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1058_:
 	call _LABEL_B9A_
 	ld a, $02
@@ -2296,7 +2296,7 @@ _LABEL_108F_:
 	ld hl, $3CE6
 	ld ($C120), hl
 	ld hl, $C631
-	ld de, $C632
+	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
 	ld hl, $8064
@@ -2339,13 +2339,13 @@ _LABEL_110A_:
 	ld ($CAC8), a
 	ei
 	ld a, $0A
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_143_
 
 ; Data from 1123 to 1126 (4 bytes)
 .db $0C $03 $30 $33
 
-; 10th entry of Jump Table from 17F (indexed by $C018)
+; 10th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1127_:
 	call _LABEL_B9A_
 	call _LABEL_BC8_
@@ -2393,10 +2393,10 @@ _LABEL_1127_:
 	ld ($C014), a
 	ei
 	ld a, $0A
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_143_
 
-; 11th entry of Jump Table from 17F (indexed by $C018)
+; 11th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_11A0_:
 	call _LABEL_3EE_
 	ld a, $02
@@ -2418,7 +2418,7 @@ _LABEL_11A0_:
 .db $CD $2C $04 $3E $0B $32 $18 $C0 $C3 $43 $01 $5F $11 $59 $11 $65
 .db $11 $5D $11
 
-; 12th entry of Jump Table from 17F (indexed by $C018)
+; 12th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_11DB_:
 	call _LABEL_B9A_
 	ld a, $02
@@ -2466,7 +2466,7 @@ _LABEL_11DB_:
 	ld ($FFFF), a
 	ld de, $3964
 	rst $08	; _LABEL_8_
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	ld b, a
 	ld hl, $19AA
 	ld de, $0016
@@ -2498,7 +2498,7 @@ _LABEL_1256_:
 	ld c, $BE
 	ld hl, $AE3B
 	call OUTI10
-	ld hl, $C62D
+	ld hl, MoneyHigh
 	ld e, $00
 	ld b, $02
 _LABEL_1298_:
@@ -2601,7 +2601,7 @@ _LABEL_131A_:
 	nop
 	jr nz, _LABEL_1315_
 _LABEL_131F_:
-	ld a, ($C63E)
+	ld a, (ContinuesSpent)
 	cp $03
 	jp nc, _LABEL_13B9_
 	ld d, a
@@ -2625,7 +2625,7 @@ _LABEL_131F_:
 	ld a, ($C0B1)
 	or e
 	ld e, a
-	ld hl, ($C62C)
+	ld hl, (MoneyMid)
 	ld a, l
 	sub e
 	daa
@@ -2635,7 +2635,7 @@ _LABEL_131F_:
 	daa
 	ld h, a
 	jr c, _LABEL_13B9_
-	ld ($C62C), hl
+	ld (MoneyMid), hl
 	ld de, $3C90
 	rst $08	; _LABEL_8_
 	ld c, $BE
@@ -2730,10 +2730,10 @@ _LABEL_13BF_:
 	ld ($DD04), a
 	ei
 	ld a, $0C
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 13th entry of Jump Table from 17F (indexed by $C018)
+; 13th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1424_:
 	call _LABEL_3EE_
 	call _LABEL_1D60_
@@ -2742,7 +2742,7 @@ _LABEL_1424_:
 ; Data from 142D to 1434 (8 bytes)
 .db $E6 $81 $26 $83 $C6 $83 $86 $82
 
-; 14th entry of Jump Table from 17F (indexed by $C018)
+; 14th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1435_:
 	call _LABEL_B9A_
 	ld a, $01
@@ -2847,22 +2847,22 @@ _LABEL_14A7_:
 	xor a
 	ld ($C0B6), a
 	ld hl, $003C
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $0E
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 ; Data from 151F to 152E (16 bytes)
 .db $E6 $81 $26 $80 $86 $82 $42 $80 $26 $83 $5E $80 $C6 $83 $7A $80
 
-; 15th entry of Jump Table from 17F (indexed by $C018)
+; 15th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_152F_:
 	call _LABEL_3EE_
 	call _LABEL_1D60_
 	call _LABEL_137_
 	jp _LABEL_137_
 
-; 23rd entry of Jump Table from 17F (indexed by $C018)
+; 23rd entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_153B_:
 	ld a, $A7
 	out ($BF), a
@@ -2879,12 +2879,12 @@ _LABEL_153B_:
 	ld a, $82
 	ld ($DD04), a
 	ld hl, $04A0
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $17
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
-; 24th entry of Jump Table from 17F (indexed by $C018)
+; 24th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1566_:
 	ld a, ($C0B7)
 	neg
@@ -2903,21 +2903,21 @@ _LABEL_1566_:
 	ld ($C0B7), a
 	ld ($C0D3), a
 	ld a, $30
-	ld ($C620), a
+	ld (Food), a
 	ld hl, $03E7
-	ld ($C621), hl
-	ld ($C623), hl
+	ld (CurrentHPLow), hl
+	ld (MaxHPLow), hl
 	xor a
 	ld ($C62A), a
-	ld ($C625), a
-	ld ($C626), a
+	ld (ExperienceLow), a
+	ld (ExperienceHigh), a
 	ld ($C627), a
-	ld ($C62B), a
-	ld ($C62C), a
-	ld ($C62D), a
+	ld (MoneyLow), a
+	ld (MoneyMid), a
+	ld (MoneyHigh), a
 	ld a, $1E
-	ld ($C62F), a
-	ld ($C630), a
+	ld (BasePW), a
+	ld (BaseAC), a
 	ld hl, $D300
 	ld de, $D301
 	ld (hl), $00
@@ -2931,7 +2931,7 @@ _LABEL_1566_:
 	call LDI128
 	call _LABEL_42C_
 	ld a, $11
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_15DF_:
@@ -2988,7 +2988,7 @@ _LABEL_160C_:
 .db $6A $11 $58 $11 $68 $11 $64 $11 $59 $11 $71 $11 $61 $11 $66 $11
 .db $5F $11 $75 $11 $FF
 
-; 16th entry of Jump Table from 17F (indexed by $C018)
+; 16th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_16F4_:
 	call _LABEL_B9A_
 	ld a, $02
@@ -3079,7 +3079,7 @@ _LABEL_16F4_:
 	out ($BE), a
 	ld de, $3D20
 	rst $08	; _LABEL_8_
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	ld b, a
 	ld hl, $19AA
 	ld de, $0016
@@ -3091,7 +3091,7 @@ _LABEL_17F5_:
 	rst $08	; _LABEL_8_
 	ld hl, $1998
 	call OUTI6
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	call _LABEL_2C6D_
 	ld e, $00
 	ld hl, $C0B3
@@ -3111,7 +3111,7 @@ _LABEL_17F5_:
 	out ($BE), a
 	ld a, $01
 	out ($BE), a
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	call _LABEL_2C6D_
 	ld e, $00
 	ld hl, $C0B3
@@ -3131,8 +3131,8 @@ _LABEL_17F5_:
 	rst $08	; _LABEL_8_
 	ld hl, $199E
 	call OUTI6
-	ld a, ($C618)
-	ld hl, ($C62F)
+	ld a, (WeaponPW)
+	ld hl, (BasePW)
 	add a, l
 	ld l, a
 	ld h, $00
@@ -3149,8 +3149,8 @@ _LABEL_17F5_:
 	rst $08	; _LABEL_8_
 	ld hl, $19A4
 	call OUTI6
-	ld a, ($C61A)
-	ld hl, ($C630)
+	ld a, (ArmorAC)
+	ld hl, (BaseAC)
 	add a, l
 	ld l, a
 	ld h, $00
@@ -3167,7 +3167,7 @@ _LABEL_17F5_:
 	rst $08	; _LABEL_8_
 	ld hl, $19AA
 	call OUTI10
-	ld hl, $C62D
+	ld hl, MoneyHigh
 	ld e, $00
 	ld b, $02
 _LABEL_18B2_:
@@ -3192,13 +3192,13 @@ _LABEL_18B2_:
 	ld hl, $19B6
 	call OUTI10
 	ld e, $00
-	ld a, ($C620)
+	ld a, (Food)
 	rrca
 	rrca
 	rrca
 	rrca
 	call _LABEL_1940_
-	ld a, ($C620)
+	ld a, (Food)
 	and $0F
 	add a, $80
 	out ($BE), a
@@ -3222,18 +3222,18 @@ _LABEL_18B2_:
 	ld ($C014), a
 	ei
 	ld hl, $0384
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $10
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 17th entry of Jump Table from 17F (indexed by $C018)
+; 17th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_192B_:
 	call _LABEL_3E6_
 	call _LABEL_1D9C_
 	call _LABEL_2DAD_
 	call _LABEL_137_
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 	and $80
 	ret nz
 	jp _LABEL_137_
@@ -3287,7 +3287,7 @@ _LABEL_194C_:
 .db $58 $11 $58 $11 $58 $11 $65 $11 $59 $11 $6B $11 $6C $11 $5D $11
 .db $6A $11 $64 $11 $67 $11 $6A $11 $5C $11 $58 $11
 
-; 18th entry of Jump Table from 17F (indexed by $C018)
+; 18th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1B20_:
 	call _LABEL_B9A_
 	ld a, $02
@@ -3305,7 +3305,7 @@ _LABEL_1B20_:
 	ld de, $2A80
 	call _LABEL_793_
 	ld a, $02
-	ld ($C006), a
+	ld (Autoplay), a
 	ld a, ($C0D3)
 	add a, a
 	add a, a
@@ -3317,7 +3317,7 @@ _LABEL_1B20_:
 	ld (Floor), a
 	inc hl
 	ld a, (hl)
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	inc hl
 	ld a, (hl)
 	ld ($C900), a
@@ -3404,7 +3404,7 @@ _LABEL_1BD5_:
 	ld hl, $3CE6
 	ld ($C120), hl
 	ld hl, $C631
-	ld de, $C632
+	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
 	ld a, $02
@@ -3438,9 +3438,9 @@ _LABEL_1BD5_:
 	ld ($CAC8), a
 	ei
 	ld hl, $0078
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $12
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_143_
 
 ; Data from 1C78 to 1CA7 (48 bytes)
@@ -3448,7 +3448,7 @@ _LABEL_1BD5_:
 .db $89 $B1 $09 $B0 $89 $B1 $C9 $B0 $01 $01 $01 $10 $08 $04 $02 $12
 .db $0A $07 $03 $12 $12 $0A $08 $15 $18 $0C $0C $1A $1D $10 $0C $1A
 
-; 19th entry of Jump Table from 17F (indexed by $C018)
+; 19th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1CA8_:
 	call _LABEL_3EE_
 	ld a, $02
@@ -3458,15 +3458,15 @@ _LABEL_1CA8_:
 	call _LABEL_175_
 	jp nz, _LABEL_143_
 	xor a
-	ld ($C006), a
+	ld (Autoplay), a
 	ld ($C0D2), a
 	ld a, $78
 	ld ($C0D4), a
 	ld a, $13
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_143_
 
-; 20th entry of Jump Table from 17F (indexed by $C018)
+; 20th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1CD0_:
 	ld a, ($C0D2)
 	cp $20
@@ -3498,10 +3498,10 @@ _LABEL_1CF2_:
 	jr nz, _LABEL_1D0B_
 	ld a, $14
 _LABEL_1D0B_:
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 21st entry of Jump Table from 17F (indexed by $C018)
+; 21st entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1D11_:
 	call _LABEL_B9A_
 	call _LABEL_BA3_
@@ -3520,12 +3520,12 @@ _LABEL_1D11_:
 	ld ($C014), a
 	ei
 	ld hl, $00B4
-	ld ($C012), hl
+	ld (TitleScreenCounterLow), hl
 	ld a, $15
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
-; 22nd entry of Jump Table from 17F (indexed by $C018)
+; 22nd entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1D4B_:
 	ld a, ($C00D)
 	and $B0
@@ -3535,7 +3535,7 @@ _LABEL_1D4B_:
 _LABEL_1D55_:
 	call _LABEL_42C_
 	ld a, $00
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_1D60_:
@@ -3953,7 +3953,7 @@ _LABEL_1FB8_:
 	add hl, hl
 	ld de, $9A70
 	add hl, de
-	ld a, ($C006)
+	ld a, (Autoplay)
 	cp $02
 	jr nz, _LABEL_1FD5_
 	ld b, $02
@@ -4359,7 +4359,7 @@ _LABEL_2245_:
 	ret
 
 _LABEL_225C_:
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr z, _LABEL_22B0_
 	ld hl, ($C105)
@@ -4504,7 +4504,7 @@ _LABEL_2320_:
 	inc hl
 	pop bc
 	djnz _LABEL_22D1_
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr nz, _LABEL_2369_
 	ld hl, ($C105)
@@ -5318,7 +5318,7 @@ _LABEL_28B2_:
 	ld ($FFFF), a
 	ld de, $0200
 	rst $08	; _LABEL_8_
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	sub $04
 	jr nc, _LABEL_28C7_
 	ld hl, $92C7
@@ -5586,7 +5586,7 @@ _LABEL_2B2B_:
 	ld hl, $AA63
 	ld de, $C7BA
 	call _LABEL_7D3_
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	call _LABEL_2C98_
 	ld hl, $C7CC
 	ld (hl), $60
@@ -5883,7 +5883,7 @@ _LABEL_2CEB_:
 	ld d, $02
 _LABEL_2D06_:
 	ld a, d
-	ld hl, $C63C
+	ld hl, FoodTimer
 	cp (hl)
 	jr c, _LABEL_2D0F_
 	inc (hl)
@@ -5891,17 +5891,17 @@ _LABEL_2D06_:
 
 _LABEL_2D0F_:
 	ld (hl), $00
-	ld a, ($C620)
+	ld a, (Food)
 	sub $01
 	daa
 	jr c, _LABEL_2D1D_
-	ld ($C620), a
+	ld (Food), a
 	ret
 
 _LABEL_2D1D_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	dec hl
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	ld a, l
 	or a
 	ret nz
@@ -5910,10 +5910,10 @@ _LABEL_2D1D_:
 	ret
 
 _LABEL_2D2D_:
-	ld a, ($C634)
+	ld a, (PoisonTicksLeft)
 	or a
 	ret nz
-	ld a, ($C620)
+	ld a, (Food)
 	or a
 	ret z
 	ld a, ($C930)
@@ -5929,23 +5929,23 @@ _LABEL_2D2D_:
 	jr nz, _LABEL_2D50_
 	ld a, $02
 _LABEL_2D50_:
-	ld hl, $C63D
+	ld hl, HealTimer
 	inc (hl)
 	cp (hl)
 	jr z, _LABEL_2D58_
 	ret nc
 _LABEL_2D58_:
 	ld (hl), $00
-	ld hl, ($C621)
-	ld de, ($C61F)
+	ld hl, (CurrentHPLow)
+	ld de, (CharacterLevel)
 	ld d, $00
 	add hl, de
-	ld ($C621), hl
-	ld de, ($C623)
+	ld (CurrentHPLow), hl
+	ld de, (MaxHPLow)
 	xor a
 	sbc hl, de
 	jr c, _LABEL_2D74_
-	ld ($C621), de
+	ld (CurrentHPLow), de
 _LABEL_2D74_:
 	ld a, ($CAC5)
 	or a
@@ -5955,19 +5955,19 @@ _LABEL_2D74_:
 	ret
 
 _LABEL_2D7F_:
-	ld a, ($C634)
+	ld a, (PoisonTicksLeft)
 	or a
 	ret z
 	dec a
-	ld ($C634), a
+	ld (PoisonTicksLeft), a
 	ret
 
 _LABEL_2D89_:
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	ret z
 	dec a
-	ld ($C635), a
+	ld (BlindnessTicksLeft), a
 	ret nz
 	ld hl, ($C105)
 	ld a, (hl)
@@ -5979,32 +5979,32 @@ _LABEL_2D89_:
 	ret
 
 _LABEL_2DA3_:
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	ret z
 	dec a
-	ld ($C636), a
+	ld (DizzinessTicksLeft), a
 	ret
 
 _LABEL_2DAD_:
 	ld b, $3F
-	ld a, ($C634)
+	ld a, (PoisonTicksLeft)
 	or a
 	jr z, _LABEL_2DB7_
 	ld b, $3A
 _LABEL_2DB7_:
-	ld a, ($C620)
+	ld a, (Food)
 	or a
 	jr nz, _LABEL_2DBF_
 	ld b, $0F
 _LABEL_2DBF_:
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	srl h
 	rr l
 	srl h
 	rr l
 	ex de, hl
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	xor a
 	sbc hl, de
 	jr nc, _LABEL_2DE6_
@@ -6023,7 +6023,7 @@ _LABEL_2DDD_:
 	or $03
 	ld b, a
 _LABEL_2DE6_:
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ld de, $C06F
 	jr nz, _LABEL_2DF7_
@@ -6540,16 +6540,16 @@ _LABEL_311A_:
 _LABEL_3142_:
 	xor a
 	ld ($C601), a
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, l
 	or h
 	jp z, _LABEL_31CB_
 	call _LABEL_1EF6_
 	jp c, _LABEL_322D_
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ret nz
-	ld a, ($C632)
+	ld a, (ParalysisTicksLeft)
 	or a
 	jp nz, _LABEL_31FF_
 	ld a, ($C932)
@@ -6563,18 +6563,18 @@ _LABEL_3142_:
 	jp nz, _LABEL_33F8_
 	bit 4, a
 	jp nz, _LABEL_31BD_
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 	and $0F
 	jp z, _LABEL_321C_
 	ld a, $5A
 	ld ($CAC8), a
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	jr nz, _LABEL_31AA_
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 	and (ix+4)
 	jr nz, _LABEL_3199_
-	ld a, ($C00C)
+	ld a, (ControllerDirection)
 _LABEL_3199_:
 	rrca
 	jp c, _LABEL_32C4_
@@ -6601,7 +6601,7 @@ _LABEL_31BD_:
 	ld ($DD05), a
 	call _LABEL_42C_
 	ld a, $0F
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_31CB_:
@@ -6625,11 +6625,11 @@ _LABEL_31E6_:
 	ld ($CAC5), a
 	call _LABEL_42C_
 	ld a, $0B
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_31FF_:
-	ld hl, $C632
+	ld hl, ParalysisTicksLeft
 	dec (hl)
 	jp nz, _LABEL_33D8_
 	ld a, $1B
@@ -6637,7 +6637,7 @@ _LABEL_31FF_:
 	ret
 
 _LABEL_320C_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, l
 	or h
 	jp z, _LABEL_31CB_
@@ -7003,7 +7003,7 @@ _LABEL_34DD_:
 	and $03
 	inc a
 	ld b, a
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	ld e, a
 	xor a
 _LABEL_34ED_:
@@ -7024,25 +7024,25 @@ _LABEL_34ED_:
 	ld a, ($C0B1)
 	or l
 	ld l, a
-	ld a, ($C62B)
+	ld a, (MoneyLow)
 	add a, l
 	daa
-	ld ($C62B), a
-	ld a, ($C62C)
+	ld (MoneyLow), a
+	ld a, (MoneyMid)
 	adc a, h
 	daa
-	ld ($C62C), a
-	ld a, ($C62D)
+	ld (MoneyMid), a
+	ld a, (MoneyHigh)
 	adc a, $00
 	daa
-	ld ($C62D), a
+	ld (MoneyHigh), a
 	cp $10
 	jr c, _LABEL_3532_
 	ld a, $99
-	ld ($C62B), a
-	ld ($C62C), a
+	ld (MoneyLow), a
+	ld (MoneyMid), a
 	ld a, $09
-	ld ($C62D), a
+	ld (MoneyHigh), a
 _LABEL_3532_:
 	ld a, $01
 	ld ($C606), a
@@ -7070,13 +7070,13 @@ _LABEL_354A_:
 	and $10
 	add a, d
 	ld d, a
-	ld a, ($C620)
+	ld a, (Food)
 	add a, d
 	daa
 	jr nc, _LABEL_3567_
 	ld a, $99
 _LABEL_3567_:
-	ld ($C620), a
+	ld (Food), a
 	ld a, $01
 	ld ($C606), a
 	ld a, $0C
@@ -7116,11 +7116,11 @@ _LABEL_35B2_:
 	ret
 
 _LABEL_35C2_:
-	ld a, ($C0A0)
+	ld a, (TableIndex3)
 	or a
 	ret nz
 	ld a, $0D
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_35CD_:
@@ -7156,13 +7156,13 @@ _LABEL_35FD_:
 	ld d, $00
 	ld hl, $36F1
 	add hl, de
-	ld a, ($C617)
+	ld a, (WeaponHit)
 	sub (hl)
 	add a, $64
 	cp b
 	jp c, _LABEL_3712_
-	ld hl, $C62F
-	ld a, ($C618)
+	ld hl, BasePW
+	ld a, (WeaponPW)
 	add a, (hl)
 	call _LABEL_4848_
 	ld e, a
@@ -7194,13 +7194,13 @@ _LABEL_35FD_:
 	jr nz, _LABEL_3657_
 	ld bc, $0001
 _LABEL_3657_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	xor a
 	sbc hl, bc
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	jr nc, _LABEL_36C7_
 	ld hl, $0000
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	ld a, $FE
 	ld ($C63F), a
 	jr _LABEL_36C7_
@@ -7251,14 +7251,14 @@ _LABEL_369F_:
 	jr nz, _LABEL_36AC_
 	ld bc, $0001
 _LABEL_36AC_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	add hl, bc
-	ld ($C621), hl
-	ld bc, ($C623)
+	ld (CurrentHPLow), hl
+	ld bc, (MaxHPLow)
 	xor a
 	sbc hl, bc
 	jr c, _LABEL_36C7_
-	ld ($C621), bc
+	ld (CurrentHPLow), bc
 	jr _LABEL_36C7_
 
 _LABEL_36C2_:
@@ -7482,7 +7482,7 @@ _LABEL_3890_:
 	ld a, (hl)
 	cp $01
 	jp z, _LABEL_3CD6_
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr nz, _LABEL_38D2_
 	ld a, (hl)
@@ -7507,7 +7507,7 @@ _LABEL_38D2_:
 	ld a, $01
 	ld ($C606), a
 	ld (ix+30), $00
-	ld a, ($C633)
+	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_38EC_
 	ld (ix+0), $42
@@ -7611,15 +7611,15 @@ _LABEL_39A0_:
 	ld e, (hl)
 	inc hl
 	ld d, (hl)
-	ld hl, ($C625)
+	ld hl, (ExperienceLow)
 	add hl, de
 	jr nc, _LABEL_39B6_
 	ld hl, $FFFF
 _LABEL_39B6_:
-	ld ($C625), hl
+	ld (ExperienceLow), hl
 _LABEL_39B9_:
-	ld de, ($C628)
-	ld hl, ($C625)
+	ld de, (NextLevelLow)
+	ld hl, (ExperienceLow)
 	or a
 	sbc hl, de
 	jp c, _LABEL_33D8_
@@ -7627,61 +7627,61 @@ _LABEL_39B9_:
 	ld ($CAC4), a
 	ld a, $A9
 	ld ($DD05), a
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	inc a
 	cp $10
 	jr c, _LABEL_39DA_
 	ld a, $10
 _LABEL_39DA_:
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	add a, a
 	ld e, a
 	ld d, $00
 	ld hl, $3A8C
 	add hl, de
 	ld a, (hl)
-	ld ($C628), a
+	ld (NextLevelLow), a
 	inc hl
 	ld a, (hl)
-	ld ($C629), a
-	ld a, ($C61F)
+	ld (NextLevelHigh), a
+	ld a, (CharacterLevel)
 	rrca
 	rrca
 	and $3F
 	inc a
 	ld d, a
-	ld a, ($C62F)
+	ld a, (BasePW)
 	add a, d
 	cp $3C
 	jr c, _LABEL_3A01_
 	ld a, $3B
 _LABEL_3A01_:
-	ld ($C62F), a
-	ld a, ($C61F)
+	ld (BasePW), a
+	ld a, (CharacterLevel)
 	ld d, a
 	ld a, (Floor)
 	add a, d
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	add hl, de
-	ld ($C623), hl
+	ld (MaxHPLow), hl
 	ld bc, $03E7
 	or a
 	sbc hl, bc
 	jr c, _LABEL_3A25_
 	ld hl, $03E7
-	ld ($C623), hl
+	ld (MaxHPLow), hl
 _LABEL_3A25_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	add hl, de
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	or a
 	sbc hl, bc
 	jr c, _LABEL_3A37_
 	ld hl, $03E7
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 _LABEL_3A37_:
 	jp _LABEL_3F1A_
 
@@ -7752,7 +7752,7 @@ _LABEL_3B0E_:
 	add hl, de
 	ld a, (hl)
 _LABEL_3B16_:
-	ld hl, $C62F
+	ld hl, BasePW
 	add a, (hl)
 	call _LABEL_4848_
 	ld l, a
@@ -7995,7 +7995,7 @@ _LABEL_3CD6_:
 	ld a, (hl)
 	call _LABEL_42C_
 	ld a, $08
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_3CE6_:
@@ -8245,20 +8245,20 @@ _LABEL_3F46_:
 
 ; 1st entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_3F53_:
-	ld a, ($C618)
+	ld a, (WeaponPW)
 	inc a
 	cp $3C
 	jr c, _LABEL_3F5D_
 	ld a, $3B
 _LABEL_3F5D_:
-	ld ($C618), a
+	ld (WeaponPW), a
 	ld a, $1C
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 2nd entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_3F68_:
-	ld hl, $C61A
+	ld hl, ArmorAC
 	inc (hl)
 	ld a, $1D
 	ld ($C975), a
@@ -8328,7 +8328,7 @@ _LABEL_3FDA_:
 
 ; 6th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_3FE6_:
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr nz, _LABEL_3FDA_
 	ld a, ($C020)
@@ -8422,7 +8422,7 @@ _LABEL_409F_:
 	call GetRandomNumber
 	and $03
 	inc a
-	ld ($C632), a
+	ld (ParalysisTicksLeft), a
 	ld a, $23
 	ld ($C975), a
 	jp _LABEL_3ED8_
@@ -8555,7 +8555,7 @@ _LABEL_41A9_:
 
 ; 16th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_41B1_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	add a, a
 	add a, a
 	ld l, a
@@ -8611,7 +8611,7 @@ _LABEL_4220_:
 
 ; 17th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4226_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	add a, a
 	ld d, a
 	add a, a
@@ -8627,7 +8627,7 @@ _LABEL_4226_:
 
 ; 18th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4240_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	add a, a
 	add a, a
 	add a, a
@@ -8713,7 +8713,7 @@ _LABEL_42DE_:
 	xor a
 	ld ($C931), a
 	call _LABEL_4888_
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld e, l
 	ld d, h
 	srl h
@@ -8723,7 +8723,7 @@ _LABEL_42DE_:
 	jr nz, _LABEL_4306_
 	ld hl, $0001
 _LABEL_4306_:
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	ex de, hl
 	add hl, hl
 	ld a, ($C928)
@@ -8883,7 +8883,7 @@ _LABEL_442C_:
 	ld ($CAC5), a
 	call _LABEL_42C_
 	ld a, $08
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_143_
 
 ; 24th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8899,27 +8899,27 @@ _LABEL_4453_:
 	res 1, (iy+28)
 	ld e, (iy+26)
 	ld d, (iy+27)
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld (iy+26), l
 	ld (iy+27), h
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	or a
 	sbc hl, de
 	ex de, hl
 	jr nc, _LABEL_4474_
 	add hl, de
 _LABEL_4474_:
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	ld a, $2D
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 25th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_447F_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	dec a
 	jp z, _LABEL_3FDA_
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	call _LABEL_496B_
 	ld a, $2E
 	ld ($C975), a
@@ -8927,37 +8927,37 @@ _LABEL_447F_:
 
 ; 26th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4494_:
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	srl h
 	rr l
 	srl h
 	rr l
 _LABEL_449F_:
-	ld de, ($C621)
+	ld de, (CurrentHPLow)
 	add hl, de
 	ex de, hl
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	xor a
 	sbc hl, de
 	ex de, hl
 	jr nc, _LABEL_44B1_
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 _LABEL_44B1_:
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	ld a, $2F
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 27th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_44BC_:
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	srl h
 	rr l
 	jr _LABEL_449F_
 
 ; 28th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_44C5_:
-	ld a, ($C633)
+	ld a, (SluggishTicksLeft)
 	or a
 	jr z, _LABEL_44D3_
 	ld a, $22
@@ -8966,14 +8966,14 @@ _LABEL_44C5_:
 
 _LABEL_44D3_:
 	ld a, $01
-	ld ($C633), a
+	ld (SluggishTicksLeft), a
 	ld a, $30
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 29th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_44E0_:
-	ld a, ($C633)
+	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_44EE_
 	ld a, $22
@@ -8982,14 +8982,14 @@ _LABEL_44E0_:
 
 _LABEL_44EE_:
 	xor a
-	ld ($C633), a
+	ld (SluggishTicksLeft), a
 	ld a, $31
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 30th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_44FA_:
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr z, _LABEL_4508_
 	ld a, $22
@@ -9018,14 +9018,14 @@ _LABEL_451D_:
 	call GetRandomNumber
 	and $0F
 	add a, $10
-	ld ($C635), a
+	ld (BlindnessTicksLeft), a
 	ld a, $32
 	ld ($CAC4), a
 	jp _LABEL_3F1A_
 
 ; 31st entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4545_:
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4553_
 	ld a, $22
@@ -9036,18 +9036,18 @@ _LABEL_4553_:
 	call GetRandomNumber
 	and $0F
 	add a, $10
-	ld ($C636), a
+	ld (DizzinessTicksLeft), a
 	ld a, $33
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 32nd entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4565_:
-	ld a, ($C634)
+	ld a, (PoisonTicksLeft)
 	ld d, a
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	ld e, a
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or e
 	or d
 	jr nz, _LABEL_457C_
@@ -9057,17 +9057,17 @@ _LABEL_4565_:
 
 _LABEL_457C_:
 	xor a
-	ld ($C634), a
-	ld ($C635), a
-	ld ($C636), a
+	ld (PoisonTicksLeft), a
+	ld (BlindnessTicksLeft), a
+	ld (DizzinessTicksLeft), a
 	ld a, $34
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 33rd entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_458E_:
-	ld hl, ($C623)
-	ld ($C621), hl
+	ld hl, (MaxHPLow)
+	ld (CurrentHPLow), hl
 	ld a, $2F
 	ld ($C975), a
 	jp _LABEL_3ED8_
@@ -9077,21 +9077,21 @@ _LABEL_459C_:
 	call GetRandomNumber
 	and $01
 	jr z, _LABEL_45B6_
-	ld a, ($C62F)
+	ld a, (BasePW)
 	or a
 	jp z, _LABEL_3FDA_
 	dec a
-	ld ($C62F), a
+	ld (BasePW), a
 	ld a, $35
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 _LABEL_45B6_:
-	ld a, ($C630)
+	ld a, (BaseAC)
 	or a
 	jp z, _LABEL_3FDA_
 	dec a
-	ld ($C62F), a
+	ld (BasePW), a
 	ld a, $35
 	ld ($C975), a
 	jp _LABEL_3ED8_
@@ -9145,26 +9145,26 @@ _LABEL_4617_:
 
 ; 38th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_461E_:
-	ld a, ($C630)
+	ld a, (BaseAC)
 	add a, $04
 	cp $32
 	jr c, _LABEL_4629_
 	ld a, $31
 _LABEL_4629_:
-	ld ($C630), a
+	ld (BaseAC), a
 	ld a, $38
 	ld ($C975), a
 	jr _LABEL_45CE_
 
 ; 39th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4633_:
-	ld a, ($C62F)
+	ld a, (BasePW)
 	add a, $04
 	cp $3C
 	jr c, _LABEL_463E_
 	ld a, $3B
 _LABEL_463E_:
-	ld ($C62F), a
+	ld (BasePW), a
 	ld a, $39
 	ld ($C975), a
 	jp _LABEL_45CE_
@@ -9219,26 +9219,26 @@ _LABEL_468B_:
 
 ; 47th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4698_:
-	ld a, ($C62F)
+	ld a, (BasePW)
 	inc a
 	cp $3C
 	jr c, _LABEL_46A2_
 	ld a, $3B
 _LABEL_46A2_:
-	ld ($C62F), a
+	ld (BasePW), a
 	ld a, $48
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 48th entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_46AD_:
-	ld a, ($C630)
+	ld a, (BaseAC)
 	inc a
 	cp $32
 	jr c, _LABEL_46B7_
 	ld a, $31
 _LABEL_46B7_:
-	ld ($C630), a
+	ld (BaseAC), a
 	ld a, $49
 	ld ($C975), a
 	jp _LABEL_3ED8_
@@ -9328,7 +9328,7 @@ _LABEL_474C_:
 
 ; 52nd entry of Jump Table from 3E68 (indexed by unknown)
 _LABEL_4758_:
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4766_
 	ld a, $22
@@ -9339,7 +9339,7 @@ _LABEL_4766_:
 	call GetRandomNumber
 	and $0F
 	add a, $10
-	ld ($C636), a
+	ld (DizzinessTicksLeft), a
 	ld a, $51
 	ld ($C975), a
 	jp _LABEL_3ED8_
@@ -9609,14 +9609,14 @@ _LABEL_48F7_:
 	ld d, $00
 	ld hl, $4935
 	add hl, de
-	ld de, $C617
+	ld de, WeaponHit
 	ldi
 	ldi
 	ld a, ($C900)
 	bit 7, a
 	ret z
 	xor a
-	ld ($C618), a
+	ld (WeaponPW), a
 	ret
 
 _LABEL_4916_:
@@ -9627,14 +9627,14 @@ _LABEL_4916_:
 	ld d, $00
 	ld hl, $4955
 	add hl, de
-	ld de, $C619
+	ld de, ArmorEvd
 	ldi
 	ldi
 	ld a, ($C908)
 	bit 7, a
 	ret z
 	xor a
-	ld ($C61A), a
+	ld (ArmorAC), a
 	ret
 
 ; Data from 4935 to 496A (54 bytes)
@@ -9644,34 +9644,34 @@ _LABEL_4916_:
 .db $28 $2C $28 $10 $32 $32
 
 _LABEL_496B_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	ld d, a
 	ld a, (Floor)
 	add a, d
 	inc a
 	ld e, a
 	ld d, $00
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	xor a
 	sbc hl, de
-	ld ($C623), hl
+	ld (MaxHPLow), hl
 	ex de, hl
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	xor a
 	sbc hl, de
 	jr c, _LABEL_498D_
-	ld ($C621), de
+	ld (CurrentHPLow), de
 _LABEL_498D_:
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	add a, a
 	ld e, a
 	ld d, $00
 	ld hl, $3A8D
 	add hl, de
-	ld de, $C629
+	ld de, NextLevelHigh
 	ldd
 	ldd
-	ld de, $C626
+	ld de, ExperienceHigh
 	ldd
 	ldd
 	ret
@@ -9700,7 +9700,7 @@ _LABEL_49D0_:
 	ld ($DD05), a
 	call _LABEL_42C_
 	ld a, $09
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_49E0_:
@@ -9717,7 +9717,7 @@ _LABEL_49E0_:
 	ret
 
 _LABEL_49FC_:
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	add a, a
 	add a, a
 	add a, a
@@ -9731,7 +9731,7 @@ _LABEL_49FC_:
 	ld a, (hl)
 	or a
 	jr z, _LABEL_4A30_
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	cp $05
 	jr nc, _LABEL_4A36_
 	cp $02
@@ -9763,7 +9763,7 @@ _LABEL_4A36_:
 	cp $58
 	jr z, _LABEL_4A6F_
 _LABEL_4A4F_:
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	cp $02
 	jr c, _LABEL_4A58_
 	ld a, $02
@@ -9775,7 +9775,7 @@ _LABEL_4A58_:
 	ld (ix+24), $00
 	call _LABEL_42C_
 	ld a, $09
-	ld ($C018), a
+	ld (TableIndex1), a
 	ret
 
 _LABEL_4A6F_:
@@ -9795,7 +9795,7 @@ _LABEL_4A6F_:
 	jp _LABEL_4CAB_
 
 _LABEL_4A97_:
-	ld hl, $C630
+	ld hl, BaseAC
 	dec (hl)
 	dec (hl)
 	dec (hl)
@@ -9805,7 +9805,7 @@ _LABEL_4A97_:
 	ret
 
 _LABEL_4AA2_:
-	ld hl, $C62F
+	ld hl, BasePW
 	dec (hl)
 	dec (hl)
 	dec (hl)
@@ -9836,7 +9836,7 @@ _LABEL_4ABC_:
 	ret
 
 _LABEL_4AD8_:
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	add a, a
 	add a, a
 	add a, a
@@ -9849,7 +9849,7 @@ _LABEL_4AD8_:
 	jp z, _LABEL_4C0C_
 	dec a
 	jp z, _LABEL_4BB2_
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	cp $05
 	jr z, _LABEL_4B25_
 	cp $02
@@ -9948,7 +9948,7 @@ _LABEL_4B95_:
 	ld ($C931), a
 	call _LABEL_42C_
 	ld a, $09
-	ld ($C018), a
+	ld (TableIndex1), a
 _LABEL_4BA0_:
 	call _LABEL_4F51_
 	ld (ix+24), $00
@@ -10110,9 +10110,9 @@ _LABEL_4C9E_:
 	add a, $28
 	ld (ix+17), a
 _LABEL_4CAB_:
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	ld hl, $4CB4
-	jp _LABEL_12D_
+	jp CallJumpTable
 
 ; Jump Table from 4CB4 to 4CBF (6 entries, indexed by unknown)
 .dw _LABEL_4E43_ _LABEL_4E54_ _LABEL_4E65_ _LABEL_4E79_ _LABEL_4E8D_ _LABEL_4EA1_
@@ -10212,7 +10212,7 @@ _LABEL_4D5D_:
 	ld a, ($C418)
 	cp $02
 	ret nz
-	ld a, ($C438)
+	ld a, (TableIndex7)
 	inc a
 	call _LABEL_4E1B_
 	ld (ix+0), $73
@@ -10540,8 +10540,8 @@ _LABEL_4F3F_:
 _LABEL_4F51_:
 	ld de, $3D66
 	rst $08	; _LABEL_8_
-	ld a, ($C618)
-	ld hl, ($C62F)
+	ld a, (WeaponPW)
+	ld hl, (BasePW)
 	add a, l
 	ld l, a
 	ld h, $00
@@ -10549,8 +10549,8 @@ _LABEL_4F51_:
 	call _LABEL_4F76_
 	ld de, $3D74
 	rst $08	; _LABEL_8_
-	ld a, ($C61A)
-	ld hl, ($C630)
+	ld a, (ArmorAC)
+	ld hl, (BaseAC)
 	add a, l
 	ld l, a
 	ld h, $00
@@ -10610,27 +10610,27 @@ _LABEL_4FCD_:
 	bit 0, (ix+24)
 	jr z, _LABEL_4FE8_
 	xor a
-	ld ($C63E), a
+	ld (ContinuesSpent), a
 	call _LABEL_42C_
 	ld a, $00
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_4FE8_:
-	ld hl, $C63E
+	ld hl, ContinuesSpent
 	inc (hl)
 	ld hl, $C631
-	ld de, $C632
+	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
 	call _LABEL_101A_
-	ld hl, ($C623)
-	ld ($C621), hl
+	ld hl, (MaxHPLow)
+	ld (CurrentHPLow), hl
 	ld a, $30
-	ld ($C620), a
+	ld (Food), a
 	call _LABEL_42C_
 	ld a, $08
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_5010_:
@@ -10646,10 +10646,10 @@ _LABEL_5019_:
 
 _LABEL_5021_:
 	xor a
-	ld ($C63E), a
+	ld (ContinuesSpent), a
 	call _LABEL_42C_
 	ld a, $00
-	ld ($C018), a
+	ld (TableIndex1), a
 	jp _LABEL_137_
 
 _LABEL_5030_:
@@ -10789,7 +10789,7 @@ _LABEL_5159_:
 
 _LABEL_5167_:
 	ld a, $16
-	ld ($C018), a
+	ld (TableIndex1), a
 	ld hl, $310F
 	ld ($C100), hl
 	ld ($C120), hl
@@ -11037,7 +11037,7 @@ _LABEL_5300_:
 	ret
 
 _LABEL_5302_:
-	ld a, ($C619)
+	ld a, (ArmorEvd)
 	ld b, a
 	ld a, $80
 	sub b
@@ -11053,7 +11053,7 @@ _LABEL_5302_:
 	ld h, $00
 	ld de, $536D
 	add hl, de
-	ld a, ($C61A)
+	ld a, (ArmorAC)
 	ld b, a
 	ld a, (hl)
 	sub b
@@ -11071,12 +11071,12 @@ _LABEL_5336_:
 	push af
 	ld c, a
 	ld b, $00
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	or a
 	sbc hl, bc
 	call c, _LABEL_5356_
 	call z, _LABEL_5356_
-	ld ($C621), hl
+	ld (CurrentHPLow), hl
 	pop af
 	ld l, a
 	ld h, $00
@@ -11793,7 +11793,7 @@ _LABEL_5801_:
 	ret
 
 _LABEL_5815_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_5801_
@@ -11935,7 +11935,7 @@ _LABEL_5945_:
 	ret
 
 _LABEL_5959_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_5945_
@@ -12119,7 +12119,7 @@ _LABEL_5ADF_:
 	ret
 
 _LABEL_5AF3_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_5ADF_
@@ -12283,7 +12283,7 @@ _LABEL_5C5B_:
 	ret
 
 _LABEL_5C70_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_5C42_
@@ -12455,7 +12455,7 @@ _LABEL_5DE5_:
 	ld ($C102), a
 	call _LABEL_51A5_
 	jr c, _LABEL_5E32_
-	ld a, ($C634)
+	ld a, (PoisonTicksLeft)
 	or a
 	jr nz, _LABEL_5E32_
 	call GetRandomNumber
@@ -12470,7 +12470,7 @@ _LABEL_5DE5_:
 	and $0F
 	ld b, $10
 	add a, b
-	ld ($C634), a
+	ld (PoisonTicksLeft), a
 	ld a, $42
 	ld ($CAC4), a
 	ld (ix+24), $10
@@ -12485,7 +12485,7 @@ _LABEL_5E32_:
 	ret
 
 _LABEL_5E3E_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_5E32_
@@ -12731,7 +12731,7 @@ _LABEL_605D_:
 	ret
 
 _LABEL_6069_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_605D_
@@ -12981,7 +12981,7 @@ _LABEL_626F_:
 	ld ($C102), a
 	call _LABEL_51A5_
 	jr c, _LABEL_62BD_
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	jr nz, _LABEL_62BD_
 	call GetRandomNumber
@@ -12996,7 +12996,7 @@ _LABEL_626F_:
 	and $07
 	ld b, $08
 	add a, b
-	ld ($C636), a
+	ld (DizzinessTicksLeft), a
 	ld a, $33
 	ld ($CAC4), a
 	ld (ix+24), $10
@@ -13011,7 +13011,7 @@ _LABEL_62BD_:
 	ret
 
 _LABEL_62C9_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_62BD_
@@ -13183,7 +13183,7 @@ _LABEL_643E_:
 	ret
 
 _LABEL_644E_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_643E_
@@ -13468,7 +13468,7 @@ _LABEL_66C7_:
 	ret
 
 _LABEL_66D3_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_66C7_
@@ -13686,10 +13686,10 @@ _LABEL_68BC_:
 	ld ($C102), a
 	call _LABEL_51A5_
 	jr c, _LABEL_6931_
-	ld a, ($C636)
+	ld a, (DizzinessTicksLeft)
 	or a
 	jr nz, _LABEL_6931_
-	ld a, ($C635)
+	ld a, (BlindnessTicksLeft)
 	or a
 	jr nz, _LABEL_6931_
 	call GetRandomNumber
@@ -13714,14 +13714,14 @@ _LABEL_68BC_:
 	ld ($C60E), a
 	ld ($C606), a
 	ld a, $08
-	ld ($C635), a
+	ld (BlindnessTicksLeft), a
 	ld a, $32
 	ld ($CAC4), a
 	jr _LABEL_6921_
 
 _LABEL_6918_:
 	pop af
-	ld ($C636), a
+	ld (DizzinessTicksLeft), a
 	ld a, $33
 	ld ($CAC4), a
 _LABEL_6921_:
@@ -13767,7 +13767,7 @@ _LABEL_696B_:
 	ret
 
 _LABEL_6974_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_6931_
@@ -14005,7 +14005,7 @@ _LABEL_6B6A_:
 	ret
 
 _LABEL_6B76_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_6B6A_
@@ -14200,7 +14200,7 @@ _LABEL_6D16_:
 	ret
 
 _LABEL_6D26_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_6D16_
@@ -14374,7 +14374,7 @@ _LABEL_6E8B_:
 	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_6EE6_
-	ld a, ($C620)
+	ld a, (Food)
 	or a
 	jr z, _LABEL_6EE6_
 	call GetRandomNumber
@@ -14383,7 +14383,7 @@ _LABEL_6E8B_:
 	add a, b
 	daa
 	ld b, a
-	ld a, ($C620)
+	ld a, (Food)
 	sub b
 	daa
 	jr c, _LABEL_6EBD_
@@ -14392,7 +14392,7 @@ _LABEL_6E8B_:
 _LABEL_6EBD_:
 	xor a
 _LABEL_6EBE_:
-	ld ($C620), a
+	ld (Food), a
 	ld (ix+24), $10
 	ld (ix+0), $CD
 	ld (ix+1), $6E
@@ -14413,7 +14413,7 @@ _LABEL_6EE6_:
 	ret
 
 _LABEL_6EF6_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_6EE6_
@@ -14530,7 +14530,7 @@ _LABEL_6FD9_:
 	ld ($DD05), a
 	call _LABEL_567B_
 	call _LABEL_553A_
-; 5th entry of Jump Table from 1C108 (indexed by $DD03)
+; 5th entry of Jump Table from 1C108 (indexed by TableIndex8)
 _LABEL_7000_:
 	dec (ix+24)
 	jr z, _LABEL_7012_
@@ -14559,7 +14559,7 @@ _LABEL_702B_:
 	ld a, (ix+28)
 	and $08
 	jr nz, _LABEL_709E_
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_709E_
@@ -14574,12 +14574,12 @@ _LABEL_702B_:
 	add a, b
 	ld c, a
 	ld b, $00
-	ld hl, ($C623)
+	ld hl, (MaxHPLow)
 	or a
 	sbc hl, bc
 	call c, _LABEL_7077_
-	ld ($C623), hl
-	ld bc, ($C621)
+	ld (MaxHPLow), hl
+	ld bc, (CurrentHPLow)
 	or a
 	sbc hl, bc
 	call c, _LABEL_707B_
@@ -14593,8 +14593,8 @@ _LABEL_7077_:
 	ret
 
 _LABEL_707B_:
-	ld hl, ($C623)
-	ld ($C621), hl
+	ld hl, (MaxHPLow)
+	ld (CurrentHPLow), hl
 	ret
 
 _LABEL_7082_:
@@ -14621,7 +14621,7 @@ _LABEL_709E_:
 	ret
 
 _LABEL_70B4_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_709E_
@@ -14830,7 +14830,7 @@ _LABEL_727C_:
 	ret
 
 _LABEL_7288_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_727C_
@@ -15049,36 +15049,36 @@ _LABEL_743B_:
 	call GetRandomNumber
 	cp $40
 	jr nc, _LABEL_74D9_
-	ld a, ($C62F)
+	ld a, (BasePW)
 	or a
 	jr z, _LABEL_74D9_
 	dec a
-	ld ($C62F), a
+	ld (BasePW), a
 	jr _LABEL_749E_
 
 _LABEL_7473_:
 	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_74D9_
-	ld a, ($C62F)
+	ld a, (BasePW)
 	or a
 	jr z, _LABEL_74D9_
 	dec a
 	jr z, _LABEL_7484_
 	dec a
 _LABEL_7484_:
-	ld ($C62F), a
+	ld (BasePW), a
 	jr _LABEL_749E_
 
 _LABEL_7489_:
 	call GetRandomNumber
 	cp $20
 	jr nc, _LABEL_74D9_
-	ld a, ($C61F)
+	ld a, (CharacterLevel)
 	cp $01
 	jr z, _LABEL_74D9_
 	dec a
-	ld ($C61F), a
+	ld (CharacterLevel), a
 	call _LABEL_496B_
 _LABEL_749E_:
 	ld a, $A3
@@ -15112,7 +15112,7 @@ _LABEL_74D9_:
 	ret
 
 _LABEL_74E5_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_74D9_
@@ -15400,7 +15400,7 @@ _LABEL_7768_:
 	ret
 
 _LABEL_7774_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_7768_
@@ -15654,7 +15654,7 @@ _LABEL_79A3_:
 	ret
 
 _LABEL_79AF_:
-	ld hl, ($C621)
+	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
 	jr z, _LABEL_79A3_
@@ -15911,7 +15911,7 @@ _LABEL_1C07D_:
 _LABEL_1C082_:
 	ld de, $DD04
 	ld ix, $DD0F
-	ld iy, $DD03
+	ld iy, TableIndex8
 	call _LABEL_1C093_
 	call _LABEL_1C093_
 _LABEL_1C093_:
@@ -15971,7 +15971,7 @@ _LABEL_1C0E3_:
 	ret
 
 _LABEL_1C0EA_:
-	ld a, ($DD03)
+	ld a, (TableIndex8)
 	bit 7, a
 	jp z, _LABEL_1C3B1_
 	cp $90
@@ -15985,10 +15985,10 @@ _LABEL_1C0EA_:
 	call _LABEL_1C3E6_
 	jp (hl)
 
-; Jump Table from 1C108 to 1C111 (5 entries, indexed by $DD03)
+; Jump Table from 1C108 to 1C111 (5 entries, indexed by TableIndex8)
 .dw _LABEL_1C112_ _LABEL_1C3B1_ _LABEL_1C122_ _LABEL_1C243_ _LABEL_7000_
 
-; 1st entry of Jump Table from 1C108 (indexed by $DD03)
+; 1st entry of Jump Table from 1C108 (indexed by TableIndex8)
 _LABEL_1C112_:
 	ld a, $0C
 	ld ($DD09), a
@@ -15997,7 +15997,7 @@ _LABEL_1C112_:
 	ld ($DD0B), a
 	jp _LABEL_1C161_
 
-; 3rd entry of Jump Table from 1C108 (indexed by $DD03)
+; 3rd entry of Jump Table from 1C108 (indexed by TableIndex8)
 _LABEL_1C122_:
 	ld iy, $DE00
 	ld de, $0030
@@ -16036,7 +16036,7 @@ _LABEL_1C15C_:
 	djnz _LABEL_1C15C_
 _LABEL_1C161_:
 	ld a, $80
-	ld ($DD03), a
+	ld (TableIndex8), a
 	ret
 
 _LABEL_1C167_:
@@ -16161,7 +16161,7 @@ _LABEL_1C23F_:
 	ld ($DD0D), a
 	ret
 
-; 4th entry of Jump Table from 1C108 (indexed by $DD03)
+; 4th entry of Jump Table from 1C108 (indexed by TableIndex8)
 _LABEL_1C243_:
 	xor a
 	call _LABEL_1C24C_
@@ -16362,12 +16362,12 @@ _LABEL_1C3A6_:
 	inc de
 	jp _LABEL_1C35D_
 
-; 2nd entry of Jump Table from 1C108 (indexed by $DD03)
+; 2nd entry of Jump Table from 1C108 (indexed by TableIndex8)
 _LABEL_1C3B1_:
 	push hl
 	push bc
 	push de
-	ld hl, $DD03
+	ld hl, TableIndex8
 	ld de, $DD04
 	ld bc, $018C
 	ld (hl), $00
