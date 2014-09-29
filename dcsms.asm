@@ -2,7 +2,7 @@
 ; Disassembled with Emulicious 
 
 ; Variable Definitions
-.include "defines.i"
+.include "defines\defines.i"
 
 ; End Definitions
 
@@ -15818,37 +15818,37 @@ _LABEL_7B1C_:
 	ret
 
 ; Data from 7B25 to 7FFF (1243 bytes)
-.incbin "dcsms_7b25.inc"
+.incbin "data\dcsms_7b25.inc"
 
 .BANK 2
 .ORG $0000
 
 ; Data from 8000 to BFFF (16384 bytes)
-.incbin "dcsms_8000.inc"
+.incbin "data\dcsms_8000.inc"
 
 .BANK 3
 .ORG $0000
 
 ; Data from C000 to FFFF (16384 bytes)
-.incbin "dcsms_c000.inc"
+.incbin "data\dcsms_c000.inc"
 
 .BANK 4
 .ORG $0000
 
 ; Data from 10000 to 13FFF (16384 bytes)
-.incbin "dcsms_10000.inc"
+.incbin "data\dcsms_10000.inc"
 
 .BANK 5
 .ORG $0000
 
 ; Data from 14000 to 17FFF (16384 bytes)
-.incbin "dcsms_14000.inc"
+.incbin "data\dcsms_14000.inc"
 
 .BANK 6
 .ORG $0000
 
 ; Data from 18000 to 1BFFF (16384 bytes)
-.incbin "dcsms_18000.inc"
+.incbin "data\dcsms_18000.inc"
 
 .BANK 7
 .ORG $0000
@@ -17047,5 +17047,5 @@ _LABEL_1C872_:
 	ret
 
 ; Data from 1C88C to 1FFFF (14196 bytes)
-.incbin "dcsms_1c88c.inc"
+.incbin "data\dcsms_1c88c.inc"
 
