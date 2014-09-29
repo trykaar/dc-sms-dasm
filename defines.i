@@ -1,3 +1,7 @@
+; Port definitions
+.define VDPData					$BE
+.define VDPControl				$BF
+
 ; Autoplaying demo- starts after title screen
 ; Autoplay mode can be turned on during gameplay with PAR code 00C006?? where ?? is $02 or greater
 .define Autoplay 				$C006	; 00 is off, 01 during play goes to title screen

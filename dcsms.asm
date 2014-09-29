@@ -38,10 +38,10 @@ Start:
 _LABEL_8_:
 	di
 	ld a, e
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $40
 	or d
-	out ($BF), a
+	out (VDPControl), a
 	ei
 	ret
 
@@ -63,13 +63,14 @@ _LABEL_30_:
 ; Data from 35 to 37 (3 bytes)
 .db $FF $FF $FF
 
+; VBLANK
 _LABEL_38_:
-	jp _LABEL_1AF_
+	jp _HANDLE_VBLANK
 
 _LABEL_3B_:
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $81
-	out ($BF), a
+	out (VDPControl), a
 	ret
 
 ; Data from 42 to 65 (36 bytes)
@@ -120,15 +121,15 @@ WaitForLineB0:
 	cp $B0					; Is it $B0?
 	jr nz, WaitForLineB0	; If not, go back and wait
 	xor a					; Zero out a
-	out ($BF), a			; Write $C000 out to the VDP, set address to VDP $00000
+	out (VDPControl), a			; Write $C000 out to the VDP, set address to VDP $00000
 	ld a, $C0
-	out ($BF), a
+	out (VDPControl), a
 	xor a					; Zero out a again
 	ld b, $20				; Load counter with $20
 	ex (sp), hl				; Wait
 	ex (sp), hl
 _LABEL_B4_:
-	out ($BE), a			; Output zero to $BE
+	out (VDPData), a		; Output zero to VDPData
 	nop						; Wait
 	djnz _LABEL_B4_			; Do this $20 times (32 times)
 _LABEL_B9_:
@@ -137,9 +138,9 @@ _LABEL_B9_:
 	xor a					; Zero out a
 	ld ($C005), a			; Set $C005 to zero
 	ld ($C002), a			; Set $C002 to zero
-	in a, ($BF)				; Clear VDP status flags by reading from port
-	ld b, $16				; Read $16 from $0042 and output to VDP
-	ld c, $BF
+	in a, (VDPControl)		; Clear VDP status flags by reading from port
+	ld b, $16				; Read $16 from $0042 and output to VDPControl
+	ld c, VDPControl
 	ld hl, $0042
 	otir
 	ld hl, $C100			; Zero out $C100-D000
@@ -152,7 +153,7 @@ _LABEL_B9_:
 	ld bc, $02EF
 	ld (hl), $00
 	ldir
-	rst $30					; _LABEL_30_- write $A2, $81 to $BF
+	rst $30					; _LABEL_30_- write $A2, $81 to VDPControl
 	call _LABEL_771_		; Initializes more memory, sets a flag in $C01E
 	call _LABEL_59D_		; Some sort of display? Title screen, maybe?
 	ld a, $FF
@@ -253,9 +254,9 @@ _LABEL_175_:
 .dw _LABEL_1058_ _LABEL_1127_ _LABEL_11A0_ _LABEL_11DB_ _LABEL_1424_ _LABEL_1435_ _LABEL_152F_ _LABEL_16F4_
 .dw _LABEL_192B_ _LABEL_1B20_ _LABEL_1CA8_ _LABEL_1CD0_ _LABEL_1D11_ _LABEL_1D4B_ _LABEL_153B_ _LABEL_1566_
 
-_LABEL_1AF_:
+_HANDLE_VBLANK:
 	push af
-	in a, ($BF)
+	in a, (VDPControl)
 	and $80
 	jp z, _LABEL_2D1_
 	ld a, ($FFFF)
@@ -363,9 +364,9 @@ _LABEL_26B_:
 ; 5th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_275_:
 	ld a, $00
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $88
-	out ($BF), a
+	out (VDPControl), a
 	call _LABEL_2DD_
 	call _LABEL_2E9_
 	ld b, $00
@@ -384,9 +385,9 @@ _LABEL_285_:
 ; 6th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_29D_:
 	ld a, $00
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $88
-	out ($BF), a
+	out (VDPControl), a
 	xor a
 	ld (TableIndex2), a
 	jp _LABEL_1E7_
@@ -394,9 +395,9 @@ _LABEL_29D_:
 ; 7th entry of Jump Table from 1D1 (indexed by TableIndex2)
 _LABEL_2AC_:
 	ld a, ($C0D2)
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $89
-	out ($BF), a
+	out (VDPControl), a
 	call _LABEL_2E9_
 	ld b, $00
 _LABEL_2BA_:
@@ -412,9 +413,9 @@ _LABEL_2BA_:
 
 _LABEL_2D1_:
 	ld a, ($C0B7)
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $88
-	out ($BF), a
+	out (VDPControl), a
 	pop af
 	ei
 	ret
@@ -433,17 +434,17 @@ _LABEL_2E7_:
 	ret
 
 _LABEL_2E9_:
-	ld c, $BE
+	ld c, VDPData
 	ld a, $00
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $7F
-	out ($BF), a
+	out (VDPControl), a
 	ld hl, $C500
 	call OUTI64
 	ld a, $80
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $7F
-	out ($BF), a
+	out (VDPControl), a
 	ld hl, $C540
 	call OUTI128
 	ret
@@ -908,7 +909,7 @@ _LABEL_608_:
 _LABEL_60A_:
 	ld a, b
 	ld b, c
-	ld c, $BE
+	ld c, VDPData
 _LABEL_60E_:
 	outi
 	jr nz, _LABEL_60E_
@@ -930,7 +931,7 @@ _LABEL_620_:
 	push bc
 	ld b, $00
 _LABEL_623_:
-	out ($BE), a
+	out (VDPData), a
 	nop
 	djnz -4
 	pop bc
@@ -944,7 +945,7 @@ _LABEL_632_:
 	rst $08	; _LABEL_8_
 	inc b
 	ld d, c
-	ld c, $BE
+	ld c, VDPData
 	push bc
 	ld b, d
 	jr _LABEL_63E_
@@ -969,7 +970,7 @@ _LABEL_64C_:
 	rst $08	; _LABEL_8_
 	push bc
 	ld b, c
-	ld c, $BE
+	ld c, VDPData
 _LABEL_651_:
 	outi
 	outi
@@ -986,7 +987,7 @@ _LABEL_661_:
 	rst $08	; _LABEL_8_
 	push bc
 	ld b, c
-	ld c, $BE
+	ld c, VDPData
 _LABEL_666_:
 	outi
 	nop
@@ -1031,7 +1032,7 @@ _LABEL_697_:
 	push de
 	rst $08	; _LABEL_8_
 	ld b, c
-	ld c, $BE
+	ld c, VDPData
 _LABEL_69D_:
 	outi
 	nop
@@ -1119,11 +1120,11 @@ _LABEL_771_:
 
 _LABEL_784_:
 	xor a
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $C0
-	out ($BF), a
+	out (VDPControl), a
 	ld hl, $C020
-	ld c, $BE
+	ld c, VDPData
 	jp OUTI32
 
 _LABEL_793_:
@@ -1167,7 +1168,7 @@ _LABEL_7B6_:
 
 _LABEL_7BB_:
 	ld a, (hl)
-	out ($BE), a
+	out (VDPData), a
 	xor a
 	or c
 	jr z, _LABEL_7C3_
@@ -1256,7 +1257,7 @@ _LABEL_817_:
 _LABEL_820_:
 	ld a, (hl)
 	exx
-	ld c, $BE
+	ld c, VDPData
 	ld b, $04
 	ld h, a
 	ld a, ($C0CC)
@@ -1744,22 +1745,22 @@ _LABEL_BA3_:
 
 _LABEL_BC8_:
 	xor a
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $88
-	out ($BF), a
+	out (VDPControl), a
 	xor a
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $89
-	out ($BF), a
+	out (VDPControl), a
 	ret
 
 ; 1st entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_BD7_:
 	call _LABEL_B9A_
 	ld a, $26
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $80
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $02
 	ld (TableIndex1), a
 	jp _LABEL_137_
@@ -2141,9 +2142,9 @@ _LABEL_F4C_:
 	call _LABEL_BA3_
 	call _LABEL_5DE_
 	ld a, $FB
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $86
-	out ($BF), a
+	out (VDPControl), a
 	ld hl, $C400
 	ld de, $C401
 	ld bc, $00FF
@@ -2473,11 +2474,11 @@ _LABEL_11DB_:
 _LABEL_1256_:
 	add hl, de
 	djnz _LABEL_1256_
-	ld c, $BE
+	ld c, VDPData
 	call OUTI22
 	ld de, $3A24
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $1990
 	call OUTI8
 	ld hl, (Floor)
@@ -2490,12 +2491,12 @@ _LABEL_1256_:
 	dec hl
 	ld a, (hl)
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3AE4
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $AE3B
 	call OUTI10
 	ld hl, MoneyHigh
@@ -2515,12 +2516,12 @@ _LABEL_1298_:
 	ld a, (hl)
 	and $0F
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3B8C
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld a, ($C63F)
 	cp $FE
 	jr c, _LABEL_12DD_
@@ -2557,27 +2558,27 @@ _LABEL_12DD_:
 	ex de, hl
 	ld b, (hl)
 	inc hl
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	jr _LABEL_12F0_
 
 _LABEL_12F0_:
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	jr _LABEL_12F5_
 
 _LABEL_12F5_:
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	jr _LABEL_12FA_
 
 _LABEL_12FA_:
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	jr _LABEL_12FF_
 
 _LABEL_12FF_:
-	ld c, $BE
+	ld c, VDPData
 	ld a, $11
 _LABEL_1303_:
 	outi
@@ -2638,17 +2639,17 @@ _LABEL_131F_:
 	ld (MoneyMid), hl
 	ld de, $3C90
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $AE45
 	call OUTI16
 	ld de, $3CAA
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $AE55
 	call OUTI6
 	ld de, $3D2A
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $AE5B
 	call OUTI4
 	ld hl, $4F98
@@ -2676,7 +2677,7 @@ _LABEL_13A4_:
 	ld hl, $95CA
 _LABEL_13A9_:
 	ld ($FFFF), a
-	ld c, $BE
+	ld c, VDPData
 	call OUTI128
 	call OUTI128
 	call OUTI128
@@ -2794,7 +2795,7 @@ _LABEL_149F_:
 	ld de, $95CA
 _LABEL_14A7_:
 	ld ($FFFF), a
-	ld c, $BE
+	ld c, VDPData
 	call OUTI128
 	call OUTI128
 	call OUTI128
@@ -2865,13 +2866,13 @@ _LABEL_152F_:
 ; 23rd entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_153B_:
 	ld a, $A7
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $8A
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $36
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $80
-	out ($BF), a
+	out (VDPControl), a
 	ld hl, $160F
 	ld ($C0B8), hl
 	xor a
@@ -2896,9 +2897,9 @@ _LABEL_1566_:
 	call _LABEL_175_
 	jp nz, _LABEL_156_
 	ld a, $06
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $80
-	out ($BF), a
+	out (VDPControl), a
 	xor a
 	ld ($C0B7), a
 	ld ($C0D3), a
@@ -2950,7 +2951,7 @@ _LABEL_15DF_:
 	ld a, (hl)
 	cp $FF
 	jr z, _LABEL_1605_
-	ld c, $BE
+	ld c, VDPData
 	outi
 	jr _LABEL_15FF_
 
@@ -2961,14 +2962,14 @@ _LABEL_15FF_:
 
 _LABEL_1605_:
 	xor a
-	out ($BE), a
+	out (VDPData), a
 	jr _LABEL_160A_
 
 _LABEL_160A_:
 	jr _LABEL_160C_
 
 _LABEL_160C_:
-	out ($BE), a
+	out (VDPData), a
 	ret
 
 ; Data from 160F to 16F3 (229 bytes)
@@ -3061,7 +3062,7 @@ _LABEL_16F4_:
 	call _LABEL_632_
 	ld de, $3D08
 	rst $08	; _LABEL_8_
-	ld c, $BE
+	ld c, VDPData
 	ld hl, $1990
 	call OUTI8
 	ld hl, (Floor)
@@ -3074,9 +3075,9 @@ _LABEL_16F4_:
 	dec hl
 	ld a, (hl)
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3D20
 	rst $08	; _LABEL_8_
 	ld a, (CharacterLevel)
@@ -3104,13 +3105,13 @@ _LABEL_17F5_:
 	ld a, (hl)
 	and $0F
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld a, $7C
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld hl, (MaxHPLow)
 	call _LABEL_2C6D_
 	ld e, $00
@@ -3124,9 +3125,9 @@ _LABEL_17F5_:
 	ld a, (hl)
 	and $0F
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3D60
 	rst $08	; _LABEL_8_
 	ld hl, $199E
@@ -3142,9 +3143,9 @@ _LABEL_17F5_:
 	call _LABEL_1940_
 	ld a, ($C0B1)
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3D6E
 	rst $08	; _LABEL_8_
 	ld hl, $19A4
@@ -3160,9 +3161,9 @@ _LABEL_17F5_:
 	call _LABEL_1940_
 	ld a, ($C0B1)
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3D8A
 	rst $08	; _LABEL_8_
 	ld hl, $19AA
@@ -3184,9 +3185,9 @@ _LABEL_18B2_:
 	ld a, (hl)
 	and $0F
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld de, $3DA6
 	rst $08	; _LABEL_8_
 	ld hl, $19B6
@@ -3201,9 +3202,9 @@ _LABEL_18B2_:
 	ld a, (Food)
 	and $0F
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $49A7
 	ld ($C400), hl
 	ld hl, $4C3E
@@ -3251,9 +3252,9 @@ _LABEL_1949_:
 	add a, $80
 _LABEL_194C_:
 	ld e, a
-	out ($BE), a
+	out (VDPData), a
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ret
 
 ; Data from 1954 to 1B1F (460 bytes)
@@ -5299,7 +5300,7 @@ _LABEL_2826_:
 	inc hl
 	ld h, (hl)
 	ld l, a
-	ld c, $BE
+	ld c, VDPData
 	call OUTI256
 	jp OUTI128
 
@@ -5356,7 +5357,7 @@ _LABEL_28E8_:
 	ld d, (hl)
 	ex de, hl
 _LABEL_28F4_:
-	ld c, $BE
+	ld c, VDPData
 	call OUTI80
 	ld ($C0D0), hl
 	ret
@@ -6481,13 +6482,13 @@ _LABEL_3092_:
 
 _LABEL_30CC_:
 	ld a, ($CA06)
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $89
-	out ($BF), a
+	out (VDPControl), a
 	ld a, ($CA05)
-	out ($BF), a
+	out (VDPControl), a
 	ld a, $88
-	out ($BF), a
+	out (VDPControl), a
 	ret
 
 _LABEL_30DF_:
@@ -10303,13 +10304,13 @@ _LABEL_4DF9_:
 	ex (sp), hl
 	ex (sp), hl
 _LABEL_4DFC_:
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	ld a, $09
 	jr _LABEL_4E03_
 
 _LABEL_4E03_:
-	out ($BE), a
+	out (VDPData), a
 	nop
 	nop
 	djnz _LABEL_4DFC_
@@ -10320,13 +10321,13 @@ _LABEL_4E0A_:
 	ex (sp), hl
 	ex (sp), hl
 _LABEL_4E0D_:
-	in a, ($BE)
+	in a, (VDPData)
 	nop
 	ld a, $01
 	jr _LABEL_4E14_
 
 _LABEL_4E14_:
-	out ($BE), a
+	out (VDPData), a
 	nop
 	nop
 	djnz _LABEL_4E0D_
@@ -10356,7 +10357,7 @@ _LABEL_4E43_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
 	ld a, $7B
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C900
 	ld de, $A000
 	jp _LABEL_4EBD_
@@ -10366,7 +10367,7 @@ _LABEL_4E54_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
 	ld a, $7B
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C908
 	ld de, $A020
 	jp _LABEL_4EBD_
@@ -10376,7 +10377,7 @@ _LABEL_4E65_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
 	ld a, $58
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C910
 	ld de, $A040
 	ld bc, $C935
@@ -10387,7 +10388,7 @@ _LABEL_4E79_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
 	ld a, $58
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C918
 	ld de, $A080
 	ld bc, $C945
@@ -10398,7 +10399,7 @@ _LABEL_4E8D_:
 	ld de, $3A1E
 	rst $08	; _LABEL_8_
 	ld a, $58
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C920
 	ld de, $A0C0
 	ld bc, $C955
@@ -10414,7 +10415,7 @@ _LABEL_4EA1_:
 	jr nz, _LABEL_4EAF_
 	ld a, $58
 _LABEL_4EAF_:
-	out ($BE), a
+	out (VDPData), a
 	ld hl, $C928
 	ld de, $A100
 	ld bc, $C965
@@ -10423,7 +10424,7 @@ _LABEL_4EAF_:
 _LABEL_4EBD_:
 	ld a, $03
 	ld ($FFFF), a
-	ld c, $BE
+	ld c, VDPData
 	exx
 	ld de, $3A20
 	ld b, $08
@@ -10565,20 +10566,20 @@ _LABEL_4F76_:
 _LABEL_4F80_:
 	ld a, $58
 _LABEL_4F82_:
-	out ($BE), a
+	out (VDPData), a
 	jr _LABEL_4F86_
 
 _LABEL_4F86_:
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ld a, ($C0B1)
 	add a, $80
-	out ($BE), a
+	out (VDPData), a
 	jr _LABEL_4F93_
 
 _LABEL_4F93_:
 	ld a, $01
-	out ($BE), a
+	out (VDPData), a
 	ret
 
 _LABEL_4F98_:
