@@ -18,11 +18,11 @@ echo [objects]>linkfile
 echo object.o>>linkfile
 
 rem Link
-"%WLAPATH%wlalink.exe" -drvs linkfile target\compileddc.sms
+"%WLAPATH%wlalink.exe" -drvs linkfile dc.sms
 
 rem Fixup for eSMS
-if exist target\compileddc.sms.sym del target\compileddc.sms.sym
-ren target\compileddc.sym compileddc.sms.sym
+if exist dc.sms.sym del dc.sms.sym
+ren dc.sym dc.sms.sym
 
 rem Cleanup to avoid mess
 if exist linkfile del linkfile
