@@ -3,6 +3,7 @@
 
 ; Variable Definitions
 .include "defines\defines.i"
+.include "defines\asciitable.i"
 
 ; End Definitions
 
@@ -15419,8 +15420,14 @@ _LABEL_7B1C_:
 .BANK 3
 .ORG $0000
 
-; Data from C000 to FFFF (16384 bytes)
+; Data from C000 to E14E (8527 bytes)
 .incbin "data\dcsms_c000.inc"
+
+; Item and equipment names
+.include "items\item_name_table.asm"
+
+; Data from E976 to FFFF (5768 bytes)
+.incbin "data\dcsms_E976.inc"
 
 .BANK 4
 .ORG $0000
