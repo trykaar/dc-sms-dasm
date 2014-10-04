@@ -15429,8 +15429,14 @@ _LABEL_7B1C_:
 ; Item and equipment names
 .include "items\item_name_table.asm"
 
-; Data from E976 to FFFF (5768 bytes)
-.incbin "data\dcsms_E976.inc"
+; Data from E976 to EB3E (456 bytes)
+.incbin "data\dcsms_e976.inc"
+
+; In-game messages
+.include "text\game_messages.asm"
+
+; Data from F129 to FFFF (3798 bytes)
+.incbin "data\dcsms_f129.inc"
 
 .BANK 4
 .ORG $0000
