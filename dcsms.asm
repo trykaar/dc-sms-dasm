@@ -15420,8 +15420,11 @@ _LABEL_7B1C_:
 .BANK 3
 .ORG $0000
 
-; Data from C000 to E14E (8527 bytes)
-.incbin "data\dcsms_c000.inc"
+; 32 16x16 blocks used to compose random maps
+.include "map\map_block_table.asm"
+
+; Pointer table for item and equipment names
+.incbin "items\item_name_pointer_table.inc"
 
 ; Item and equipment names
 .include "items\item_name_table.asm"
