@@ -16652,6 +16652,14 @@ _LABEL_1C872_:
 	dec de
 	ret
 
-; Data from 1C88C to 1FFFF (14196 bytes)
+; Data from 1C88C to 1EEA0 (9748 bytes)
 .incbin "data\dcsms_1c88c.inc"
 
+; Player death messages
+.include "text\player_death_messages.asm"
+
+; Monster names
+.include "monsters\monster_names.asm"
+
+; Data from 1F009 to 1FFFF (4088 bytes)
+.incbin "data\dcsms_1f009.inc"
