@@ -34,7 +34,6 @@
 ; Table at $3CC0 index not yet known
 ; Table at $3E68 index not yet known
 .define TableIndex7				$C438	; Table at $4CB4
-.define TableIndex8				$DD03
 
 .define WeaponHit 				$C617
 .define WeaponPW 				$C618
