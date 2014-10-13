@@ -161,8 +161,8 @@ StopSFX:
 	djnz -
 	ret
 
-; Data from 1C139 to 1C139 (1 bytes)
-.db $F2
+TrackEndSequenceData:
+	.db $F2
 
 PlayMusic:
 	sub $81					; Sound ID -> Music index
@@ -217,7 +217,7 @@ _LABEL_1C188_:
 	jr nz, _LABEL_1C19A_
 	set 2, (iy+0)
 	ld a, $FF
-	out ($7F), a
+	out (PSGHCounter), a
 _LABEL_1C19A_:
 	ld de, SFXTrack2_PSG3
 	ld iy, MusicTrack3
@@ -350,7 +350,7 @@ _LABEL_1C275_:
 	inc hl
 	ld a, (hl)
 	add a, $1F
-	out ($7F), a
+	out (PSGHCounter), a
 _LABEL_1C27C_:
 	ex af, af'
 	ret
@@ -535,13 +535,13 @@ SilencePSG:
 	push bc
 	ld hl, PSGMuteValues
 	ld b, $0A
-	ld c, $7F
+	ld c, PSGHCounter
 	otir
 	pop bc
 	pop hl
 	jp ClearSoundID
 
-PSGMuteVals:
+PSGMuteValues:
 	.db $80 $00
 	.db $A0 $00
 	.db $C0 $00
@@ -638,7 +638,7 @@ _LABEL_1C4E4_:
 	ld a, l
 	and $0F
 	or c
-	out ($7F), a
+	out (PSGHCounter), a
 	ld a, l
 	and $F0
 	or h
@@ -646,7 +646,7 @@ _LABEL_1C4E4_:
 	rrca
 	rrca
 	rrca
-	out ($7F), a
+	out (PSGHCounter), a
 
 DoPSGVolume:
 	call DoADSR
@@ -662,7 +662,7 @@ DoPSGVolume:
 _LABEL_1C50B_:
 	or (ix+1)
 	add a, $10
-	out ($7F), a
+	out (PSGHCounter), a
 	ret
 
 DoADSR:
@@ -818,7 +818,7 @@ SilencePSGChannel:
 	ret nz
 	ld a, $1F
 	add a, (ix+1)
-	out ($7F), a
+	out (PSGHCounter), a
 	ret
 
 UpdateNoiseTrack:
@@ -905,7 +905,7 @@ DoDrumNote:
 	ld a, ($DD15)
 	add a, c
 	ld ($DD11), a
-	out ($7F), a
+	out (PSGHCounter), a
 	ret
 
 cfHandler:
@@ -1029,7 +1029,7 @@ cfF3_PSGNoise:
 	xor a
 	ld (ix+0), a
 	dec a
-	out ($7F), a
+	out (PSGHCounter), a
 	ld ($DD0D), a
 	pop hl
 	pop hl
@@ -1037,14 +1037,14 @@ cfF3_PSGNoise:
 
 _LABEL_1C78A_:
 	ld a, (de)
-	out ($7F), a
+	out (PSGHCounter), a
 	ld hl, MusicTrack3
 	ld iy, SFXTrack2_PSG3
 	or $FC
 	inc a
 	jr nz, _LABEL_1C7A8_
 	ld a, $DF
-	out ($7F), a
+	out (PSGHCounter), a
 	res 6, (ix+0)
 	set 2, (hl)
 	set 2, (iy+0)
@@ -1107,7 +1107,7 @@ _LABEL_1C7F7_:
 	res 2, (hl)
 	set 4, (hl)
 	or $1F
-	out ($7F), a
+	out (PSGHCounter), a
 	xor a
 	ld (CurrentSoundPriority), a
 	ld (ix+0), a
@@ -1216,3 +1216,69 @@ cfE0_ADSR:
 	ex de, hl
 	dec de
 	ret
+
+VolumeEnvelopePointers:
+;	.dw $88A6 $88A9 $88B2 $88BB $88C4 $88CF $88EE $88F0 $88FF $890B $8911 $891C $892D
+	.dw VolumeEnvelope1 VolumeEnvelope2 VolumeEnvelope3 VolumeEnvelope4
+	.dw VolumeEnvelope5 VolumeEnvelope6 VolumeEnvelope7 VolumeEnvelope8
+	.dw VolumeEnvelope9 VolumeEnvelope10 VolumeEnvelope11 VolumeEnvelope12
+	.dw VolumeEnvelope13
+
+VolumeEnvelope1:
+	.db $02 $06 $82
+
+VolumeEnvelope2:
+	.db $00 $01 $02 $04 $05 $06 $07 $0a $82
+
+VolumeEnvelope3:
+	.db $01 $00 $01 $01 $03 $04 $07 $0a $82
+
+VolumeEnvelope4:
+	.db $02 $00 $00 $00 $01 $02 $03 $04 $82
+
+VolumeEnvelope5:
+	.db $02 $01 $00 $01 $02 $02 $03 $03 $04 $04 $81
+
+VolumeEnvelope6:
+	.db $05 $02 $00 $00 $01 $01 $02 $02 $02 $02 $03 $03 $03 $03 $04 $04
+	.db $04 $04 $05 $05 $05 $05 $06 $06 $06 $06 $07 $07 $07 $08 $81
+
+VolumeEnvelope7:
+	.db $00 $81
+
+VolumeEnvelope8:
+	.db $00 $00 $01 $01 $02 $02 $02 $03 $03 $03 $03 $04 $04 $05 $81
+
+; This one overhangs by one byte?
+VolumeEnvelope9:
+	.db $00 $00 $01 $01 $01 $02 $04 $03 $02 $02 $83 $04
+
+VolumeEnvelope10:	
+	.db $02 $02 $03 $03 $0f $81
+
+VolumeEnvelope11:
+	.db $02 $01 $00 $00 $01 $01 $02 $03 $04 $05 $81
+
+VolumeEnvelope12:
+	.db $07 $07 $06 $06 $05 $05 $04 $04 $03 $03 $02 $02 $02 $01 $01 $01 $82
+
+VolumeEnvelope13:
+	.db $00 $00 $01 $02 $03 $04 $03 $02 $01 $00 $82
+
+SoundPriorities:
+	.db $80 $80 $80 $80 $80 $80 $80 $80 $80 $80 $80 $80 $80 $80
+	.db $80 $10 $10 $10 $00 $00 $00 $00 $00 $00 $00 $00 $00 $00
+	.db $00 $00 $00 $00 $00 $00 $00 $00 $00 $00 $00 $00 $00 $00
+	.db $00 $00 $00 $00 $00 $00 $7f $7f $7f $7f $00
+
+TempoList:
+	.db $09 $07 $00 $03 $00 $00 $03 $03 $03 $03 $03 $03 $03 $03 $03
+
+MusicPointers:
+	.dw $89DA $8AE3 $8B81 $8BFB $8D65 $8ED5 $8BFB $8BFB
+	.dw $8BFB $8BFB $8BFB $8BFB $8BFB $8BFB $8BFB
+
+SFXPointers:
+	.dw $8FF3 $9017 $9041 $905D $906B $906B $9080 $9095 $90AD $90BF $90BF
+	.dw $90F0 $90FD $910F $910F $8FF3 $913F $9041 $9150 $9164 $917E $9192
+	.dw $91AD $91C1 $91D8 $91E9 $9208 $9235 $91C1 $91C1 $91C1 $91C1

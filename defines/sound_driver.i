@@ -15,11 +15,3 @@
 .define SFXTrack1_PSG2			$DE00
 .define SFXTrack2_PSG3			$DE30
 .define SFXTrack3_PSG4_Noise	$DE60
-
-.define TrackEndSequenceData	$8139
-.define PSGMuteValues			$83D4
-.define VolumeEnvelopePointers	$888C
-.define SoundPriorities			$8938
-.define TempoList				$896D
-.define MusicPointers			$897C
-.define SFXPointers				$899A

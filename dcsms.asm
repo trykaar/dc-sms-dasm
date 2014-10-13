@@ -4,7 +4,7 @@
 ; Variable Definitions
 .include "defines\defines.i"
 .include "defines\asciitable.i"
-.include "defines\soundengine.i"
+.include "defines\sound_driver.i"
 
 ; End Definitions
 
@@ -15463,8 +15463,18 @@ _LABEL_7B1C_:
 ; Sound driver- pre-SMPS with 9-byte track header
 .include "sound\sound_driver.asm"
 
-; Data from 1C88C to 1EEA0 (9748 bytes)
-.incbin "data\dcsms_1c88c.inc"
+; Sound data
+.incbin "sound\sound_data.inc"
+
+; Text data?
+.db $67 $11 $6e $11 $5d $11 $6a $11 $5f $11 $67 $11 $64 $11 $5c $11 $58 $11
+.db $5b $11 $67 $11 $66 $11 $6c $11 $61 $11 $66 $11 $6d $11 $5d $11 $71 $11
+.db $5d $11 $6b $11 $66 $11 $67 $11
+
+; Pointer table for player death messages and monster names?
+.dw $AECD $AED5 $AEE0 $AEEA $AEF2 $AEFD $AF07 $AF11 $AF19 $AF23 $AF2E
+.dw $AF37 $AF3F $AF49 $AF52 $AF5C $AF67 $AF6F $AF7A $AF84 $AF8F $AF9A
+.dw $AFA5 $AFB0 $AFBB $AFC6 $AFD1 $AFDA $AFE5 $AFED $AFF6 $AFFF $AFFF
 
 ; Player death messages
 .include "text\player_death_messages.asm"
