@@ -15393,7 +15393,7 @@ _LABEL_7B1C_:
 .include "map\map_block_table.asm"
 
 ; Pointer table for item and equipment names
-.incbin "items\item_name_pointer_table.inc"
+.include "items\item_name_pointer_table.asm"
 
 ; Item and equipment names
 .include "items\item_name_table.asm"
@@ -15434,12 +15434,11 @@ _LABEL_7B1C_:
 ; Sound data
 .incbin "sound\sound_data.inc"
 
+; Game over screen text
 .include "text\game_over_screen_2.asm"
 
-; Pointer table for player death messages and monster names?
-.dw $AECD $AED5 $AEE0 $AEEA $AEF2 $AEFD $AF07 $AF11 $AF19 $AF23 $AF2E
-.dw $AF37 $AF3F $AF49 $AF52 $AF5C $AF67 $AF6F $AF7A $AF84 $AF8F $AF9A
-.dw $AFA5 $AFB0 $AFBB $AFC6 $AFD1 $AFDA $AFE5 $AFED $AFF6 $AFFF $AFFF
+; Pointer table for monster names
+.include "monsters\monster_name_pointer_table.asm"
 
 ; Player death messages
 .include "text\player_death_messages.asm"

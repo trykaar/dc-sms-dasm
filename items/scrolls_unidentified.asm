@@ -1,48 +1,64 @@
 ; Unidentified scrolls
-.db $0D
-.asc "YELLOW SCROLL "
+UnidentifiedScrollName1:
+	.db $0D
+	.asc "YELLOW SCROLL "
 
-.db $0A
-.asc "RED SCROLL    "
+UnidentifiedScrollName2:
+	.db $0A
+	.asc "RED SCROLL    "
 
-.db $0B
-.asc "BLUE SCROLL   "
+UnidentifiedScrollName3:
+	.db $0B
+	.asc "BLUE SCROLL   "
 
-.db $0C
-.asc "BLACK SCROLL  "
+UnidentifiedScrollName4:
+	.db $0C
+	.asc "BLACK SCROLL  "
 
-.db $0B
-.asc "CYAN SCROLL   "
+UnidentifiedScrollName5:
+	.db $0B
+	.asc "CYAN SCROLL   "
 
-.db $0C
-.asc "WHITE SCROLL  "
+UnidentifiedScrollName6:
+	.db $0C
+	.asc "WHITE SCROLL  "
 
-.db $0B
-.asc "PINK SCROLL   "
+UnidentifiedScrollName7:
+	.db $0B
+	.asc "PINK SCROLL   "
 
-.db $0D
-.asc "BRONZE SCROLL "
+UnidentifiedScrollName8:
+	.db $0D
+	.asc "BRONZE SCROLL "
 
-.db $0B
-.asc "GOLD SCROLL   "
+UnidentifiedScrollName9:
+	.db $0B
+	.asc "GOLD SCROLL   "
 
-.db $0D
-.asc "SILVER SCROLL "
+UnidentifiedScrollName10:
+	.db $0D
+	.asc "SILVER SCROLL "
 
-.db $0C
-.asc "GREEN SCROLL  "
+UnidentifiedScrollName11:
+	.db $0C
+	.asc "GREEN SCROLL  "
 
-.db $0C
-.asc "BROWN SCROLL  "
+UnidentifiedScrollName12:
+	.db $0C
+	.asc "BROWN SCROLL  "
 
-.db $0D
-.asc "PURPLE SCROLL "
+UnidentifiedScrollName13:
+	.db $0D
+	.asc "PURPLE SCROLL "
 
-.db $0B
-.asc "GREY SCROLL   "
+UnidentifiedScrollName14:
+	.db $0B
+	.asc "GREY SCROLL   "
 
-.db $0C
-.asc "MAUVE SCROLL  "
+UnidentifiedScrollName15:
+	.db $0C
+	.asc "MAUVE SCROLL  "
 
-.db $0D
-.asc "VIOLET SCROLL "
+UnidentifiedScrollName16:
+	.db $0D
+	.asc "VIOLET SCROLL "

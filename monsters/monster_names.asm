@@ -1,96 +1,128 @@
 ; Monster names are prefixed by a length byte
-.db $07
-.asc "   OOZE"
+MonsterName1:
+	.db $07
+	.asc "   OOZE"
 
-.db $0A
-.asc " SLIMETOAD"
+MonsterName2:
+	.db $0A
+	.asc " SLIMETOAD"
 
-.db $09
-.asc " SCORPION"
+MonsterName3:
+	.db $09
+	.asc " SCORPION"
 
-.db $07
-.asc "   KRAG"
+MonsterName4:
+	.db $07
+	.asc "   KRAG"
 
-.db $0A
-.asc " BLUE OOZE"
+MonsterName5:
+	.db $0A
+	.asc " BLUE OOZE"
 
-.db $09
-.asc " LOCHTOAD"
+MonsterName6:
+	.db $09
+	.asc " LOCHTOAD"
 
-.db $09
-.asc "  PHANTOM"
+MonsterName7:
+	.db $09
+	.asc "  PHANTOM"
 
-.db $07
-.asc "    ORB"
+MonsterName8:
+	.db $07
+	.asc "    ORB"
 
-.db $09
-.asc " RED OOZE"
+MonsterName9:
+	.db $09
+	.asc " RED OOZE"
 
-.db $0A
-.asc " BLOODTOAD"
+MonsterName10:
+	.db $0A
+	.asc " BLOODTOAD"
 
-.db $08
-.asc "   WITCH"
+MonsterName11:
+	.db $08
+	.asc "   WITCH"
 
-.db $07
-.asc "   MYST"
+MonsterName12:
+	.db $07
+	.asc "   MYST"
 
-.db $09
-.asc "  DEMIJAW"
+MonsterName13:
+	.db $09
+	.asc "  DEMIJAW"
 
-.db $08
-.asc "  KRAKEN"
+MonsterName14:
+	.db $08
+	.asc "  KRAKEN"
 
-.db $09
-.asc " SCORPIUS"
+MonsterName15:
+	.db $09
+	.asc " SCORPIUS"
 
-.db $0A
-.asc " KING KRAG"
+MonsterName16:
+	.db $0A
+	.asc " KING KRAG"
 
-.db $07
-.asc "   ROOT"
+MonsterName17:
+	.db $07
+	.asc "   ROOT"
 
-.db $0A
-.asc " RED SNAIL"
+MonsterName18:
+	.db $0A
+	.asc " RED SNAIL"
 
-.db $09
-.asc "  SPECTRE"
+MonsterName19:
+	.db $09
+	.asc "  SPECTRE"
 
-.db $0A
-.asc " BLOOD ORB"
+MonsterName20:
+	.db $0A
+	.asc " BLOOD ORB"
 
-.db $0A
-.asc "BLOOD ROOT"
+MonsterName21:
+	.db $0A
+	.asc "BLOOD ROOT"
 
-.db $0A
-.asc "BLUE SNAIL"
+MonsterName22:
+	.db $0A
+	.asc "BLUE SNAIL"
 
-.db $0A
-.asc " MAD WITCH"
+MonsterName23:
+	.db $0A
+	.asc " MAD WITCH"
 
-.db $0A
-.asc "DEATH MYST"
+MonsterName24:
+	.db $0A
+	.asc "DEATH MYST"
 
-.db $0A
-.asc "DEATH ROOT"
+MonsterName25:
+	.db $0A
+	.asc "DEATH ROOT"
 
-.db $0A
-.asc "KING SNAIL"
+MonsterName26:
+	.db $0A
+	.asc "KING SNAIL"
 
-.db $08
-.asc "  WRAITH"
+MonsterName27:
+	.db $08
+	.asc "  WRAITH"
 
-.db $0A
-.asc " DEATH ORB"
+MonsterName28:
+	.db $0A
+	.asc " DEATH ORB"
 
-.db $07
-.asc "   BLOB"
+MonsterName29:
+	.db $07
+	.asc "   BLOB"
 
-.db $08
-.asc "  KRAKOS"
+MonsterName30:
+	.db $08
+	.asc "  KRAKOS"
 
-.db $08
-.asc "  DRAGON"
+MonsterName31:
+	.db $08
+	.asc "  DRAGON"
 
-.db $09
-.asc " KAMELEON"
+MonsterName32:
+	.db $09
+	.asc " KAMELEON"

@@ -1,48 +1,64 @@
 ; Unidentified potions
-.db $0d
-.asc "YELLOW POTION "
+UnidentifiedPotionName1:
+	.db $0d
+	.asc "YELLOW POTION "
 
-.db $0a
-.asc "RED POTION    "
+UnidentifiedPotionName2:
+	.db $0a
+	.asc "RED POTION    "
 
-.db $0b
-.asc "BLUE POTION   "
+UnidentifiedPotionName3:
+	.db $0b
+	.asc "BLUE POTION   "
 
-.db $0c
-.asc "BLACK POTION  "
+UnidentifiedPotionName4:
+	.db $0c
+	.asc "BLACK POTION  "
 
-.db $0b
-.asc "CYAN POTION   "
+UnidentifiedPotionName5:
+	.db $0b
+	.asc "CYAN POTION   "
 
-.db $0c
-.asc "WHITE POTION  "
+UnidentifiedPotionName6:
+	.db $0c
+	.asc "WHITE POTION  "
 
-.db $0b
-.asc "PINK POTION   "
+UnidentifiedPotionName7:
+	.db $0b
+	.asc "PINK POTION   "
 
-.db $0e
-.asc "BRONZE POTION "
+UnidentifiedPotionName8:
+	.db $0e
+	.asc "BRONZE POTION "
 
-.db $0b
-.asc "GOLD POTION   "
+UnidentifiedPotionName9:
+	.db $0b
+	.asc "GOLD POTION   "
 
-.db $0d
-.asc "SILVER POTION "
+UnidentifiedPotionName10:
+	.db $0d
+	.asc "SILVER POTION "
 
-.db $0c
-.asc "GREEN POTION  "
+UnidentifiedPotionName11:
+	.db $0c
+	.asc "GREEN POTION  "
 
-.db $0c
-.asc "BROWN POTION  "
+UnidentifiedPotionName12:
+	.db $0c
+	.asc "BROWN POTION  "
 
-.db $0d
-.asc "PURPLE POTION "
+UnidentifiedPotionName13:
+	.db $0d
+	.asc "PURPLE POTION "
 
-.db $0b
-.asc "GREY POTION   "
+UnidentifiedPotionName14:
+	.db $0b
+	.asc "GREY POTION   "
 
-.db $0c
-.asc "MAUVE POTION  "
+UnidentifiedPotionName15:
+	.db $0c
+	.asc "MAUVE POTION  "
 
-.db $0c
-.asc "VIOLET POTION "
+UnidentifiedPotionName16:
+	.db $0c
+	.asc "VIOLET POTION "

@@ -1,35 +1,46 @@
 ; Light armors
-.db $04
-.asc "ROBE          "
+LightArmorName1:
+	.db $04
+	.asc "ROBE          "
 
-.db $0B
-.asc "LEATHERSUIT   "
+LightArmorName2:
+	.db $0B
+	.asc "LEATHERSUIT   "
 
-.db $08
-.asc "LAMELLAR      "
+LightArmorName3:
+	.db $08
+	.asc "LAMELLAR      "
 
 ; Medium armors
-.db $07
-.asc "CUIRASS       "
+MediumArmorName1:
+	.db $07
+	.asc "CUIRASS       "
 
-.db $0A
-.asc "CHAIN MAIL    "
+MediumArmorName2:
+	.db $0A
+	.asc "CHAIN MAIL    "
 
-.db $0B
-.asc "SCALE ARMOR   "
+MediumArmorName3:
+	.db $0B
+	.asc "SCALE ARMOR   "
 
 ; Heavy armors
-.db $0B
-.asc "PLATE ARMOR   "
+HeavyArmorName1:
+	.db $0B
+	.asc "PLATE ARMOR   "
 
-.db $0B
-.asc "BATTLE SUIT   "
+HeavyArmorName2:
+	.db $0B
+	.asc "BATTLE SUIT   "
 
-.db $0B
-.asc "DRAGON SUIT   "
+HeavyArmorName3:
+	.db $0B
+	.asc "DRAGON SUIT   "
 
-.db $0B
-.asc "MYSTIC SUIT   "
+HeavyArmorName4:
+	.db $0B
+	.asc "MYSTIC SUIT   "
 
-.db $0A
-.asc "POWER SUIT    "
+HeavyArmorName5:
+	.db $0A
+	.asc "POWER SUIT    "

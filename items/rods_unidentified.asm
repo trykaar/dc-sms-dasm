@@ -1,48 +1,64 @@
 ; Unidentified rods
-.db $0A
-.asc "YELLOW ROD    "
+UnidentifiedRodName1:
+	.db $0A
+	.asc "YELLOW ROD    "
 
-.db $07
-.asc "RED ROD       "
+UnidentifiedRodName2:
+	.db $07
+	.asc "RED ROD       "
 
-.db $08
-.asc "BLUE ROD      "
+UnidentifiedRodName3:
+	.db $08
+	.asc "BLUE ROD      "
 
-.db $09
-.asc "BLACK ROD     "
+UnidentifiedRodName4:
+	.db $09
+	.asc "BLACK ROD     "
 
-.db $08
-.asc "CYAN ROD      "
+UnidentifiedRodName5:
+	.db $08
+	.asc "CYAN ROD      "
 
-.db $09
-.asc "WHITE ROD     "
+UnidentifiedRodName6:
+	.db $09
+	.asc "WHITE ROD     "
 
-.db $08
-.asc "PINK ROD      "
+UnidentifiedRodName7:
+	.db $08
+	.asc "PINK ROD      "
 
-.db $0A
-.asc "BRONZE ROD    "
+UnidentifiedRodName8:
+	.db $0A
+	.asc "BRONZE ROD    "
 
-.db $08
-.asc "GOLD ROD      "
+UnidentifiedRodName9:
+	.db $08
+	.asc "GOLD ROD      "
 
-.db $0A
-.asc "SILVER ROD    "
+UnidentifiedRodName10:
+	.db $0A
+	.asc "SILVER ROD    "
 
-.db $09
-.asc "GREEN ROD     "
+UnidentifiedRodName11:
+	.db $09
+	.asc "GREEN ROD     "
 
-.db $09
-.asc "BROWN ROD     "
+UnidentifiedRodName12:
+	.db $09
+	.asc "BROWN ROD     "
 
-.db $0A
-.asc "PURPLE ROD    "
+UnidentifiedRodName13:
+	.db $0A
+	.asc "PURPLE ROD    "
 
-.db $08
-.asc "GREY ROD      "
+UnidentifiedRodName14:
+	.db $08
+	.asc "GREY ROD      "
 
-.db $09
-.asc "MAUVE ROD     "
+UnidentifiedRodName15:
+	.db $09
+	.asc "MAUVE ROD     "
 
-.db $0A
-.asc "VIOLET ROD    "
+UnidentifiedRodName16:
+	.db $0A
+	.asc "VIOLET ROD    "
