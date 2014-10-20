@@ -15401,6 +15401,14 @@ _LABEL_7B1C_:
 ; Data from E976 to EB3E (456 bytes)
 .incbin "data\dcsms_e976.inc"
 
+; Pointer table for in-game messages
+.include "text\game_messages_pointer_table.asm"
+
+; Does this continue the pointer table?
+; This points to data beyond the game message text
+.dw $B129 $B129 $B129 $B129 $B129 $B129 $B129 $B129 
+.dw $B129 $B129 $B129 $B129 $B129 $B129 
+
 ; In-game messages
 .include "text\game_messages.asm"
 
