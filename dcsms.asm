@@ -15496,14 +15496,23 @@ _LABEL_7B1C_:
 	ld (ix+23), $7C
 	ret
 
-; Data from 7B25 to 7FFF (1243 bytes)
+; Data from 7B25 to 7D05 (480 bytes)
 .incbin "data\dcsms_7b25.inc"
+
+; Empty data at the end of the bank
+.ds 746, $FF
+
+; ROM header (16 bytes)
+.include "rom_header.asm"
 
 .BANK 2
 .ORG $0000
 
-; Data from 8000 to BFFF (16384 bytes)
+; Data from 8000 to BF5F (16224 bytes)
 .incbin "data\dcsms_8000.inc"
+
+; Empty data at the end of the bank
+.ds 160, $FF
 
 .BANK 3
 .ORG $0000
@@ -15531,26 +15540,38 @@ _LABEL_7B1C_:
 ; In-game messages
 .include "text\game_messages.asm"
 
-; Data from F129 to FFFF (3798 bytes)
+; Data from F129 to FF5F (3638 bytes)
 .incbin "data\dcsms_f129.inc"
+
+; Empty data at the end of the bank
+.ds 160, $FF
 
 .BANK 4
 .ORG $0000
 
-; Data from 10000 to 13FFF (16384 bytes)
+; Data from 10000 to 13F5F (16224 bytes)
 .incbin "data\dcsms_10000.inc"
+
+; Empty data at the end of the bank
+.ds 160, $FF
 
 .BANK 5
 .ORG $0000
 
-; Data from 14000 to 17FFF (16384 bytes)
+; Data from 14000 to 17F5F (16224 bytes)
 .incbin "data\dcsms_14000.inc"
+
+; Empty data at the end of the bank
+.ds 160, $FF
 
 .BANK 6
 .ORG $0000
 
-; Data from 18000 to 1BFFF (16384 bytes)
+; Data from 18000 to 1BD15 (15637 bytes)
 .incbin "data\dcsms_18000.inc"
+
+; Empty data at the end of the bank
+.ds 746, $FF
 
 .BANK 7
 .ORG $0000
@@ -15573,5 +15594,8 @@ _LABEL_7B1C_:
 ; Monster names
 .include "monsters\monster_names.asm"
 
-; Data from 1F009 to 1FFFF (4088 bytes)
+; Data from 1F009 to 1F848 (2241 bytes)
 .incbin "data\dcsms_1f009.inc"
+
+; Empty data at the end of the bank
+.ds 1975, $FF
