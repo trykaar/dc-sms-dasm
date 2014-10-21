@@ -47,9 +47,20 @@ _LABEL_8_:
 	ei
 	ret
 
-; Data from 13 to 27 (21 bytes)
-.db $FF $FF $FF $FF $FF $F3 $7B $D3 $BF $7A $D3 $BF $FB $C9 $FF $FF
+; Data from 13 to 17 (5 bytes)
 .db $FF $FF $FF $FF $FF
+
+_LABEL_18_:
+	di
+	ld a, e
+	out (VDPControl), a
+	ld a, d
+	out (VDPControl), a
+	ei
+	ret
+
+; Data from 21 to 27 (7 bytes)
+.db $FF $FF $FF $FF $FF $FF $FF
 
 _LABEL_28_:
 	ld a, $E2
@@ -172,9 +183,7 @@ _LABEL_B9_:
 	ld a, $01				; If pressed, set $C0D6 to $01
 	ld ($C0D6), a
 	jp _LABEL_111_
-
-; Data from 110 to 110 (1 bytes)
-.db $C9
+	ret						; Unreachable
 
 _LABEL_111_:
 	call _LABEL_321_
@@ -191,8 +200,8 @@ _LABEL_111_:
 _LABEL_12A_:
 	ld hl, $017F
 CallJumpTable:
-	ld e, a				; Load index passed in a into lower byte
-	ld d, $00			; $00XX where XX is index
+	ld e, a					; Load index passed in a into lower byte
+	ld d, $00				; $00XX where XX is index
 	add hl, de
 	add hl, de
 	ld a, (hl)
@@ -940,8 +949,12 @@ _LABEL_623_:
 	djnz _LABEL_620_
 	ret
 
-; Data from 62C to 631 (6 bytes)
-.db $D3 $BE $00 $10 $FB $C9
+; Unused?
+_LABEL_62C_:
+	out ($BE), a
+	nop
+	djnz -5
+	ret
 
 _LABEL_632_:
 	rst $08	; _LABEL_8_
@@ -1074,16 +1087,119 @@ _LABEL_6C6_:
 	djnz _LABEL_697_
 	ret
 
-; Data from 6CB to 74F (133 bytes)
-.db $C5 $08 $CF $7E $D3 $BE $08 $18 $00 $D3 $BE $08 $23 $0D $20 $F3
-.db $08 $EB $01 $40 $00 $09 $EB $C1 $10 $E6 $C9 $C5 $DF $41 $0E $BE
-.db $ED $A2 $00 $18 $00 $ED $A2 $00 $20 $F6 $EB $01 $40 $00 $09 $7C
-.db $FE $3F $38 $02 $26 $38 $EB $C1 $10 $E1 $C9 $79 $83 $AB $CB $77
-.db $28 $D9 $79 $83 $E6 $3F $28 $D3 $08 $79 $83 $E6 $3F $ED $44 $81
-.db $4F $C5 $D5 $DF $41 $0E $BE $ED $A2 $00 $18 $00 $ED $A2 $00 $20
-.db $F6 $7B $E6 $C0 $5F $DF $08 $47 $08 $ED $A2 $00 $18 $00 $ED $A2
-.db $00 $20 $F6 $D1 $EB $01 $40 $00 $09 $7C $FE $3F $38 $02 $26 $38
-.db $EB $C1 $10 $CD $C9
+_LABEL_6CB_:
+	push bc
+	ex af, af'
+	rst $08	; _LABEL_8_
+_LABEL_6CE_:
+	ld a, (hl)
+	out ($BE), a
+	ex af, af'
+	jr _LABEL_6D4_
+
+_LABEL_6D4_:
+	out ($BE), a
+	ex af, af'
+	inc hl
+	dec c
+	jr nz, _LABEL_6CE_
+	ex af, af'
+	ex de, hl
+	ld bc, $0040
+	add hl, bc
+	ex de, hl
+	pop bc
+	djnz -26
+	ret
+
+_LABEL_6E6_:
+	push bc
+	rst $18	; _LABEL_18_
+	ld b, c
+	ld c, $BE
+_LABEL_6EB_:
+	ini
+	nop
+	jr _LABEL_6F0_
+
+_LABEL_6F0_:
+	ini
+	nop
+	jr nz, _LABEL_6EB_
+	ex de, hl
+	ld bc, $0040
+	add hl, bc
+	ld a, h
+	cp $3F
+	jr c, _LABEL_701_
+	ld h, $38
+_LABEL_701_:
+	ex de, hl
+	pop bc
+	djnz -31
+	ret
+
+_LABEL_706_:
+	ld a, c
+	add a, e
+	xor e
+	bit 6, a
+	jr z, _LABEL_6E6_
+	ld a, c
+	add a, e
+	and $3F
+	jr z, _LABEL_6E6_
+	ex af, af'
+	ld a, c
+	add a, e
+	and $3F
+	neg
+	add a, c
+	ld c, a
+_LABEL_71C_:
+	push bc
+	push de
+	rst $18	; _LABEL_18_
+	ld b, c
+	ld c, $BE
+_LABEL_722_:
+	ini
+	nop
+	jr _LABEL_727_
+
+_LABEL_727_:
+	ini
+	nop
+	jr nz, _LABEL_722_
+	ld a, e
+	and $C0
+	ld e, a
+	rst $18	; _LABEL_18_
+	ex af, af'
+	ld b, a
+	ex af, af'
+_LABEL_734_:
+	ini
+	nop
+	jr _LABEL_739_
+
+_LABEL_739_:
+	ini
+	nop
+	jr nz, _LABEL_734_
+	pop de
+	ex de, hl
+	ld bc, $0040
+	add hl, bc
+	ld a, h
+	cp $3F
+	jr c, _LABEL_74B_
+	ld h, $38
+_LABEL_74B_:
+	ex de, hl
+	pop bc
+	djnz _LABEL_71C_
+	ret
 
 _LABEL_750_:
 	ld de, $C060
@@ -1279,16 +1395,11 @@ _LABEL_82F_:
 	jp nz, _LABEL_820_
 	ret
 
-; These two files contain large unrolled loops of OUTI and LDI instructions
-; to improve performance.
+; These two files contain large unrolled loops of OUTI, LDI, and LDD
+; instructions to improve performance.
 .include "utils\outi.asm"
 .include "utils\ldi.asm"
-
-; Data from B3E to B7A (61 bytes)
-.db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8
-.db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8
-.db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8
-.db $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $ED $A8 $C9
+.include "utils\ldd.asm"
 
 ; $B7B Get Random Number
 GetRandomNumber:
@@ -2006,8 +2117,12 @@ _LABEL_11A0_:
 	call _LABEL_2DAD_
 	jp _LABEL_143_
 
-; Data from 11C8 to 11D2 (11 bytes)
-.db $CD $2C $04 $3E $0B $32 $18 $C0 $C3 $43 $01
+; Unreachable?
+_LABEL_11C8_:
+	call _LABEL_42C_
+	ld a, $0B
+	ld (TableIndex1), a
+	jp _LABEL_143_
 
 ; Just the "Game" from "Game Over"- is Game used elsewhere?
 .include "text\game_over_screen_1.asm"
@@ -3004,6 +3119,7 @@ _LABEL_1BD5_:
 	ld (TableIndex1), a
 	jp _LABEL_143_
 
+; Code or data?
 ; Data from 1C78 to 1CA7 (48 bytes)
 .db $49 $B2 $49 $B3 $49 $B4 $49 $B5 $49 $B6 $49 $B7 $09 $B0 $C9 $B0
 .db $89 $B1 $09 $B0 $89 $B1 $C9 $B0 $01 $01 $01 $10 $08 $04 $02 $12
@@ -5658,9 +5774,7 @@ _LABEL_2E27_:
 	ld a, $02
 	ld ($CA0B), a
 	ret
-
-; Data from 2E68 to 2E68 (1 bytes)
-.db $C9
+	ret									; Unreachable ret
 
 _LABEL_2E69_:
 	ret
@@ -7246,8 +7360,13 @@ _LABEL_3A25_:
 _LABEL_3A37_:
 	jp _LABEL_3F1A_
 
-; Data from 3A3A to 3AAB (114 bytes)
-.db $04 $02 $08 $06 $04 $02 $03 $01 $04 $02 $0D $0B $04 $02 $12 $10
+; Data from 3A3A to 3A49 (16 bytes)
+.db $04 $02 $08 $06
+.db $04 $02 $03 $01
+.db $04 $02 $0D $0B
+.db $04 $02 $12 $10
+
+; Data from 3A50 to 3AAB (98 bytes)
 .db $01 $00 $02 $00 $06 $00 $0A $00 $03 $00 $06 $00 $01 $00 $08 $00
 .db $05 $00 $0A $00 $19 $00 $30 $00 $0C $00 $20 $00 $14 $00 $16 $00
 .db $2C $00 $3E $00 $48 $00 $34 $00 $4E $00 $6E $00 $3C $00 $96 $00
