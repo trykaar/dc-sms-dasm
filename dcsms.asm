@@ -1957,7 +1957,7 @@ _LABEL_1034_:
 	call LDI36
 	jp _LABEL_48F0_
 
-.include "text\init.asm"
+.include "ui\init.asm"
 
 ; 9th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1058_:
@@ -2125,7 +2125,7 @@ _LABEL_11C8_:
 	jp _LABEL_143_
 
 ; Just the "Game" from "Game Over"- is Game used elsewhere?
-.include "text\game_over_screen_1.asm"
+.include "ui\game_over_screen_1.asm"
 
 ; 12th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_11DB_:
@@ -2680,7 +2680,7 @@ _LABEL_160C_:
 	out (VDPData), a
 	ret
 
-.include "text\ending.asm"
+.include "ui\ending.asm"
 
 ; Data at 16F3 (1 byte)
 .db $FF
@@ -2959,9 +2959,9 @@ _LABEL_194C_:
 .db $57 $07 $57 $07 $57 $07 $54 $07 $54 $01 $57 $01 $57 $01 $57 $01
 .db $56 $07 $56 $01 $57 $07 $57 $07 $57 $07 $54 $07
 
-.include "text\hud.asm"
+.include "ui\hud.asm"
 
-.include "text\character_classes.asm"
+.include "ui\character_classes.asm"
 
 ; 18th entry of Jump Table from 17F (indexed by TableIndex1)
 _LABEL_1B20_:
@@ -15583,7 +15583,7 @@ _LABEL_7B1C_:
 .incbin "sound\sound_data.inc"
 
 ; Game over screen text
-.include "text\game_over_screen_2.asm"
+.include "ui\game_over_screen_2.asm"
 
 ; Pointer table for monster names
 .include "monsters\monster_name_pointer_table.asm"
@@ -15599,7 +15599,7 @@ _LABEL_7B1C_:
 .incbin "data\dcsms_1f009.inc"
 
 ; End credits
-.include "text\credits.asm"
+.include "ui\credits.asm"
 
 ; Empty data at the end of the bank
 .ds 1975, $FF
