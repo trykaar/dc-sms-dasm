@@ -15594,8 +15594,12 @@ _LABEL_7B1C_:
 ; Monster names
 .include "monsters\monster_names.asm"
 
-; Data from 1F009 to 1F848 (2241 bytes)
+; Data from 1F009 to 1F249 (576 bytes)
+; This looks like blocks, possibly the windows that pop up for item actions?
 .incbin "data\dcsms_1f009.inc"
+
+; End credits
+.include "text\credits.asm"
 
 ; Empty data at the end of the bank
 .ds 1975, $FF
