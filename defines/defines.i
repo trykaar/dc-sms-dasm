@@ -27,13 +27,13 @@
 
 ; Jump Tables
 .define TableIndex1				$C018	; Table at $17F
-.define TableIndex2				$C011	; Table at $1D1
+.define VBlankAction			$C011	; Table at $1D1
 .define TableIndex3				$C0A0	; Table at $4ED
 ; Table at $2012 index not yet known
 ; Additional tables start at $25FB? Odd format, possibly a single table
 ; Table at $3CC0 index not yet known
 ; Table at $3E68 index not yet known
-.define TableIndex7				$C438	; Table at $4CB4
+.define TableIndex8				$C438	; Table at $4CB4
 
 .define WeaponHit 				$C617
 .define WeaponPW 				$C618

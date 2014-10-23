@@ -31,13 +31,14 @@ BANKS 6
 .BANK 0 SLOT 0
 .ORG $0000
 
-Start:
+Origin:
 	jp Initialize
 
-; Data from 3 to 7 (5 bytes)
-.db $FF $FF $FF $FF $FF
+; Empty space
+.ds 5, $FF
 
-_LABEL_8_:
+.org $0008
+Interrupt8:
 	di
 	ld a, e
 	out (VDPControl), a
@@ -47,10 +48,11 @@ _LABEL_8_:
 	ei
 	ret
 
-; Data from 13 to 17 (5 bytes)
-.db $FF $FF $FF $FF $FF
+; Empty space
+.ds 5, $FF
 
-_LABEL_18_:
+.org $0018
+Interrupt18:
 	di
 	ld a, e
 	out (VDPControl), a
@@ -59,26 +61,29 @@ _LABEL_18_:
 	ei
 	ret
 
-; Data from 21 to 27 (7 bytes)
-.db $FF $FF $FF $FF $FF $FF $FF
+; Empty space
+.ds 7, $FF
 
-_LABEL_28_:
+.org $0028
+Interrupt28:
 	ld a, $E2
 	jp _LABEL_3B_
 
-; Data from 2D to 2F (3 bytes)
-.db $FF $FF $FF
+; Empty space
+.ds 3, $FF
 
-_LABEL_30_:
+.org $0030
+Interrupt30:
 	ld a, $A2
 	jp _LABEL_3B_
 
-; Data from 35 to 37 (3 bytes)
-.db $FF $FF $FF
+; Empty space
+.ds 3, $FF
 
-; VBLANK
-_LABEL_38_:
-	jp _HANDLE_VBLANK
+; Interrupt $38 is VBLANK
+.org $0038
+VBlank:
+	jp VBlankHandler
 
 _LABEL_3B_:
 	out (VDPControl), a
@@ -87,13 +92,17 @@ _LABEL_3B_:
 	ret
 
 ; Data from 42 to 65 (36 bytes)
-.db $26 $80 $A2 $81 $FF $82 $FF $83 $FF $84 $FF $85 $FB $86 $00 $87
-.db $00 $88 $00 $89 $00 $8A $FF $FF $FF $FF $FF $FF $FF $FF $FF $FF
-.db $FF $FF $FF $FF
+Data_42:
+	.db $26 $80 $A2 $81 $FF $82 $FF $83
+	.db $FF $84 $FF $85 $FB $86 $00 $87
+	.db $00 $88 $00 $89 $00 $8A
+
+; Empty space
+.ds 14, $FF
 
 ; Pause handler- must be at $0066
 .org $0066
-PAUSE_HANDLER:
+PauseHandler:
 	push af
 	ld a, ($C019)
 	cp $0A
@@ -134,7 +143,7 @@ WaitForLineB0:
 	cp $B0					; Is it $B0?
 	jr nz, WaitForLineB0	; If not, go back and wait
 	xor a					; Zero out a
-	out (VDPControl), a			; Write $C000 out to the VDP, set address to VDP $00000
+	out (VDPControl), a		; Write $C000 out to the VDP, set address to VDP $00000
 	ld a, $C0
 	out (VDPControl), a
 	xor a					; Zero out a again
@@ -154,7 +163,7 @@ _LABEL_B9_:
 	in a, (VDPControl)		; Clear VDP status flags by reading from port
 	ld b, $16				; Read $16 from $0042 and output to VDPControl
 	ld c, VDPControl
-	ld hl, $0042
+	ld hl, Data_42
 	otir
 	ld hl, $C100			; Zero out $C100-D000
 	ld de, $C101
@@ -166,7 +175,7 @@ _LABEL_B9_:
 	ld bc, $02EF
 	ld (hl), $00
 	ldir
-	rst $30					; _LABEL_30_- write $A2, $81 to VDPControl
+	rst $30					; Interrupt30- write $A2, $81 to VDPControl
 	call _LABEL_771_		; Initializes more memory, sets a flag in $C01E
 	call _LABEL_59D_		; Some sort of display? Title screen, maybe?
 	ld a, $FF
@@ -198,7 +207,7 @@ _LABEL_111_:
 	jr z, _LABEL_12A_
 	ld ($C019), a
 _LABEL_12A_:
-	ld hl, $017F
+	ld hl, JumpTable1
 CallJumpTable:
 	ld e, a					; Load index passed in a into lower byte
 	ld d, $00				; $00XX where XX is index
@@ -212,42 +221,42 @@ CallJumpTable:
 
 _LABEL_137_:
 	ld a, $01
-	ld (TableIndex2), a
+	ld (VBlankAction), a
 _LABEL_13C_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	or a
 	jr nz, _LABEL_13C_
 	ret
 
 _LABEL_143_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	or a
 	jr nz, _LABEL_143_
 	ld a, $02
-	ld (TableIndex2), a
+	ld (VBlankAction), a
 _LABEL_14E_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	cp $02
 	jr z, _LABEL_14E_
 	ret
 
 _LABEL_156_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	or a
 	jr nz, _LABEL_156_
 	ld a, $04
-	ld (TableIndex2), a
+	ld (VBlankAction), a
 _LABEL_161_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	cp $04
 	jr z, _LABEL_161_
 	ret
 
 _LABEL_169_:
 	ld a, $06
-	ld (TableIndex2), a
+	ld (VBlankAction), a
 _LABEL_16E_:
-	ld a, (TableIndex2)
+	ld a, (VBlankAction)
 	or a
 	jr nz, _LABEL_16E_
 	ret
@@ -261,17 +270,21 @@ _LABEL_175_:
 	ret
 
 ; Jump Table from 17F to 1AE (24 entries, indexed by TableIndex1)
-.dw _LABEL_BD7_ _LABEL_BD7_ _LABEL_BEA_ _LABEL_C6D_ SetUpGameAutoplay $0000 _LABEL_F4C_ _LABEL_F4C_
-.dw _LABEL_1058_ _LABEL_1127_ _LABEL_11A0_ _LABEL_11DB_ _LABEL_1424_ _LABEL_1435_ _LABEL_152F_ _LABEL_16F4_
-.dw _LABEL_192B_ _LABEL_1B20_ _LABEL_1CA8_ _LABEL_1CD0_ _LABEL_1D11_ _LABEL_1D4B_ _LABEL_153B_ _LABEL_1566_
+JumpTable1:
+	.dw JumpTable1_BD7    JumpTable1_BD7  JumpTable1_BEA  JumpTable1_C6D
+	.dw SetUpGameAutoplay Origin          JumpTable1_F4C  JumpTable1_F4C
+	.dw JumpTable1_1058   JumpTable1_1127 JumpTable1_11A0 JumpTable1_11DB
+	.dw JumpTable1_1424   JumpTable1_1435 JumpTable1_152F JumpTable1_16F4
+	.dw JumpTable1_192B   JumpTable1_1B20 JumpTable1_1CA8 JumpTable1_1CD0
+	.dw JumpTable1_1D11   JumpTable1_1D4B JumpTable1_153B JumpTable1_1566
 
-_HANDLE_VBLANK:
+VBlankHandler:
 	push af
 	in a, (VDPControl)
 	and $80
 	jp z, _LABEL_2D1_
-	ld a, ($FFFF)
-	push af
+	ld a, ($FFFF)			; Save current mapper value
+	push af					; Save registers
 	push bc
 	push de
 	push hl
@@ -283,17 +296,19 @@ _HANDLE_VBLANK:
 	push hl
 	push ix
 	push iy
-	ld a, (TableIndex2)
-	ld hl, $01D1
+	ld a, (VBlankAction)
+	ld hl, VBlankActionTable
 	jp CallJumpTable
 
-; Jump Table from 1D1 to 1E6 (11 entries, indexed by TableIndex2)
-.dw _LABEL_1E7_ _LABEL_20E_ _LABEL_22F_ _LABEL_26B_ _LABEL_275_ _LABEL_29D_ _LABEL_2AC_ _LABEL_1E7_
-.dw _LABEL_1E7_ _LABEL_1E7_ _LABEL_1E7_
+; Jump Table from 1D1 to 1E6 (11 entries, indexed by VBlankAction)
+VBlankActionTable:
+	.dw VBlankUpdateSound     VBlankActionTable_20E VBlankActionTable_22F VBlankActionTable_26B
+	.dw VBlankActionTable_275 VBlankActionTable_29D VBlankActionTable_2AC VBlankUpdateSound
+	.dw VBlankUpdateSound     VBlankUpdateSound     VBlankUpdateSound
 
-; 1st entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_1E7_:
-	ld hl, $01FA
+; 1st entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankUpdateSound:
+	ld hl, EndVBlank
 	push hl
 	ld a, $07
 	ld ($FFFF), a
@@ -302,7 +317,7 @@ _LABEL_1E7_:
 	jp nz, SilencePSG
 	jp UpdateAllSound
 
-_LABEL_1FA_:
+EndVBlank:
 	pop iy
 	pop ix
 	pop hl
@@ -320,8 +335,8 @@ _LABEL_1FA_:
 	ei
 	ret
 
-; 2nd entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_20E_:
+; 2nd entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_20E:
 	call _LABEL_308_
 	call _LABEL_2DD_
 	call _LABEL_2E9_
@@ -334,11 +349,11 @@ _LABEL_219_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld (TableIndex2), a
-	jr _LABEL_1E7_
+	ld (VBlankAction), a
+	jr VBlankUpdateSound
 
-; 3rd entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_22F_:
+; 3rd entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_22F:
 	call _LABEL_308_
 	call _LABEL_2DD_
 	call _LABEL_2E9_
@@ -356,24 +371,24 @@ _LABEL_22F_:
 	ld a, (PlayerSpeed)		; Get player speed
 	or a					; Is player speed slow ($00)?
 	jr nz, _LABEL_263_		; If not (speed is fast/$FF), go here
-	ld hl, TableIndex2
+	ld hl, VBlankAction
 	inc (hl)
-	jp _LABEL_1E7_
+	jp VBlankUpdateSound
 
 _LABEL_263_:
-	ld hl, TableIndex2
+	ld hl, VBlankAction
 	ld (hl), $00
-	jp _LABEL_1E7_
+	jp VBlankUpdateSound
 
-; 4th entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_26B_:
+; 4th entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_26B:
 	call _LABEL_308_
 	xor a
-	ld (TableIndex2), a
-	jp _LABEL_1E7_
+	ld (VBlankAction), a
+	jp VBlankUpdateSound
 
-; 5th entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_275_:
+; 5th entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_275:
 	ld a, $00
 	out (VDPControl), a
 	ld a, $88
@@ -389,22 +404,22 @@ _LABEL_285_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld hl, TableIndex2
+	ld hl, VBlankAction
 	inc (hl)
-	jp _LABEL_1E7_
+	jp VBlankUpdateSound
 
-; 6th entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_29D_:
+; 6th entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_29D:
 	ld a, $00
 	out (VDPControl), a
 	ld a, $88
 	out (VDPControl), a
 	xor a
-	ld (TableIndex2), a
-	jp _LABEL_1E7_
+	ld (VBlankAction), a
+	jp VBlankUpdateSound
 
-; 7th entry of Jump Table from 1D1 (indexed by TableIndex2)
-_LABEL_2AC_:
+; 7th entry of Jump Table from 1D1 (indexed by VBlankAction)
+VBlankActionTable_2AC:
 	ld a, ($C0D2)
 	out (VDPControl), a
 	ld a, $89
@@ -419,8 +434,8 @@ _LABEL_2BA_:
 	xor a
 	ld ($C01E), a
 	ld ($C01F), a
-	ld (TableIndex2), a
-	jp _LABEL_1E7_
+	ld (VBlankAction), a
+	jp VBlankUpdateSound
 
 _LABEL_2D1_:
 	ld a, ($C0B7)
@@ -437,11 +452,11 @@ _LABEL_2DD_:
 	ret z
 	dec a
 	jr z, _LABEL_2E7_
-	rst $28	; _LABEL_28_
+	rst $28	; Interrupt28
 	ret
 
 _LABEL_2E7_:
-	rst $30	; _LABEL_30_
+	rst $30	; Interrupt30
 	ret
 
 _LABEL_2E9_:
@@ -539,7 +554,7 @@ _LABEL_384_:
 	ld (AutoplayVar3), a
 _LABEL_38E_:
 	ld a, (AutoplayDirection)
-	ld hl, $03DE
+	ld hl, Data_3DE
 	ld b, $04
 _LABEL_396_:
 	rrca
@@ -590,6 +605,7 @@ _LABEL_3CD_:
 	jp _LABEL_38E_
 
 ; Data from 3DE to 3E5 (8 bytes)
+Data_3DE:
 .db $E0 $FF $20 $00 $FF $FF $01 $00
 
 _LABEL_3E6_:
@@ -645,7 +661,8 @@ _LABEL_42C_:
 	ret
 
 ; Data from 440 to 442 (3 bytes)
-.db $CD $50 $07
+Data_440:
+	.db $CD $50 $07
 
 _LABEL_443_:
 	ld a, $03
@@ -737,14 +754,16 @@ _LABEL_4DC_:
 
 _LABEL_4E4_:
 	ld a, (TableIndex3)			; Call func in jumptable based on TableIndex3
-	ld hl, $04ED
+	ld hl, JumpTable3
 	jp CallJumpTable
 
 ; Jump Table from 4ED to 4FA (7 entries, indexed by TableIndex3)
-.dw $0000 _LABEL_4FB_ _LABEL_504_ _LABEL_539_ _LABEL_542_ _LABEL_580_ _LABEL_589_
+JumpTable3:
+	.dw Origin         JumpTable3_4FB JumpTable3_504 JumpTable3_539
+	.dw JumpTable3_542 JumpTable3_580 JumpTable3_589
 
 ; 2nd entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_4FB_:
+JumpTable3_4FB:
 	ld a, ($C0A1)
 	ld d, a
 	ld a, $03
@@ -752,7 +771,7 @@ _LABEL_4FB_:
 	jr _LABEL_507_
 
 ; 3rd entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_504_:
+JumpTable3_504:
 	ld a, ($C0A1)
 _LABEL_507_:
 	ld c, a
@@ -795,7 +814,7 @@ _LABEL_531_:
 	ret
 
 ; 4th entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_539_:
+JumpTable3_539:
 	ld a, ($C0A1)
 	ld d, a
 	ld a, $03
@@ -803,7 +822,7 @@ _LABEL_539_:
 	jr _LABEL_545_
 
 ; 5th entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_542_:
+JumpTable3_542:
 	ld a, ($C0A1)
 _LABEL_545_:
 	ld c, a
@@ -849,7 +868,7 @@ _LABEL_578_:
 	ret
 
 ; 6th entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_580_:
+JumpTable3_580:
 	ld a, ($C0A1)
 	ld d, a
 	ld a, $03
@@ -857,7 +876,7 @@ _LABEL_580_:
 	jr _LABEL_58C_
 
 ; 7th entry of Jump Table from 4ED (indexed by TableIndex3)
-_LABEL_589_:
+JumpTable3_589:
 	ld a, ($C0A1)
 _LABEL_58C_:
 	ld c, a
@@ -915,7 +934,7 @@ _LABEL_5DE_:
 	ret
 
 _LABEL_608_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	inc b
 _LABEL_60A_:
 	ld a, b
@@ -931,7 +950,7 @@ _LABEL_60E_:
 
 _LABEL_618_:
 	ex af, af'
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ex af, af'
 	inc b
 	push bc
@@ -957,7 +976,7 @@ _LABEL_62C_:
 	ret
 
 _LABEL_632_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	inc b
 	ld d, c
 	ld c, VDPData
@@ -982,7 +1001,7 @@ _LABEL_644_:
 	ret
 
 _LABEL_64C_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	push bc
 	ld b, c
 	ld c, VDPData
@@ -999,7 +1018,7 @@ _LABEL_651_:
 	ret
 
 _LABEL_661_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	push bc
 	ld b, c
 	ld c, VDPData
@@ -1045,7 +1064,7 @@ _LABEL_681_:
 _LABEL_697_:
 	push bc
 	push de
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld b, c
 	ld c, VDPData
 _LABEL_69D_:
@@ -1060,7 +1079,7 @@ _LABEL_6A2_:
 	ld a, e
 	and $C0
 	ld e, a
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ex af, af'
 	ld b, a
 	ex af, af'
@@ -1090,7 +1109,7 @@ _LABEL_6C6_:
 _LABEL_6CB_:
 	push bc
 	ex af, af'
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 _LABEL_6CE_:
 	ld a, (hl)
 	out ($BE), a
@@ -1114,7 +1133,7 @@ _LABEL_6D4_:
 
 _LABEL_6E6_:
 	push bc
-	rst $18	; _LABEL_18_
+	rst $18	; Interrupt18
 	ld b, c
 	ld c, $BE
 _LABEL_6EB_:
@@ -1159,7 +1178,7 @@ _LABEL_706_:
 _LABEL_71C_:
 	push bc
 	push de
-	rst $18	; _LABEL_18_
+	rst $18	; Interrupt18
 	ld b, c
 	ld c, $BE
 _LABEL_722_:
@@ -1174,7 +1193,7 @@ _LABEL_727_:
 	ld a, e
 	and $C0
 	ld e, a
-	rst $18	; _LABEL_18_
+	rst $18	; Interrupt18
 	ex af, af'
 	ld b, a
 	ex af, af'
@@ -1245,7 +1264,7 @@ _LABEL_784_:
 	ld c, VDPData
 	jp OUTI32
 
-_LABEL_793_:
+DecompressToVDP:
 	ld a, (hl)
 	inc hl
 	exx
@@ -1279,7 +1298,7 @@ _LABEL_7AA_:
 	and $7F
 	ld b, a
 _LABEL_7B6_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ex (sp), hl
 	ex (sp), hl
 	jr _LABEL_7BB_
@@ -1304,7 +1323,7 @@ _LABEL_7C3_:
 	inc hl
 	jp _LABEL_7AA_
 
-_LABEL_7D3_:
+DecompressToRAM:
 	ld a, (hl)
 	inc hl
 	exx
@@ -1367,7 +1386,7 @@ _LABEL_814_:
 _LABEL_817_:
 	exx
 	ld ($C0CC), a
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, (hl)
 	inc hl
 	ld b, (hl)
@@ -1442,9 +1461,11 @@ _LABEL_BA3_:
 	di
 	jp _LABEL_59D_
 
-; Data from BB2 to BC7 (22 bytes)
-.db $3E $0F $11 $00 $2B $21 $D8 $80 $C3 $14 $08 $3E $0F $11 $00 $30
-.db $21 $86 $80 $C3 $14 $08
+; Data from BB2 to BC7 (22 bytes) - Unused?
+Data_BB2:
+	.db $3E $0F $11 $00 $2B $21 $D8 $80
+	.db $C3 $14 $08 $3E $0F $11 $00 $30
+	.db $21 $86 $80 $C3 $14 $08
 
 _LABEL_BC8_:
 	xor a
@@ -1458,7 +1479,7 @@ _LABEL_BC8_:
 	ret
 
 ; 1st entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_BD7_:
+JumpTable1_BD7:
 	call _LABEL_B9A_
 	ld a, $26
 	out (VDPControl), a
@@ -1469,7 +1490,7 @@ _LABEL_BD7_:
 	jp _LABEL_137_
 
 ; 3rd entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_BEA_:
+JumpTable1_BEA:
 	call _LABEL_B9A_
 	ld a, $07
 	ld ($FFFF), a
@@ -1483,19 +1504,19 @@ _LABEL_BEA_:
 	ld ($FFFF), a
 	ld hl, $8B6E
 	ld de, $2000
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $99B4
 	ld de, $0000
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $8934
 	ld de, $3500
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $878D
 	ld de, $1A00
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $80D6
 	ld de, $CB00
-	call _LABEL_7D3_
+	call DecompressToRAM
 	ld hl, $CB00
 	ld de, $3886
 	ld bc, $0A36
@@ -1518,7 +1539,7 @@ _LABEL_BEA_:
 	jp _LABEL_137_
 
 ; 4th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_C6D_:
+JumpTable1_C6D:
 	call _LABEL_137_
 	ld a, ($C00D)
 	and $30
@@ -1649,7 +1670,7 @@ _LABEL_D81_:
 	ld ($FFFF), a
 	ld hl, $8466
 	ld de, $1400
-	call _LABEL_793_
+	call DecompressToVDP
 	ld (ix+2), $01
 	ld (ix+3), $BD
 	ld (ix+15), $00
@@ -1798,8 +1819,10 @@ _LABEL_ED7_:
 	ret
 
 ; Data from EE0 to EF2 (19 bytes)
-.db $B9 $BA $BB $BC $BB $BA $B9 $00 $C1 $C0 $BF $BE $BF $C0 $C1 $C2
-.db $C1 $C2 $C1
+Data_EE0:
+	.db $B9 $BA $BB $BC $BB $BA $B9 $00
+	.db $C1 $C0 $BF $BE $BF $C0 $C1 $C2
+	.db $C1 $C2 $C1
 
 ; 5th entry of Jump Table from 17F (indexed by TableIndex1)
 SetUpGameAutoplay:
@@ -1838,7 +1861,7 @@ SetUpGameAutoplay:
 	jp _LABEL_137_
 
 ; 7th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_F4C_:
+JumpTable1_F4C:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -1957,10 +1980,11 @@ _LABEL_1034_:
 	call LDI36
 	jp _LABEL_48F0_
 
+; Text "INIT"
 .include "ui\init.asm"
 
 ; 9th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1058_:
+JumpTable1_1058:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -1975,7 +1999,7 @@ _LABEL_1058_:
 	call _LABEL_80D_
 	ld hl, $8000
 	ld de, $2A80
-	call _LABEL_793_
+	call DecompressToVDP
 	ld a, (Floor)
 	dec a
 	jr z, _LABEL_108F_
@@ -2017,7 +2041,7 @@ _LABEL_108F_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $1123
+	ld hl, Data_1123
 	add hl, de
 	ld de, $C077
 	ldi
@@ -2046,10 +2070,11 @@ _LABEL_110A_:
 	jp _LABEL_143_
 
 ; Data from 1123 to 1126 (4 bytes)
-.db $0C $03 $30 $33
+Data_1123:
+	.db $0C $03 $30 $33
 
 ; 10th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1127_:
+JumpTable1_1127:
 	call _LABEL_B9A_
 	call _LABEL_BC8_
 	ld a, $02
@@ -2085,7 +2110,7 @@ _LABEL_1127_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $1123
+	ld hl, Data_1123
 	add hl, de
 	ld a, (hl)
 	ld ($C077), a
@@ -2100,7 +2125,7 @@ _LABEL_1127_:
 	jp _LABEL_143_
 
 ; 11th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_11A0_:
+JumpTable1_11A0:
 	call _LABEL_3EE_
 	ld a, $02
 	ld ($FFFF), a
@@ -2128,7 +2153,7 @@ _LABEL_11C8_:
 .include "ui\game_over_screen_1.asm"
 
 ; 12th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_11DB_:
+JumpTable1_11DB:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -2152,17 +2177,17 @@ _LABEL_11DB_:
 	ld ($FFFF), a
 	ld hl, $ACC7
 	ld de, $1800
-	call _LABEL_793_
+	call DecompressToVDP
 	ld a, $06
 	ld ($FFFF), a
 	ld hl, $99B4
 	ld de, $0000
-	call _LABEL_793_
+	call DecompressToVDP
 	ld a, ($C01D)
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $142D
+	ld hl, Data_142D
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -2174,7 +2199,7 @@ _LABEL_11DB_:
 	ld a, $07
 	ld ($FFFF), a
 	ld de, $3964
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
 	ld hl, $19AA
@@ -2185,7 +2210,7 @@ _LABEL_1256_:
 	ld c, VDPData
 	call OUTI22
 	ld de, $3A24
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $1990
 	call OUTI8
@@ -2203,7 +2228,7 @@ _LABEL_1256_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3AE4
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $AE3B
 	call OUTI10
@@ -2228,7 +2253,7 @@ _LABEL_1298_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3B8C
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld a, ($C63F)
 	cp $FE
@@ -2346,17 +2371,17 @@ _LABEL_131F_:
 	jr c, _LABEL_13B9_
 	ld (MoneyMid), hl
 	ld de, $3C90
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $AE45
 	call OUTI16
 	ld de, $3CAA
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $AE55
 	call OUTI6
 	ld de, $3D2A
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $AE5B
 	call OUTI4
@@ -2365,7 +2390,7 @@ _LABEL_131F_:
 	ld a, $C4
 	ld ($C103), a
 	ld de, $1400
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, ($C908)
 	cp $13
 	jr c, _LABEL_13A4_
@@ -2426,7 +2451,7 @@ _LABEL_13BF_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $1123
+	ld hl, Data_1123
 	add hl, de
 	ld de, $C08E
 	ldi
@@ -2443,16 +2468,17 @@ _LABEL_13BF_:
 	jp _LABEL_137_
 
 ; 13th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1424_:
+JumpTable1_1424:
 	call _LABEL_3EE_
 	call _LABEL_1D60_
 	jp _LABEL_137_
 
 ; Data from 142D to 1434 (8 bytes)
-.db $E6 $81 $26 $83 $C6 $83 $86 $82
+Data_142D:
+	.db $E6 $81 $26 $83 $C6 $83 $86 $82
 
 ; 14th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1435_:
+JumpTable1_1435:
 	call _LABEL_B9A_
 	ld a, $01
 	ld ($C014), a
@@ -2475,12 +2501,12 @@ _LABEL_1435_:
 	ld ($FFFF), a
 	ld hl, $99B4
 	ld de, $0000
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $A63A
 	ld de, $1C00
-	call _LABEL_793_
+	call DecompressToVDP
 	ld de, $1200
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, ($C908)
 	cp $13
 	jr c, _LABEL_149F_
@@ -2509,7 +2535,7 @@ _LABEL_14A7_:
 	call OUTI128
 	ex de, hl
 	ld de, $1400
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	call OUTI128
 	call OUTI128
 	call OUTI128
@@ -2519,7 +2545,7 @@ _LABEL_14A7_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $151F
+	ld hl, Data_151F
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -2543,7 +2569,7 @@ _LABEL_14A7_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $1123
+	ld hl, Data_1123
 	add hl, de
 	ld de, $C077
 	ldi
@@ -2562,17 +2588,19 @@ _LABEL_14A7_:
 	jp _LABEL_137_
 
 ; Data from 151F to 152E (16 bytes)
-.db $E6 $81 $26 $80 $86 $82 $42 $80 $26 $83 $5E $80 $C6 $83 $7A $80
+Data_151F:
+	.db $E6 $81 $26 $80 $86 $82 $42 $80
+	.db $26 $83 $5E $80 $C6 $83 $7A $80
 
 ; 15th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_152F_:
+JumpTable1_152F:
 	call _LABEL_3EE_
 	call _LABEL_1D60_
 	call _LABEL_137_
 	jp _LABEL_137_
 
 ; 23rd entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_153B_:
+JumpTable1_153B:
 	ld a, $A7
 	out (VDPControl), a
 	ld a, $8A
@@ -2594,7 +2622,7 @@ _LABEL_153B_:
 	ret
 
 ; 24th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1566_:
+JumpTable1_1566:
 	ld a, ($C0B7)
 	neg
 	ld d, a
@@ -2654,7 +2682,7 @@ _LABEL_15DF_:
 	ld hl, $3D40
 	add hl, de
 	ex de, hl
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, ($C0B8)
 	ld a, (hl)
 	cp $FF
@@ -2686,7 +2714,7 @@ _LABEL_160C_:
 .db $FF
 
 ; 16th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_16F4_:
+JumpTable1_16F4:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -2707,7 +2735,7 @@ _LABEL_16F4_:
 	call _LABEL_80D_
 	ld hl, $8000
 	ld de, $2A80
-	call _LABEL_793_
+	call DecompressToVDP
 	ld de, $0B00
 	ld hl, $80D8
 	call _LABEL_80D_
@@ -2716,10 +2744,10 @@ _LABEL_16F4_:
 	call _LABEL_80D_
 	ld de, $2020
 	ld hl, $97AD
-	call _LABEL_793_
+	call DecompressToVDP
 	ld de, $0040
 	ld hl, $9668
-	call _LABEL_793_
+	call DecompressToVDP
 	ld de, $38CA
 	ld hl, $9A18
 	ld bc, $022C
@@ -2757,7 +2785,7 @@ _LABEL_16F4_:
 	ld bc, $001A
 	call _LABEL_632_
 	ld de, $3D08
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $1990
 	call OUTI8
@@ -2775,7 +2803,7 @@ _LABEL_16F4_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3D20
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
 	ld hl, $19AA
@@ -2785,7 +2813,7 @@ _LABEL_17F5_:
 	djnz _LABEL_17F5_
 	call OUTI22
 	ld de, $3D48
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, $1998
 	call OUTI6
 	ld hl, (CurrentHPLow)
@@ -2825,7 +2853,7 @@ _LABEL_17F5_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3D60
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, $199E
 	call OUTI6
 	ld a, (WeaponPW)
@@ -2843,7 +2871,7 @@ _LABEL_17F5_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3D6E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, $19A4
 	call OUTI6
 	ld a, (ArmorAC)
@@ -2861,7 +2889,7 @@ _LABEL_17F5_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3D8A
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, $19AA
 	call OUTI10
 	ld hl, MoneyHigh
@@ -2885,7 +2913,7 @@ _LABEL_18B2_:
 	ld a, $01
 	out (VDPData), a
 	ld de, $3DA6
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, $19B6
 	call OUTI10
 	ld e, $00
@@ -2925,7 +2953,7 @@ _LABEL_18B2_:
 	jp _LABEL_137_
 
 ; 17th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_192B_:
+JumpTable1_192B:
 	call _LABEL_3E6_
 	call _LABEL_1D9C_
 	call _LABEL_2DAD_
@@ -2954,6 +2982,7 @@ _LABEL_194C_:
 	ret
 
 ; Data from 1954 to 1B1F (460 bytes)
+; Some kind of tile data- possibly the border
 .db $54 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01
 .db $57 $01 $56 $07 $56 $01 $57 $07 $57 $07 $57 $07 $57 $07 $57 $07
 .db $57 $07 $57 $07 $57 $07 $54 $07 $54 $01 $57 $01 $57 $01 $57 $01
@@ -2964,7 +2993,7 @@ _LABEL_194C_:
 .include "ui\character_classes.asm"
 
 ; 18th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1B20_:
+JumpTable1_1B20:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -2979,7 +3008,7 @@ _LABEL_1B20_:
 	call _LABEL_80D_
 	ld hl, $8000
 	ld de, $2A80
-	call _LABEL_793_
+	call DecompressToVDP
 	ld a, $02
 	ld (Autoplay), a
 	ld a, ($C0D3)
@@ -3066,7 +3095,7 @@ _LABEL_1BD5_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $1C78
+	ld hl, Data_1C78
 	add hl, de
 	ld a, (hl)
 	inc hl
@@ -3100,7 +3129,7 @@ _LABEL_1BD5_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $1123
+	ld hl, Data_1123
 	add hl, de
 	ld de, $C077
 	ldi
@@ -3119,14 +3148,17 @@ _LABEL_1BD5_:
 	ld (TableIndex1), a
 	jp _LABEL_143_
 
-; Code or data?
 ; Data from 1C78 to 1CA7 (48 bytes)
-.db $49 $B2 $49 $B3 $49 $B4 $49 $B5 $49 $B6 $49 $B7 $09 $B0 $C9 $B0
-.db $89 $B1 $09 $B0 $89 $B1 $C9 $B0 $01 $01 $01 $10 $08 $04 $02 $12
-.db $0A $07 $03 $12 $12 $0A $08 $15 $18 $0C $0C $1A $1D $10 $0C $1A
+Data_1C78:
+	.db $49 $B2 $49 $B3 $49 $B4 $49 $B5
+	.db $49 $B6 $49 $B7 $09 $B0 $C9 $B0
+	.db $89 $B1 $09 $B0 $89 $B1 $C9 $B0
+	.db $01 $01 $01 $10 $08 $04 $02 $12
+	.db $0A $07 $03 $12 $12 $0A $08 $15
+	.db $18 $0C $0C $1A $1D $10 $0C $1A
 
 ; 19th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1CA8_:
+JumpTable1_1CA8:
 	call _LABEL_3EE_
 	ld a, $02
 	ld ($FFFF), a
@@ -3144,7 +3176,7 @@ _LABEL_1CA8_:
 	jp _LABEL_143_
 
 ; 20th entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1CD0_:
+JumpTable1_1CD0:
 	ld a, ($C0D2)
 	cp $20
 	jp nc, _LABEL_1CF2_
@@ -3179,7 +3211,7 @@ _LABEL_1D0B_:
 	jp _LABEL_137_
 
 ; 21st entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1D11_:
+JumpTable1_1D11:
 	call _LABEL_B9A_
 	call _LABEL_BA3_
 	call _LABEL_BC8_
@@ -3187,10 +3219,10 @@ _LABEL_1D11_:
 	ld ($FFFF), a
 	ld de, $0000
 	ld hl, $A724
-	call _LABEL_793_
+	call DecompressToVDP
 	ld de, $3800
 	ld hl, $BBA9
-	call _LABEL_793_
+	call DecompressToVDP
 	ld hl, $A712
 	call _LABEL_40C_
 	ld a, $02
@@ -3203,7 +3235,7 @@ _LABEL_1D11_:
 	jp _LABEL_137_
 
 ; 22nd entry of Jump Table from 17F (indexed by TableIndex1)
-_LABEL_1D4B_:
+JumpTable1_1D4B:
 	ld a, ($C00D)
 	and $B0
 	jr nz, _LABEL_1D55_
@@ -3674,11 +3706,16 @@ _LABEL_1FDD_:
 	ret
 
 ; Jump Table from 2012 to 2053 (33 entries, indexed by unknown)
-.dw _LABEL_56C8_ _LABEL_5C9D_ _LABEL_5EE6_ _LABEL_60E7_ _LABEL_583E_ _LABEL_5E90_ _LABEL_631A_ _LABEL_64E7_
-.dw _LABEL_59A6_ _LABEL_5EBB_ _LABEL_677E_ _LABEL_69F2_ _LABEL_6BCB_ _LABEL_6D47_ _LABEL_60C4_ _LABEL_62F3_
-.dw _LABEL_6F6B_ _LABEL_72E3_ _LABEL_64A9_ _LABEL_6730_ _LABEL_70DE_ _LABEL_7550_ _LABEL_69CF_ _LABEL_6BA0_
-.dw _LABEL_7101_ _LABEL_7573_ _LABEL_64C8_ _LABEL_6757_ _LABEL_5B40_ _LABEL_6F48_ _LABEL_7124_ _LABEL_7596_
-.dw _LABEL_77D1_
+JumpTable4:
+	.dw JumpTable4_56C8 JumpTable4_5C9D JumpTable4_5EE6 JumpTable4_60E7
+	.dw JumpTable4_583E JumpTable4_5E90 JumpTable4_631A JumpTable4_64E7
+	.dw JumpTable4_59A6 JumpTable4_5EBB JumpTable4_677E JumpTable4_69F2
+	.dw JumpTable4_6BCB JumpTable4_6D47 JumpTable4_60C4 JumpTable4_62F3
+	.dw JumpTable4_6F6B JumpTable4_72E3 JumpTable4_64A9 JumpTable4_6730
+	.dw JumpTable4_70DE JumpTable4_7550 JumpTable4_69CF JumpTable4_6BA0
+	.dw JumpTable4_7101 JumpTable4_7573 JumpTable4_64C8 JumpTable4_6757
+	.dw JumpTable4_5B40 JumpTable4_6F48 JumpTable4_7124 JumpTable4_7596
+	.dw JumpTable4_77D1
 
 _LABEL_2054_:
 	ld a, $02
@@ -4374,7 +4411,7 @@ _LABEL_245E_:
 	ret
 
 _LABEL_2461_:
-	ld hl, $2480
+	ld hl, Data_2480
 	bit 7, d
 	jr z, _LABEL_246B_
 	ld hl, $2489
@@ -4396,8 +4433,10 @@ _LABEL_2478_:
 	ret
 
 ; Data from 2480 to 2491 (18 bytes)
-.db $01 $05 $05 $05 $05 $05 $01 $01 $02 $03 $04 $04 $04 $04 $04 $03
-.db $03 $00
+Data_2480:
+	.db $01 $05 $05 $05 $05 $05 $01 $01
+	.db $02 $03 $04 $04 $04 $04 $04 $03
+	.db $03 $00
 
 _LABEL_2492_:
 	ld hl, $D700
@@ -4417,7 +4456,7 @@ _LABEL_2492_:
 	and $30
 	ld e, a
 	ld d, $00
-	ld hl, $25FB
+	ld hl, JumpTable5
 	add hl, de
 	ld b, $03
 _LABEL_24C5_:
@@ -4555,7 +4594,7 @@ _LABEL_2595_:
 	jr _LABEL_2552_
 
 ; 1st entry of Jump Table from 25FB (indexed by unknown)
-_LABEL_259A_:
+JumpTable5_259A:
 	ld b, $10
 _LABEL_259C_:
 	push bc
@@ -4568,8 +4607,8 @@ _LABEL_259C_:
 	djnz _LABEL_259C_
 	ret
 
-; 1st entry of Jump Table from 25FF (indexed by unknown)
-_LABEL_25AA_:
+; 2nd entry of Jump Table from 25FB (indexed by unknown)
+JumpTable5_25AA:
 	ex de, hl
 	ld bc, $000F
 	add hl, bc
@@ -4592,8 +4631,8 @@ _LABEL_25B5_:
 	djnz _LABEL_25B2_
 	ret
 
-; 1st entry of Jump Table from 2607 (indexed by unknown)
-_LABEL_25C5_:
+; 3rd entry of Jump Table from 25FB (indexed by unknown)
+JumpTable5_25C5:
 	ex de, hl
 	ld bc, $01E0
 	add hl, bc
@@ -4616,8 +4655,8 @@ _LABEL_25D0_:
 	djnz _LABEL_25CD_
 	ret
 
-; 1st entry of Jump Table from 2603 (indexed by unknown)
-_LABEL_25E0_:
+; 4th entry of Jump Table from 25FB (indexed by unknown)
+JumpTable5_25E0:
 	ex de, hl
 	ld bc, $01EF
 	add hl, bc
@@ -4640,101 +4679,27 @@ _LABEL_25EB_:
 	djnz _LABEL_25E8_
 	ret
 
-; Jump Table from 25FB to 25FC (1 entries, indexed by unknown)
-.dw _LABEL_259A_
-
-; Data from 25FD to 25FE (2 bytes)
-.db $00 $D3
-
-; Jump Table from 25FF to 2600 (1 entries, indexed by unknown)
-.dw _LABEL_25AA_
-
-; Data from 2601 to 2602 (2 bytes)
-.db $10 $D3
-
-; Jump Table from 2603 to 2604 (1 entries, indexed by unknown)
-.dw _LABEL_25E0_
-
-; Data from 2605 to 2606 (2 bytes)
-.db $10 $D5
-
-; Jump Table from 2607 to 2608 (1 entries, indexed by unknown)
-.dw _LABEL_25C5_
-
-; Data from 2609 to 260A (2 bytes)
-.db $00 $D5
-
-; Jump Table from 260B to 260C (1 entries, indexed by unknown)
-.dw _LABEL_259A_
-
-; Data from 260D to 260E (2 bytes)
-.db $10 $D3
-
-; Jump Table from 260F to 2610 (1 entries, indexed by unknown)
-.dw _LABEL_25C5_
-
-; Data from 2611 to 2612 (2 bytes)
-.db $10 $D5
-
-; Jump Table from 2613 to 2614 (1 entries, indexed by unknown)
-.dw _LABEL_25E0_
-
-; Data from 2615 to 2616 (2 bytes)
-.db $00 $D5
-
-; Jump Table from 2617 to 2618 (1 entries, indexed by unknown)
-.dw _LABEL_25AA_
-
-; Data from 2619 to 261A (2 bytes)
-.db $00 $D3
-
-; Jump Table from 261B to 261C (1 entries, indexed by unknown)
-.dw _LABEL_259A_
-
-; Data from 261D to 261E (2 bytes)
-.db $10 $D5
-
-; Jump Table from 261F to 2620 (1 entries, indexed by unknown)
-.dw _LABEL_25AA_
-
-; Data from 2621 to 2622 (2 bytes)
-.db $00 $D5
-
-; Jump Table from 2623 to 2624 (1 entries, indexed by unknown)
-.dw _LABEL_25E0_
-
-; Data from 2625 to 2626 (2 bytes)
-.db $00 $D3
-
-; Jump Table from 2627 to 2628 (1 entries, indexed by unknown)
-.dw _LABEL_25C5_
-
-; Data from 2629 to 262A (2 bytes)
-.db $10 $D3
-
-; Jump Table from 262B to 262C (1 entries, indexed by unknown)
-.dw _LABEL_259A_
-
-; Data from 262D to 262E (2 bytes)
-.db $00 $D5
-
-; Jump Table from 262F to 2630 (1 entries, indexed by unknown)
-.dw _LABEL_25C5_
-
-; Data from 2631 to 2632 (2 bytes)
-.db $00 $D3
-
-; Jump Table from 2633 to 2634 (1 entries, indexed by unknown)
-.dw _LABEL_25E0_
-
-; Data from 2635 to 2636 (2 bytes)
-.db $10 $D3
-
-; Jump Table from 2637 to 2638 (1 entries, indexed by unknown)
-.dw _LABEL_25AA_
-
-; Data from 2639 to 263A (2 bytes)
-.db $10 $D5
+; Jump Table from 25FB to 263A (16 entries, indexed by unknown)
+; This is a table of permutations of the routines at 259A, 25AA, 25E0, and 25C5
+; and the data $D300, $D310, $D510, and $D500. All possible combinations of
+; routines and data are represented.
+JumpTable5:
+	.dw JumpTable5_259A $D300
+	.dw JumpTable5_25AA $D310
+	.dw JumpTable5_25E0 $D510
+	.dw JumpTable5_25C5 $D500
+	.dw JumpTable5_259A $D310
+	.dw JumpTable5_25C5 $D510
+	.dw JumpTable5_25E0 $D500
+	.dw JumpTable5_25AA $D300
+	.dw JumpTable5_259A $D510
+	.dw JumpTable5_25AA $D500
+	.dw JumpTable5_25E0 $D300
+	.dw JumpTable5_25C5 $D310
+	.dw JumpTable5_259A $D500
+	.dw JumpTable5_25C5 $D300
+	.dw JumpTable5_25E0 $D310
+	.dw JumpTable5_25AA $D510
 
 _LABEL_263B_:
 	call GetRandomNumber
@@ -4918,20 +4883,28 @@ _LABEL_2756_:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld de, $276B
+	ld de, Data_276B
 	add hl, de
 	ld de, $C078
 	jp LDI8
 
 ; Data from 276B to 27E2 (120 bytes)
-.db $04 $08 $09 $1E $02 $03 $07 $0B $20 $34 $38 $3C $02 $03 $07 $0B
-.db $20 $34 $38 $3C $15 $2A $2E $3F $02 $03 $03 $0B $15 $2A $2E $3F
-.db $02 $03 $03 $0B $15 $2A $2E $3F $15 $2A $3E $3F $15 $2A $2E $3F
-.db $15 $2A $3E $3F $20 $34 $38 $0C $01 $02 $03 $0B $20 $34 $38 $0C
-.db $01 $02 $03 $0B $20 $34 $38 $0C $20 $34 $38 $3C $20 $34 $38 $0C
-.db $20 $34 $38 $3C $15 $15 $2A $2A $07 $0B $0F $0F $15 $15 $2A $2A
-.db $07 $0B $0F $0F $01 $02 $03 $0B $07 $0B $0F $0F $01 $02 $03 $0B
-.db $07 $0B $0F $0F $04 $14 $19 $1A
+Data_276B:
+	.db $04 $08 $09 $1E $02 $03 $07 $0B
+	.db $20 $34 $38 $3C $02 $03 $07 $0B
+	.db $20 $34 $38 $3C $15 $2A $2E $3F
+	.db $02 $03 $03 $0B $15 $2A $2E $3F
+	.db $02 $03 $03 $0B $15 $2A $2E $3F
+	.db $15 $2A $3E $3F $15 $2A $2E $3F
+	.db $15 $2A $3E $3F $20 $34 $38 $0C
+	.db $01 $02 $03 $0B $20 $34 $38 $0C
+	.db $01 $02 $03 $0B $20 $34 $38 $0C
+	.db $20 $34 $38 $3C $20 $34 $38 $0C
+	.db $20 $34 $38 $3C $15 $15 $2A $2A
+	.db $07 $0B $0F $0F $15 $15 $2A $2A
+	.db $07 $0B $0F $0F $01 $02 $03 $0B
+	.db $07 $0B $0F $0F $01 $02 $03 $0B
+	.db $07 $0B $0F $0F $04 $14 $19 $1A
 
 _LABEL_27E3_:
 	ld a, $02
@@ -4940,7 +4913,7 @@ _LABEL_27E3_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $27FA
+	ld hl, Data_27FA
 	add hl, de
 	ld a, (hl)
 	inc hl
@@ -4949,11 +4922,12 @@ _LABEL_27E3_:
 	jp _LABEL_750_
 
 ; Data from 27FA to 2801 (8 bytes)
-.db $15 $87 $29 $8A $66 $8E $8A $92
+Data_27FA:
+	.db $15 $87 $29 $8A $66 $8E $8A $92
 
 _LABEL_2802_:
 	ld de, $0040
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $2838
@@ -4980,21 +4954,29 @@ _LABEL_2826_:
 	call OUTI256
 	jp OUTI128
 
-; Data from 283A to 28B1 (120 bytes)
-.db $0A $80 $8A $81 $0A $83 $8A $84 $0A $86 $8A $87 $0A $89 $8A $8A
-.db $0A $8C $8A $8D $0A $8F $4A $90 $8A $91 $0A $93 $4A $94 $CA $95
-.db $0A $97 $4A $98 $CA $99 $0A $9B $8A $9C $0A $9E $8A $9F $0A $A1
-.db $8A $A2 $0A $A4 $8A $A5 $0A $A7 $8A $A8 $0A $AA $8A $AB $CA $AC
-.db $0A $AE $8A $AF $CA $B0 $4A $B2 $8A $B3 $CA $B4 $4A $B6 $8A $B7
-.db $2E $A0 $AE $A1 $2E $A3 $AE $A4 $2E $A6 $AE $A7 $2E $A9 $AE $AA
-.db $2E $AC $AE $AD $2E $AF $6E $B0 $AE $B1 $2E $B3 $6E $B4 $EE $B5
-.db $2E $B7 $6E $B8 $EE $B9 $2E $BB
+; Data from 283A to 28B1 (120 bytes) - Unused?
+Data_283A:
+	.db $0A $80 $8A $81 $0A $83 $8A $84
+	.db $0A $86 $8A $87 $0A $89 $8A $8A
+	.db $0A $8C $8A $8D $0A $8F $4A $90
+	.db $8A $91 $0A $93 $4A $94 $CA $95
+	.db $0A $97 $4A $98 $CA $99 $0A $9B
+	.db $8A $9C $0A $9E $8A $9F $0A $A1
+	.db $8A $A2 $0A $A4 $8A $A5 $0A $A7
+	.db $8A $A8 $0A $AA $8A $AB $CA $AC
+	.db $0A $AE $8A $AF $CA $B0 $4A $B2
+	.db $8A $B3 $CA $B4 $4A $B6 $8A $B7
+	.db $2E $A0 $AE $A1 $2E $A3 $AE $A4
+	.db $2E $A6 $AE $A7 $2E $A9 $AE $AA
+	.db $2E $AC $AE $AD $2E $AF $6E $B0
+	.db $AE $B1 $2E $B3 $6E $B4 $EE $B5
+	.db $2E $B7 $6E $B8 $EE $B9 $2E $BB
 
 _LABEL_28B2_:
 	ld a, $07
 	ld ($FFFF), a
 	ld de, $0200
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	sub $04
 	jr nc, _LABEL_28C7_
@@ -5026,7 +5008,7 @@ _LABEL_28E8_:
 	ld l, a
 	ld h, $00
 	add hl, de
-	ld de, $2911
+	ld de, Data_2911
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5042,7 +5024,7 @@ _LABEL_28FD_:
 	ld a, $07
 	ld ($FFFF), a
 	ld de, $0250
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld hl, ($C0D0)
 	ld bc, $B0BE
 _LABEL_290C_:
@@ -5051,9 +5033,13 @@ _LABEL_290C_:
 	ret
 
 ; Data from 2911 to 2940 (48 bytes)
-.db $C7 $96 $C7 $97 $C7 $94 $C7 $95 $C7 $98 $C7 $99 $C7 $9A $C7 $9B
-.db $C7 $9E $C7 $9F $C7 $9C $C7 $9D $C7 $A0 $C7 $A1 $C7 $A2 $C7 $A3
-.db $C7 $A6 $C7 $A7 $C7 $A4 $C7 $A5 $C7 $A8 $C7 $A9 $C7 $AA $C7 $AB
+Data_2911:
+	.db $C7 $96 $C7 $97 $C7 $94 $C7 $95
+	.db $C7 $98 $C7 $99 $C7 $9A $C7 $9B
+	.db $C7 $9E $C7 $9F $C7 $9C $C7 $9D
+	.db $C7 $A0 $C7 $A1 $C7 $A2 $C7 $A3
+	.db $C7 $A6 $C7 $A7 $C7 $A4 $C7 $A5 
+	.db $C7 $A8 $C7 $A9 $C7 $AA $C7 $AB
 
 _LABEL_2941_:
 	ld hl, (Floor)
@@ -5091,7 +5077,7 @@ _LABEL_295A_:
 	inc hl
 	ld h, (hl)
 	ld l, a
-	call _LABEL_793_
+	call DecompressToVDP
 	pop hl
 	inc hl
 	jr _LABEL_294F_
@@ -5114,13 +5100,13 @@ _LABEL_2A22_:
 	ld ($FFFF), a
 	ld hl, $820A
 	ld de, $2020
-	call _LABEL_793_
+	call DecompressToVDP
 	ld a, ($C01D)
 	add a, a
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $2A5C
+	ld hl, Data_2A5C
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5129,7 +5115,7 @@ _LABEL_2A22_:
 	push hl
 	ex de, hl
 	ld de, $2520
-	call _LABEL_793_
+	call DecompressToVDP
 	pop hl
 	ld e, (hl)
 	inc hl
@@ -5142,7 +5128,8 @@ _LABEL_2A22_:
 	jp LDI80
 
 ; Data from 2A5C to 2A6B (16 bytes)
-.db $27 $87 $D1 $89 $3B $8A $0E $8E $78 $8E $32 $92 $9C $92 $EE $95
+Data_2A5C:
+	.db $27 $87 $D1 $89 $3B $8A $0E $8E $78 $8E $32 $92 $9C $92 $EE $95
 
 _LABEL_2A6C_:
 	ld a, ($C0D5)
@@ -5194,7 +5181,7 @@ _LABEL_2ABC_:
 	call _LABEL_2B2B_
 	ld hl, $AA47
 	ld de, $C700
-	call _LABEL_7D3_
+	call DecompressToRAM
 	ld a, ($CAC4)
 	cp $01
 	jp z, _LABEL_2B88_
@@ -5262,7 +5249,7 @@ _LABEL_2B2B_:
 	ld ($FFFF), a
 	ld hl, $AA63
 	ld de, $C7BA
-	call _LABEL_7D3_
+	call DecompressToRAM
 	ld hl, (CurrentHPLow)
 	call _LABEL_2C98_
 	ld hl, $C7CC
@@ -5405,7 +5392,7 @@ _LABEL_2BFA_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $2C61
+	ld hl, Data_2C61
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5465,7 +5452,8 @@ _LABEL_2C54_:
 	jp _LABEL_2AF9_
 
 ; Data from 2C61 to 2C6C (12 bytes)
-.db $00 $A0 $20 $A0 $40 $A0 $80 $A0 $C0 $A0 $00 $A1
+Data_2C61:
+	.db $00 $A0 $20 $A0 $40 $A0 $80 $A0 $C0 $A0 $00 $A1
 
 _LABEL_2C6D_:
 	ld b, $04
@@ -6339,7 +6327,8 @@ _LABEL_322D_:
 	ret
 
 ; Data from 3240 to 3243 (4 bytes)
-.db $06 $01 $0B $10
+Data_3240:
+	.db $06 $01 $0B $10
 
 _LABEL_3244_:
 	ld e, (ix+5)
@@ -6429,7 +6418,7 @@ _LABEL_32C4_:
 	jp c, _LABEL_321C_
 	call _LABEL_327F_
 	call _LABEL_3260_
-	ld de, $3A3A
+	ld de, Data_3A3A
 	jp c, _LABEL_35CD_
 	ld a, $FF
 	ld ($CAC4), a
@@ -6537,7 +6526,7 @@ _LABEL_33F8_:
 	cp $0C
 	jr nc, _LABEL_3461_
 	ld a, (ix+4)
-	ld hl, $3459
+	ld hl, Data_3459
 _LABEL_3409_:
 	rrca
 	jr c, _LABEL_3410_
@@ -6588,7 +6577,8 @@ _LABEL_344F_:
 	jp _LABEL_33D8_
 
 ; Data from 3459 to 3460 (8 bytes)
-.db $E0 $FF $20 $00 $FF $FF $01 $00
+Data_3459:
+	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 _LABEL_3461_:
 	cp $10
@@ -6829,7 +6819,7 @@ _LABEL_35FD_:
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, $36F1
+	ld hl, Data_36F1
 	add hl, de
 	ld a, (WeaponHit)
 	sub (hl)
@@ -6962,9 +6952,12 @@ _LABEL_36D7_:
 	jp _LABEL_3928_
 
 ; Data from 36F1 to 3711 (33 bytes)
-.db $00 $04 $08 $0A $00 $05 $0E $18 $00 $08 $04 $32 $00 $14 $0C $0A
-.db $00 $0A $14 $0A $00 $18 $00 $1E $00 $0E $1E $14 $00 $0E $19 $0A
-.db $0A
+Data_36F1:
+	.db $00 $04 $08 $0A $00 $05 $0E $18
+	.db $00 $08 $04 $32 $00 $14 $0C $0A
+	.db $00 $0A $14 $0A $00 $18 $00 $1E
+	.db $00 $0E $1E $14 $00 $0E $19 $0A
+	.db $0A
 
 _LABEL_3712_:
 	ld (ix+20), $00
@@ -7021,7 +7014,7 @@ _LABEL_3777_:
 _LABEL_3779_:
 	ex de, hl
 	ld de, $0300
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld bc, $80BE
 _LABEL_3781_:
 	outi
@@ -7037,8 +7030,8 @@ _LABEL_3796_:
 	bit 7, a
 	jr z, _LABEL_37A5_
 	and $70
-	jp z, _LABEL_467E_
-	jp _LABEL_468B_
+	jp z, JumpTable7_467E
+	jp JumpTable7_468B
 
 _LABEL_37A5_:
 	sub $20
@@ -7058,7 +7051,7 @@ _LABEL_37B5_:
 
 _LABEL_37BB_:
 	ld d, $00
-	ld hl, $37E0
+	ld hl, Data_37E0
 	add hl, de
 	ld a, (hl)
 	ld (ix+3), a
@@ -7072,7 +7065,7 @@ _LABEL_37C5_:
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, $3E68
+	ld hl, JumpTable7
 	add hl, de
 	add hl, de
 	ld e, (hl)
@@ -7082,11 +7075,12 @@ _LABEL_37C5_:
 	jp (hl)
 
 ; Data from 37E0 to 382F (80 bytes)
-.db $09 $04 $0E $13 $0A $05 $0F $14 $06 $01 $0B $10 $06 $01 $0B $10
-.db $00 $01 $02 $03 $05 $06 $07 $0A $0B $0C $0D $09 $0E $30 $FF $FF
-.db $0F $10 $11 $16 $12 $13 $15 $14 $17 $31 $04 $18 $FF $FF $FF $FF
-.db $19 $1A $1B $1C $1D $33 $1F $08 $2E $2F $20 $32 $21 $FF $FF $FF
-.db $22 $23 $22 $24 $25 $26 $28 $29 $2A $27 $FF $FF $FF $FF $FF $FF
+Data_37E0:
+	.db $09 $04 $0E $13 $0A $05 $0F $14 $06 $01 $0B $10 $06 $01 $0B $10
+	.db $00 $01 $02 $03 $05 $06 $07 $0A $0B $0C $0D $09 $0E $30 $FF $FF
+	.db $0F $10 $11 $16 $12 $13 $15 $14 $17 $31 $04 $18 $FF $FF $FF $FF
+	.db $19 $1A $1B $1C $1D $33 $1F $08 $2E $2F $20 $32 $21 $FF $FF $FF
+	.db $22 $23 $22 $24 $25 $26 $28 $29 $2A $27 $FF $FF $FF $FF $FF $FF
 
 _LABEL_3830_:
 	ld a, (ix+15)
@@ -7361,10 +7355,11 @@ _LABEL_3A37_:
 	jp _LABEL_3F1A_
 
 ; Data from 3A3A to 3A49 (16 bytes)
-.db $04 $02 $08 $06
-.db $04 $02 $03 $01
-.db $04 $02 $0D $0B
-.db $04 $02 $12 $10
+Data_3A3A:
+	.db $04 $02 $08 $06
+	.db $04 $02 $03 $01
+	.db $04 $02 $0D $0B
+	.db $04 $02 $12 $10
 
 ; Data from 3A50 to 3AAB (98 bytes)
 .db $01 $00 $02 $00 $06 $00 $0A $00 $03 $00 $06 $00 $01 $00 $08 $00
@@ -7413,7 +7408,7 @@ _LABEL_3AE9_:
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, $36F1
+	ld hl, Data_36F1
 	add hl, de
 	ld a, $64
 	sub (hl)
@@ -7426,7 +7421,7 @@ _LABEL_3AE9_:
 	jr _LABEL_3B16_
 
 _LABEL_3B0E_:
-	ld hl, $3C85
+	ld hl, Data_3C85
 	ld e, a
 	ld d, $00
 	add hl, de
@@ -7461,7 +7456,7 @@ _LABEL_3B38_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $3CC0
+	ld hl, JumpTable6
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -7470,7 +7465,7 @@ _LABEL_3B38_:
 	jp (hl)
 
 ; 1st entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3B51_:
+JumpTable6_3B51:
 	ld hl, ($C638)
 	ld de, $001A
 	add hl, de
@@ -7499,7 +7494,7 @@ _LABEL_3B68_:
 	jp _LABEL_3F1A_
 
 ; 2nd entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3B7E_:
+JumpTable6_3B7E:
 	ld hl, ($C638)
 	ld de, $001A
 	add hl, de
@@ -7528,7 +7523,7 @@ _LABEL_3B7E_:
 	jp _LABEL_3F1A_
 
 ; 3rd entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3BAB_:
+JumpTable6_3BAB:
 	ld hl, ($C638)
 	ld de, $001C
 	add hl, de
@@ -7542,7 +7537,7 @@ _LABEL_3BAB_:
 	jp _LABEL_3F1A_
 
 ; 4th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3BC5_:
+JumpTable6_3BC5:
 	ld hl, ($C638)
 	ld de, $001C
 	add hl, de
@@ -7557,7 +7552,7 @@ _LABEL_3BC5_:
 	jp _LABEL_3F1A_
 
 ; 5th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3BE1_:
+JumpTable6_3BE1:
 	ld hl, ($C638)
 	ld de, $001A
 	add hl, de
@@ -7585,7 +7580,7 @@ _LABEL_3BFA_:
 	jp _LABEL_3F1A_
 
 ; 6th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C0E_:
+JumpTable6_3C0E:
 	ld a, $19
 	ld ($CAC4), a
 	xor a
@@ -7593,7 +7588,7 @@ _LABEL_3C0E_:
 	jp _LABEL_3F1A_
 
 ; 7th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C1A_:
+JumpTable6_3C1A:
 	xor a
 	ld ($C932), a
 	ld hl, $0001
@@ -7602,7 +7597,7 @@ _LABEL_3C1A_:
 	jp _LABEL_393C_
 
 ; 8th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C2A_:
+JumpTable6_3C2A:
 	call _LABEL_207D_
 	ex de, hl
 	ld hl, ($C638)
@@ -7618,7 +7613,7 @@ _LABEL_3C2A_:
 	jp _LABEL_3F1A_
 
 ; 9th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C44_:
+JumpTable6_3C44:
 	ld hl, ($C638)
 	ld de, $001F
 	add hl, de
@@ -7641,12 +7636,12 @@ _LABEL_3C5C_:
 	jp _LABEL_393C_
 
 ; 10th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C6C_:
+JumpTable6_3C6C:
 	xor a
 	jp _LABEL_3B16_
 
 ; 11th entry of Jump Table from 3CC0 (indexed by unknown)
-_LABEL_3C70_:
+JumpTable6_3C70:
 	xor a
 	jp _LABEL_3C5C_
 
@@ -7660,14 +7655,17 @@ _LABEL_3C74_:
 	jp _LABEL_3F1A_
 
 ; Data from 3C85 to 3CBF (59 bytes)
-.db $00 $01 $02 $03 $05 $08 $0B $0E $12 $06 $06 $08 $08 $04 $08 $0C
-.db $00 $01 $02 $03 $04 $05 $06 $06 $0A $04 $0A $00 $00 $01 $00 $02
-.db $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00 $00 $09 $00 $09 $00
-.db $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
+Data_3C85:
+	.db $00 $01 $02 $03 $05 $08 $0B $0E $12 $06 $06 $08 $08 $04 $08 $0C
+	.db $00 $01 $02 $03 $04 $05 $06 $06 $0A $04 $0A $00 $00 $01 $00 $02
+	.db $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00 $00 $09 $00 $09 $00
+	.db $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
 
 ; Jump Table from 3CC0 to 3CD5 (11 entries, indexed by unknown)
-.dw _LABEL_3B51_ _LABEL_3B7E_ _LABEL_3BAB_ _LABEL_3BC5_ _LABEL_3BE1_ _LABEL_3C0E_ _LABEL_3C1A_ _LABEL_3C2A_
-.dw _LABEL_3C44_ _LABEL_3C6C_ _LABEL_3C70_
+JumpTable6:
+	.dw JumpTable6_3B51 JumpTable6_3B7E JumpTable6_3BAB JumpTable6_3BC5
+	.dw JumpTable6_3BE1 JumpTable6_3C0E JumpTable6_3C1A JumpTable6_3C2A
+	.dw JumpTable6_3C44 JumpTable6_3C6C JumpTable6_3C70
 
 _LABEL_3CD6_:
 	ld hl, Floor
@@ -7849,13 +7847,21 @@ _LABEL_3E51_:
 	ret
 
 ; Jump Table from 3E68 to 3ED7 (56 entries, indexed by unknown)
-.dw _LABEL_3F53_ _LABEL_3F68_ _LABEL_3F74_ _LABEL_3F81_ _LABEL_3FDA_ _LABEL_3FE6_ _LABEL_401C_ _LABEL_4077_
-.dw _LABEL_409F_ _LABEL_40B0_ _LABEL_411D_ _LABEL_4140_ _LABEL_4163_ _LABEL_4186_ _LABEL_41A9_ _LABEL_41B1_
-.dw _LABEL_4226_ _LABEL_4240_ _LABEL_4259_ _LABEL_42AB_ _LABEL_4339_ _LABEL_438C_ _LABEL_43EE_ _LABEL_4446_
-.dw _LABEL_447F_ _LABEL_4494_ _LABEL_44BC_ _LABEL_44C5_ _LABEL_44E0_ _LABEL_44FA_ _LABEL_4545_ _LABEL_4565_
-.dw _LABEL_458E_ _LABEL_459C_ _LABEL_45C9_ _LABEL_4610_ _LABEL_4617_ _LABEL_461E_ _LABEL_4633_ _LABEL_4649_
-.dw _LABEL_4656_ _LABEL_4663_ _LABEL_4670_ _LABEL_467E_ _LABEL_467E_ _LABEL_468B_ _LABEL_4698_ _LABEL_46AD_
-.dw _LABEL_46C2_ _LABEL_46DF_ _LABEL_474C_ _LABEL_4758_ _LABEL_4778_ _LABEL_4778_ _LABEL_4778_ _LABEL_4778_
+JumpTable7:
+	.dw JumpTable7_3F53 JumpTable7_3F68 JumpTable7_3F74 JumpTable7_3F81
+	.dw JumpTable7_3FDA JumpTable7_3FE6 JumpTable7_401C JumpTable7_4077
+	.dw JumpTable7_409F JumpTable7_40B0 JumpTable7_411D JumpTable7_4140
+	.dw JumpTable7_4163 JumpTable7_4186 JumpTable7_41A9 JumpTable7_41B1
+	.dw JumpTable7_4226 JumpTable7_4240 JumpTable7_4259 JumpTable7_42AB
+	.dw JumpTable7_4339 JumpTable7_438C JumpTable7_43EE JumpTable7_4446
+	.dw JumpTable7_447F JumpTable7_4494 JumpTable7_44BC JumpTable7_44C5
+	.dw JumpTable7_44E0 JumpTable7_44FA JumpTable7_4545 JumpTable7_4565
+	.dw JumpTable7_458E JumpTable7_459C JumpTable7_45C9 JumpTable7_4610
+	.dw JumpTable7_4617 JumpTable7_461E JumpTable7_4633 JumpTable7_4649
+	.dw JumpTable7_4656 JumpTable7_4663 JumpTable7_4670 JumpTable7_467E
+	.dw JumpTable7_467E JumpTable7_468B JumpTable7_4698 JumpTable7_46AD
+	.dw JumpTable7_46C2 JumpTable7_46DF JumpTable7_474C JumpTable7_4758
+	.dw JumpTable7_4778 JumpTable7_4778 JumpTable7_4778 JumpTable7_4778
 
 _LABEL_3ED8_:
 	ld a, $3F
@@ -7924,7 +7930,7 @@ _LABEL_3F46_:
 	ret
 
 ; 1st entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3F53_:
+JumpTable7_3F53:
 	ld a, (WeaponPW)
 	inc a
 	cp $3C
@@ -7937,7 +7943,7 @@ _LABEL_3F5D_:
 	jp _LABEL_3ED8_
 
 ; 2nd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3F68_:
+JumpTable7_3F68:
 	ld hl, ArmorAC
 	inc (hl)
 	ld a, $1D
@@ -7945,7 +7951,7 @@ _LABEL_3F68_:
 	jp _LABEL_3ED8_
 
 ; 3rd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3F74_:
+JumpTable7_3F74:
 	ld a, $01
 	ld ($C631), a
 	ld a, $1E
@@ -7953,7 +7959,7 @@ _LABEL_3F74_:
 	jp _LABEL_3ED8_
 
 ; 4th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3F81_:
+JumpTable7_3F81:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3F94_
@@ -7970,7 +7976,7 @@ _LABEL_3F94_:
 	or d
 	ld d, a
 	and $80
-	jr z, _LABEL_3FDA_
+	jr z, JumpTable7_3FDA
 _LABEL_3FA1_:
 	ld hl, $C900
 	res 7, (hl)
@@ -7999,7 +8005,7 @@ _LABEL_3FD2_:
 	jp _LABEL_3ED8_
 
 ; 5th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3FDA_:
+JumpTable7_3FDA:
 	ld a, $19
 	ld ($C975), a
 	xor a
@@ -8007,10 +8013,10 @@ _LABEL_3FDA_:
 	jp _LABEL_3EDF_
 
 ; 6th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_3FE6_:
+JumpTable7_3FE6:
 	ld a, (BlindnessTicksLeft)
 	or a
-	jr nz, _LABEL_3FDA_
+	jr nz, JumpTable7_3FDA
 	ld a, ($C020)
 	ld ($C0A9), a
 	ld a, $3F
@@ -8036,7 +8042,7 @@ _LABEL_4001_:
 	jp _LABEL_3F1A_
 
 ; 7th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_401C_:
+JumpTable7_401C:
 	ld a, ($C020)
 	ld ($C0A9), a
 	ld a, $3F
@@ -8077,7 +8083,7 @@ _LABEL_4044_:
 	jp _LABEL_4786_
 
 ; 8th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4077_:
+JumpTable7_4077:
 	ld iy, $C140
 	ld de, $0020
 	ld bc, $1600
@@ -8092,13 +8098,13 @@ _LABEL_408E_:
 	djnz _LABEL_4081_
 	ld a, c
 	or a
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld a, $16
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 9th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_409F_:
+JumpTable7_409F:
 	call GetRandomNumber
 	and $03
 	inc a
@@ -8108,14 +8114,14 @@ _LABEL_409F_:
 	jp _LABEL_3ED8_
 
 ; 10th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_40B0_:
+JumpTable7_40B0:
 	call _LABEL_1F3A_
-	jp c, _LABEL_3FDA_
+	jp c, JumpTable7_3FDA
 	ld ($C638), hl
 	push hl
 	pop iy
 	ld a, (ix+4)
-	ld hl, $4115
+	ld hl, Data_4115
 _LABEL_40C2_:
 	rrca
 	jr c, _LABEL_40C9_
@@ -8131,7 +8137,7 @@ _LABEL_40C9_:
 	ld h, (ix+6)
 	add hl, de
 	call _LABEL_2091_
-	jp c, _LABEL_3FDA_
+	jp c, JumpTable7_3FDA
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, ($C020)
@@ -8161,13 +8167,14 @@ _LABEL_40F4_:
 	jp _LABEL_3F1A_
 
 ; Data from 4115 to 411C (8 bytes)
-.db $E0 $FF $20 $00 $FF $FF $01 $00
+Data_4115:
+	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 ; 11th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_411D_:
+JumpTable7_411D:
 	ld a, ($C900)
 	cp $09
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld a, $09
 	ld ($C900), a
 	ld hl, $0F00
@@ -8180,10 +8187,10 @@ _LABEL_411D_:
 	jp _LABEL_3ED8_
 
 ; 12th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4140_:
+JumpTable7_4140:
 	ld a, ($C900)
 	cp $0A
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld a, $0A
 	ld ($C900), a
 	ld hl, $0F00
@@ -8196,10 +8203,10 @@ _LABEL_4140_:
 	jp _LABEL_3ED8_
 
 ; 13th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4163_:
+JumpTable7_4163:
 	ld a, ($C900)
 	cp $0B
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld a, $0B
 	ld ($C900), a
 	ld hl, $0F00
@@ -8212,10 +8219,10 @@ _LABEL_4163_:
 	jp _LABEL_3ED8_
 
 ; 14th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4186_:
+JumpTable7_4186:
 	ld a, ($C900)
 	cp $0C
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld a, $0C
 	ld ($C900), a
 	ld hl, $0F00
@@ -8228,13 +8235,13 @@ _LABEL_4186_:
 	jp _LABEL_3ED8_
 
 ; 15th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_41A9_:
+JumpTable7_41A9:
 	ld a, $26
 	ld ($C975), a
 	jp _LABEL_3EDF_
 
 ; 16th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_41B1_:
+JumpTable7_41B1:
 	ld a, (CharacterLevel)
 	add a, a
 	add a, a
@@ -8290,7 +8297,7 @@ _LABEL_4220_:
 	jp _LABEL_393C_
 
 ; 17th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4226_:
+JumpTable7_4226:
 	ld a, (CharacterLevel)
 	add a, a
 	ld d, a
@@ -8306,7 +8313,7 @@ _LABEL_4226_:
 	jp _LABEL_41C6_
 
 ; 18th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4240_:
+JumpTable7_4240:
 	ld a, (CharacterLevel)
 	add a, a
 	add a, a
@@ -8321,7 +8328,7 @@ _LABEL_4240_:
 	jp _LABEL_41C6_
 
 ; 19th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4259_:
+JumpTable7_4259:
 	call _LABEL_489C_
 	jr nc, _LABEL_4266_
 	ld a, $22
@@ -8360,7 +8367,7 @@ _LABEL_4283_:
 	jp _LABEL_3F1A_
 
 ; 20th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_42AB_:
+JumpTable7_42AB:
 	call _LABEL_489C_
 	jr nc, _LABEL_42B8_
 	ld a, $22
@@ -8437,7 +8444,7 @@ _LABEL_4329_:
 	jp _LABEL_3F1A_
 
 ; 21st entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4339_:
+JumpTable7_4339:
 	call _LABEL_489C_
 	jr nc, _LABEL_4346_
 	ld a, $22
@@ -8476,7 +8483,7 @@ _LABEL_4363_:
 	jp _LABEL_3F1A_
 
 ; 22nd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_438C_:
+JumpTable7_438C:
 	call _LABEL_489C_
 	jr nc, _LABEL_4399_
 	ld a, $22
@@ -8524,7 +8531,7 @@ _LABEL_43D2_:
 	jp _LABEL_3F1A_
 
 ; 23rd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_43EE_:
+JumpTable7_43EE:
 	ld a, (Floor)
 	cp $1E
 	jr c, _LABEL_43FD_
@@ -8567,7 +8574,7 @@ _LABEL_442C_:
 	jp _LABEL_143_
 
 ; 24th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4446_:
+JumpTable7_4446:
 	call _LABEL_489C_
 	jr nc, _LABEL_4453_
 	ld a, $22
@@ -8595,10 +8602,10 @@ _LABEL_4474_:
 	jp _LABEL_3ED8_
 
 ; 25th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_447F_:
+JumpTable7_447F:
 	ld a, (CharacterLevel)
 	dec a
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld (CharacterLevel), a
 	call _LABEL_496B_
 	ld a, $2E
@@ -8606,7 +8613,7 @@ _LABEL_447F_:
 	jp _LABEL_3ED8_
 
 ; 26th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4494_:
+JumpTable7_4494:
 	ld hl, (MaxHPLow)
 	srl h
 	rr l
@@ -8629,14 +8636,14 @@ _LABEL_44B1_:
 	jp _LABEL_3ED8_
 
 ; 27th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_44BC_:
+JumpTable7_44BC:
 	ld hl, (MaxHPLow)
 	srl h
 	rr l
 	jr _LABEL_449F_
 
 ; 28th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_44C5_:
+JumpTable7_44C5:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr z, _LABEL_44D3_
@@ -8652,7 +8659,7 @@ _LABEL_44D3_:
 	jp _LABEL_3ED8_
 
 ; 29th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_44E0_:
+JumpTable7_44E0:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_44EE_
@@ -8668,7 +8675,7 @@ _LABEL_44EE_:
 	jp _LABEL_3ED8_
 
 ; 30th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_44FA_:
+JumpTable7_44FA:
 	ld a, (BlindnessTicksLeft)
 	or a
 	jr z, _LABEL_4508_
@@ -8704,7 +8711,7 @@ _LABEL_451D_:
 	jp _LABEL_3F1A_
 
 ; 31st entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4545_:
+JumpTable7_4545:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4553_
@@ -8722,7 +8729,7 @@ _LABEL_4553_:
 	jp _LABEL_3ED8_
 
 ; 32nd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4565_:
+JumpTable7_4565:
 	ld a, (PoisonTicksLeft)
 	ld d, a
 	ld a, (BlindnessTicksLeft)
@@ -8745,7 +8752,7 @@ _LABEL_457C_:
 	jp _LABEL_3ED8_
 
 ; 33rd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_458E_:
+JumpTable7_458E:
 	ld hl, (MaxHPLow)
 	ld (CurrentHPLow), hl
 	ld a, $2F
@@ -8753,13 +8760,13 @@ _LABEL_458E_:
 	jp _LABEL_3ED8_
 
 ; 34th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_459C_:
+JumpTable7_459C:
 	call GetRandomNumber
 	and $01
 	jr z, _LABEL_45B6_
 	ld a, (BasePW)
 	or a
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	dec a
 	ld (BasePW), a
 	ld a, $35
@@ -8769,7 +8776,7 @@ _LABEL_459C_:
 _LABEL_45B6_:
 	ld a, (BaseAC)
 	or a
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	dec a
 	ld (BasePW), a
 	ld a, $35
@@ -8777,7 +8784,7 @@ _LABEL_45B6_:
 	jp _LABEL_3ED8_
 
 ; 35th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_45C9_:
+JumpTable7_45C9:
 	ld a, $2F
 	ld ($C975), a
 _LABEL_45CE_:
@@ -8812,19 +8819,19 @@ _LABEL_45FF_:
 	jp _LABEL_4786_
 
 ; 36th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4610_:
+JumpTable7_4610:
 	ld a, $36
 	ld ($C975), a
 	jr _LABEL_45CE_
 
 ; 37th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4617_:
+JumpTable7_4617:
 	ld a, $37
 	ld ($C975), a
 	jr _LABEL_45CE_
 
 ; 38th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_461E_:
+JumpTable7_461E:
 	ld a, (BaseAC)
 	add a, $04
 	cp $32
@@ -8837,7 +8844,7 @@ _LABEL_4629_:
 	jr _LABEL_45CE_
 
 ; 39th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4633_:
+JumpTable7_4633:
 	ld a, (BasePW)
 	add a, $04
 	cp $3C
@@ -8850,7 +8857,7 @@ _LABEL_463E_:
 	jp _LABEL_45CE_
 
 ; 40th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4649_:
+JumpTable7_4649:
 	ld a, $21
 	ld ($C975), a
 	ld a, $00
@@ -8858,7 +8865,7 @@ _LABEL_4649_:
 	jp _LABEL_45D3_
 
 ; 41st entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4656_:
+JumpTable7_4656:
 	ld a, $3A
 	ld ($C975), a
 	ld a, $00
@@ -8866,7 +8873,7 @@ _LABEL_4656_:
 	jp _LABEL_45D3_
 
 ; 42nd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4663_:
+JumpTable7_4663:
 	ld a, $3A
 	ld ($C975), a
 	ld a, $00
@@ -8874,7 +8881,7 @@ _LABEL_4663_:
 	jp _LABEL_45D3_
 
 ; 43rd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4670_:
+JumpTable7_4670:
 	ld a, $3B
 	ld ($C975), a
 	ld a, ($C020)
@@ -8882,7 +8889,7 @@ _LABEL_4670_:
 	jp _LABEL_45D3_
 
 ; 44th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_467E_:
+JumpTable7_467E:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $3F
@@ -8890,7 +8897,7 @@ _LABEL_467E_:
 	jp _LABEL_3EE5_
 
 ; 46th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_468B_:
+JumpTable7_468B:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $40
@@ -8898,7 +8905,7 @@ _LABEL_468B_:
 	jp _LABEL_3EE5_
 
 ; 47th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4698_:
+JumpTable7_4698:
 	ld a, (BasePW)
 	inc a
 	cp $3C
@@ -8911,7 +8918,7 @@ _LABEL_46A2_:
 	jp _LABEL_3ED8_
 
 ; 48th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_46AD_:
+JumpTable7_46AD:
 	ld a, (BaseAC)
 	inc a
 	cp $32
@@ -8924,10 +8931,10 @@ _LABEL_46B7_:
 	jp _LABEL_3ED8_
 
 ; 49th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_46C2_:
+JumpTable7_46C2:
 	ld a, ($C920)
 	or a
-	jp z, _LABEL_3FDA_
+	jp z, JumpTable7_3FDA
 	ld hl, $C920
 	ld b, $08
 _LABEL_46CE_:
@@ -8943,14 +8950,14 @@ _LABEL_46D7_:
 	jp _LABEL_3ED8_
 
 ; 50th entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_46DF_:
+JumpTable7_46DF:
 	call _LABEL_1F3A_
-	jp c, _LABEL_3FDA_
+	jp c, JumpTable7_3FDA
 	ld ($C638), hl
 	push hl
 	pop iy
 	ld a, (ix+4)
-	ld hl, $4744
+	ld hl, Data_4744
 _LABEL_46F1_:
 	rrca
 	jr c, _LABEL_46F8_
@@ -8966,7 +8973,7 @@ _LABEL_46F8_:
 	ld h, (ix+6)
 	add hl, de
 	call _LABEL_2091_
-	jp c, _LABEL_3FDA_
+	jp c, JumpTable7_3FDA
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, ($C020)
@@ -8996,10 +9003,11 @@ _LABEL_4723_:
 	jp _LABEL_3F1A_
 
 ; Data from 4744 to 474B (8 bytes)
-.db $E0 $FF $20 $00 $FF $FF $01 $00
+Data_4744:
+	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 ; 51st entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_474C_:
+JumpTable7_474C:
 	ld a, $50
 	ld ($C975), a
 	xor a
@@ -9007,7 +9015,7 @@ _LABEL_474C_:
 	jp _LABEL_3EDF_
 
 ; 52nd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4758_:
+JumpTable7_4758:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4766_
@@ -9025,7 +9033,7 @@ _LABEL_4766_:
 	jp _LABEL_3ED8_
 
 ; 53rd entry of Jump Table from 3E68 (indexed by unknown)
-_LABEL_4778_:
+JumpTable7_4778:
 	ld a, ($C020)
 	ld ($C0AB), a
 	ld a, $19
@@ -9201,7 +9209,7 @@ _LABEL_4883_:
 	ret
 
 _LABEL_4888_:
-	ld hl, $3240
+	ld hl, Data_3240
 	ld a, (ix+4)
 	or a
 	jr z, _LABEL_4897_
@@ -9218,7 +9226,7 @@ _LABEL_4897_:
 
 _LABEL_489C_:
 	ld a, (ix+4)
-	ld hl, $48E8
+	ld hl, Data_48E8
 _LABEL_48A2_:
 	rrca
 	jr c, _LABEL_48A9_
@@ -9274,7 +9282,8 @@ _LABEL_48E5_:
 	ret
 
 ; Data from 48E8 to 48EF (8 bytes)
-.db $E0 $FF $20 $00 $FF $FF $01 $00
+Data_48E8:
+	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 _LABEL_48F0_:
 	call _LABEL_48F7_
@@ -9287,7 +9296,7 @@ _LABEL_48F7_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $4935
+	ld hl, Data_4935
 	add hl, de
 	ld de, WeaponHit
 	ldi
@@ -9318,10 +9327,11 @@ _LABEL_4916_:
 	ret
 
 ; Data from 4935 to 496A (54 bytes)
-.db $00 $00 $00 $02 $04 $04 $08 $08 $10 $0E $14 $13 $18 $19 $1E $20
-.db $28 $28 $0A $0C $28 $0D $1E $0D $28 $17 $14 $0E $00 $12 $28 $1E
-.db $00 $00 $08 $02 $0C $05 $10 $09 $14 $0F $18 $14 $1D $1C $23 $24
-.db $28 $2C $28 $10 $32 $32
+Data_4935:
+	.db $00 $00 $00 $02 $04 $04 $08 $08 $10 $0E $14 $13 $18 $19 $1E $20
+	.db $28 $28 $0A $0C $28 $0D $1E $0D $28 $17 $14 $0E $00 $12 $28 $1E
+	.db $00 $00 $08 $02 $0C $05 $10 $09 $14 $0F $18 $14 $1D $1C $23 $24
+	.db $28 $2C $28 $10 $32 $32
 
 _LABEL_496B_:
 	ld a, (CharacterLevel)
@@ -9397,7 +9407,7 @@ _LABEL_49E0_:
 	ret
 
 _LABEL_49FC_:
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	add a, a
 	add a, a
 	add a, a
@@ -9411,7 +9421,7 @@ _LABEL_49FC_:
 	ld a, (hl)
 	or a
 	jr z, _LABEL_4A30_
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	cp $05
 	jr nc, _LABEL_4A36_
 	cp $02
@@ -9443,7 +9453,7 @@ _LABEL_4A36_:
 	cp $58
 	jr z, _LABEL_4A6F_
 _LABEL_4A4F_:
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	cp $02
 	jr c, _LABEL_4A58_
 	ld a, $02
@@ -9516,7 +9526,7 @@ _LABEL_4ABC_:
 	ret
 
 _LABEL_4AD8_:
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	add a, a
 	add a, a
 	add a, a
@@ -9529,7 +9539,7 @@ _LABEL_4AD8_:
 	jp z, _LABEL_4C0C_
 	dec a
 	jp z, _LABEL_4BB2_
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	cp $05
 	jr z, _LABEL_4B25_
 	cp $02
@@ -9790,12 +9800,14 @@ _LABEL_4C9E_:
 	add a, $28
 	ld (ix+17), a
 _LABEL_4CAB_:
-	ld a, (TableIndex7)
-	ld hl, $4CB4
+	ld a, (TableIndex8)
+	ld hl, JumpTable8
 	jp CallJumpTable
 
 ; Jump Table from 4CB4 to 4CBF (6 entries, indexed by unknown)
-.dw _LABEL_4E43_ _LABEL_4E54_ _LABEL_4E65_ _LABEL_4E79_ _LABEL_4E8D_ _LABEL_4EA1_
+JumpTable8:
+	.dw JumpTable8_4E43 JumpTable8_4E54 JumpTable8_4E65 JumpTable8_4E79
+	.dw JumpTable8_4E8D JumpTable8_4EA1
 
 _LABEL_4CC0_:
 	ld a, ($C418)
@@ -9892,7 +9904,7 @@ _LABEL_4D5D_:
 	ld a, ($C418)
 	cp $02
 	ret nz
-	ld a, (TableIndex7)
+	ld a, (TableIndex8)
 	inc a
 	call _LABEL_4E1B_
 	ld (ix+0), $73
@@ -9979,7 +9991,7 @@ _LABEL_4DE2_:
 	jr _LABEL_4E0A_
 
 _LABEL_4DF9_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ex (sp), hl
 	ex (sp), hl
 _LABEL_4DFC_:
@@ -9996,7 +10008,7 @@ _LABEL_4E03_:
 	ret
 
 _LABEL_4E0A_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ex (sp), hl
 	ex (sp), hl
 _LABEL_4E0D_:
@@ -10016,7 +10028,7 @@ _LABEL_4E1B_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $4E35
+	ld hl, Data_4E35
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -10029,12 +10041,14 @@ _LABEL_4E1B_:
 	jp _LABEL_661_
 
 ; Data from 4E35 to 4E42 (14 bytes)
-.db $75 $A9 $BB $A9 $BB $A9 $01 $AA $01 $AA $01 $AA $BB $A9
+Data_4E35:
+	.db $75 $A9 $BB $A9 $BB $A9 $01 $AA
+	.db $01 $AA $01 $AA $BB $A9
 
 ; 1st entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4E43_:
+JumpTable8_4E43:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $7B
 	out (VDPData), a
 	ld hl, $C900
@@ -10042,9 +10056,9 @@ _LABEL_4E43_:
 	jp _LABEL_4EBD_
 
 ; 2nd entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4E54_:
+JumpTable8_4E54:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $7B
 	out (VDPData), a
 	ld hl, $C908
@@ -10052,9 +10066,9 @@ _LABEL_4E54_:
 	jp _LABEL_4EBD_
 
 ; 3rd entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4E65_:
+JumpTable8_4E65:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $58
 	out (VDPData), a
 	ld hl, $C910
@@ -10063,9 +10077,9 @@ _LABEL_4E65_:
 	jp _LABEL_4EFE_
 
 ; 4th entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4E79_:
+JumpTable8_4E79:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $58
 	out (VDPData), a
 	ld hl, $C918
@@ -10074,9 +10088,9 @@ _LABEL_4E79_:
 	jp _LABEL_4EFE_
 
 ; 5th entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4E8D_:
+JumpTable8_4E8D:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, $58
 	out (VDPData), a
 	ld hl, $C920
@@ -10085,9 +10099,9 @@ _LABEL_4E8D_:
 	jp _LABEL_4EFE_
 
 ; 6th entry of Jump Table from 4CB4 (indexed by unknown)
-_LABEL_4EA1_:
+JumpTable8_4EA1:
 	ld de, $3A1E
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, ($C930)
 	or a
 	ld a, $7B
@@ -10108,7 +10122,7 @@ _LABEL_4EBD_:
 	ld de, $3A20
 	ld b, $08
 _LABEL_4ECA_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	exx
 	push hl
 	push de
@@ -10158,7 +10172,7 @@ _LABEL_4EFE_:
 	ld de, $3A20
 	ld bc, $08BE
 _LABEL_4F0A_:
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	exx
 	push hl
 	push de
@@ -10219,7 +10233,7 @@ _LABEL_4F3F_:
 
 _LABEL_4F51_:
 	ld de, $3D66
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, (WeaponPW)
 	ld hl, (BasePW)
 	add a, l
@@ -10228,7 +10242,7 @@ _LABEL_4F51_:
 	call _LABEL_2C98_
 	call _LABEL_4F76_
 	ld de, $3D74
-	rst $08	; _LABEL_8_
+	rst $08	; Interrupt8
 	ld a, (ArmorAC)
 	ld hl, (BaseAC)
 	add a, l
@@ -10428,8 +10442,9 @@ _LABEL_50EF_:
 	ld (ix+1), $51
 	ret
 
-; Data from 5116 to 511D (8 bytes)
-.db $C5 $C6 $C7 $C8 $C7 $C6 $C5 $00
+; Data from 5116 to 511D (8 bytes) - Unused?
+Data_5116:
+	.db $C5 $C6 $C7 $C8 $C7 $C6 $C5 $00
 
 _LABEL_511E_:
 	ld a, (ix+21)
@@ -10731,7 +10746,7 @@ _LABEL_5302_:
 	ld a, (ix+31)
 	ld l, a
 	ld h, $00
-	ld de, $536D
+	ld de, Data_536D
 	add hl, de
 	ld a, (ArmorAC)
 	ld b, a
@@ -10782,9 +10797,12 @@ _LABEL_536A_:
 	ret
 
 ; Data from 536D to 538D (33 bytes)
-.db $01 $02 $04 $06 $08 $0A $0E $14 $08 $12 $0E $35 $3C $1E $20 $1C
-.db $32 $23 $34 $46 $3C $30 $3C $AF $50 $46 $8C $6E $10 $78 $B4 $64
-.db $82
+Data_536D:
+	.db $01 $02 $04 $06 $08 $0A $0E $14
+	.db $08 $12 $0E $35 $3C $1E $20 $1C
+	.db $32 $23 $34 $46 $3C $30 $3C $AF
+	.db $50 $46 $8C $6E $10 $78 $B4 $64
+	.db $82
 
 _LABEL_538E_:
 	ld a, (ix+4)
@@ -11319,7 +11337,7 @@ _LABEL_56A9_:
 	ret
 
 ; 1st entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_56C8_:
+JumpTable4_56C8:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -11489,7 +11507,7 @@ _LABEL_5815_:
 	jp _LABEL_57D7_
 
 ; 5th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_583E_:
+JumpTable4_583E:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -11645,7 +11663,7 @@ _LABEL_5989_:
 	jp _LABEL_58B9_
 
 ; 9th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_59A6_:
+JumpTable4_59A6:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -11829,7 +11847,7 @@ _LABEL_5B23_:
 	jp _LABEL_5A2D_
 
 ; 29th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_5B40_:
+JumpTable4_5B40:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -11980,7 +11998,7 @@ _LABEL_5C70_:
 	jp _LABEL_5C18_
 
 ; 2nd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_5C9D_:
+JumpTable4_5C9D:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12206,7 +12224,7 @@ _LABEL_5E81_:
 	jp _LABEL_5DBB_
 
 ; 6th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_5E90_:
+JumpTable4_5E90:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12221,7 +12239,7 @@ _LABEL_5E90_:
 	ret
 
 ; 10th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_5EBB_:
+JumpTable4_5EBB:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12236,7 +12254,7 @@ _LABEL_5EBB_:
 	ret
 
 ; 3rd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_5EE6_:
+JumpTable4_5EE6:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12457,7 +12475,7 @@ _LABEL_60BB_:
 	jp _LABEL_56A9_
 
 ; 15th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_60C4_:
+JumpTable4_60C4:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12470,7 +12488,7 @@ _LABEL_60C4_:
 	ret
 
 ; 4th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_60E7_:
+JumpTable4_60E7:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -12710,7 +12728,7 @@ _LABEL_62EA_:
 	jp _LABEL_56A9_
 
 ; 16th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_62F3_:
+JumpTable4_62F3:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -12724,7 +12742,7 @@ _LABEL_62F3_:
 	ret
 
 ; 7th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_631A_:
+JumpTable4_631A:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $1E
@@ -12909,7 +12927,7 @@ _LABEL_64A0_:
 	jp _LABEL_56A9_
 
 ; 19th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_64A9_:
+JumpTable4_64A9:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $50
@@ -12921,7 +12939,7 @@ _LABEL_64A9_:
 	ret
 
 ; 27th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_64C8_:
+JumpTable4_64C8:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $B4
@@ -12933,7 +12951,7 @@ _LABEL_64C8_:
 	ret
 
 ; 8th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_64E7_:
+JumpTable4_64E7:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13192,7 +13210,7 @@ _LABEL_6719_:
 	jp _LABEL_661F_
 
 ; 20th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6730_:
+JumpTable4_6730:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13206,7 +13224,7 @@ _LABEL_6730_:
 	ret
 
 ; 28th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6757_:
+JumpTable4_6757:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13220,7 +13238,7 @@ _LABEL_6757_:
 	ret
 
 ; 11th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_677E_:
+JumpTable4_677E:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $3C
@@ -13493,7 +13511,7 @@ _LABEL_69C6_:
 	jp _LABEL_56A9_
 
 ; 23rd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_69CF_:
+JumpTable4_69CF:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $A0
@@ -13506,7 +13524,7 @@ _LABEL_69CF_:
 	ret
 
 ; 12th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_69F2_:
+JumpTable4_69F2:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13704,7 +13722,7 @@ _LABEL_6B97_:
 	jp _LABEL_56A9_
 
 ; 24th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6BA0_:
+JumpTable4_6BA0:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13719,7 +13737,7 @@ _LABEL_6BA0_:
 	ret
 
 ; 13th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6BCB_:
+JumpTable4_6BCB:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -13894,7 +13912,7 @@ _LABEL_6D26_:
 	jp _LABEL_6CEC_
 
 ; 14th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6D47_:
+JumpTable4_6D47:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14134,7 +14152,7 @@ _LABEL_6F39_:
 	jp _LABEL_6E61_
 
 ; 30th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6F48_:
+JumpTable4_6F48:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14147,7 +14165,7 @@ _LABEL_6F48_:
 	ret
 
 ; 17th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_6F6B_:
+JumpTable4_6F6B:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $5A
@@ -14320,7 +14338,7 @@ _LABEL_70D5_:
 	jp _LABEL_56A9_
 
 ; 21st entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_70DE_:
+JumpTable4_70DE:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $5F
@@ -14333,7 +14351,7 @@ _LABEL_70DE_:
 	ret
 
 ; 25th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_7101_:
+JumpTable4_7101:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $64
@@ -14346,7 +14364,7 @@ _LABEL_7101_:
 	ret
 
 ; 31st entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_7124_:
+JumpTable4_7124:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14556,7 +14574,7 @@ _LABEL_72DA_:
 	jp _LABEL_56A9_
 
 ; 18th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_72E3_:
+JumpTable4_72E3:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14844,7 +14862,7 @@ _LABEL_7537_:
 	ret
 
 ; 22nd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_7550_:
+JumpTable4_7550:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14857,7 +14875,7 @@ _LABEL_7550_:
 	ret
 
 ; 26th entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_7573_:
+JumpTable4_7573:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14870,7 +14888,7 @@ _LABEL_7573_:
 	ret
 
 ; 32nd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_7596_:
+JumpTable4_7596:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14901,7 +14919,7 @@ _LABEL_75BD_:
 	ld d, (ix+17)
 	call _LABEL_1ECB_
 	ex de, hl
-	ld hl, $7A0C
+	ld hl, Data_7A0C
 	ld bc, $0204
 	call _LABEL_681_
 	call _LABEL_5473_
@@ -15124,7 +15142,7 @@ _LABEL_77B6_:
 	jp _LABEL_7723_
 
 ; 33rd entry of Jump Table from 2012 (indexed by unknown)
-_LABEL_77D1_:
+JumpTable4_77D1:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -15378,7 +15396,9 @@ _LABEL_79F1_:
 	jp _LABEL_795E_
 
 ; Data from 7A0C to 7A1B (16 bytes)
-.db $01 $01 $02 $01 $03 $01 $04 $01 $0D $01 $0E $01 $0F $01 $10 $01
+Data_7A0C:
+	.db $01 $01 $02 $01 $03 $01 $04 $01
+	.db $0D $01 $0E $01 $0F $01 $10 $01
 
 _LABEL_7A1C_:
 	ld (ix+2), $01
