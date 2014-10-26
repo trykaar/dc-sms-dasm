@@ -3,6 +3,7 @@
 
 ; Variable Definitions
 .include "defines\defines.i"
+.include "defines\macros.i"
 .include "defines\asciitable.i"
 .include "defines\sound_driver.i"
 
@@ -1585,9 +1586,9 @@ SetUpGame:
 	ld (BasePW), a
 	ld (BaseAC), a
 	ld a, $01
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld a, $10
-	ld ($C908), a
+	ld (EquippedArmor), a
 	call _LABEL_101A_
 	ld a, $07
 	ld ($FFFF), a
@@ -1853,9 +1854,9 @@ SetUpGameAutoplay:
 	ld a, $01
 	ld (Floor), a
 	ld a, $01
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld a, $10
-	ld ($C908), a
+	ld (EquippedArmor), a
 	ld a, $08
 	ld (TableIndex1), a
 	jp _LABEL_137_
@@ -1923,9 +1924,9 @@ _LABEL_F76_:
 	ld (BasePW), a
 	ld (BaseAC), a
 	ld a, $01
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld a, $10
-	ld ($C908), a
+	ld (EquippedArmor), a
 	call _LABEL_101A_
 	call _LABEL_42C_
 	ld a, $08
@@ -1956,19 +1957,19 @@ _LABEL_1004_:
 	ret
 
 _LABEL_101A_:
-	ld hl, $C900
+	ld hl, EquippedWeapon
 	res 7, (hl)
 	inc hl
 	ld de, $C902
 	ld (hl), $00
 	call LDI6
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	cp $0E
 	jr nz, _LABEL_1034_
 	ld a, $03
 	ld ($C901), a
 _LABEL_1034_:
-	ld hl, $C908
+	ld hl, EquippedArmor
 	res 7, (hl)
 	inc hl
 	ld de, $C90A
@@ -1978,7 +1979,7 @@ _LABEL_1034_:
 	ld de, $C911
 	ld (hl), $00
 	call LDI36
-	jp _LABEL_48F0_
+	jp EquipWeaponAndArmor
 
 ; Text "INIT"
 .include "ui\init.asm"
@@ -2034,7 +2035,7 @@ _LABEL_108F_:
 	ld ($FFFF), a
 	ld hl, $8000
 	call _LABEL_750_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	dec a
 	and $0C
 	rrca
@@ -2060,7 +2061,7 @@ _LABEL_110A_:
 	ld a, d
 	ld (SoundQueueSlots), a
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $3C
 	ld ($CAC8), a
@@ -2103,7 +2104,7 @@ JumpTable1_1127:
 	ld ($FFFF), a
 	ld hl, $8000
 	call _LABEL_750_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	dec a
 	and $0C
 	rrca
@@ -2391,7 +2392,7 @@ _LABEL_131F_:
 	ld ($C103), a
 	ld de, $1400
 	rst $08	; Interrupt8
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $13
 	jr c, _LABEL_13A4_
 	cp $16
@@ -2444,7 +2445,7 @@ _LABEL_13BF_:
 	ld ($FFFF), a
 	ld hl, $8000
 	call _LABEL_750_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	dec a
 	and $0C
 	rrca
@@ -2507,7 +2508,7 @@ JumpTable1_1435:
 	call DecompressToVDP
 	ld de, $1200
 	rst $08	; Interrupt8
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $13
 	jr c, _LABEL_149F_
 	cp $16
@@ -2562,7 +2563,7 @@ _LABEL_14A7_:
 	ld d, (hl)
 	ex de, hl
 	call _LABEL_750_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	dec a
 	and $0C
 	rrca
@@ -2725,7 +2726,7 @@ JumpTable1_16F4:
 	ld bc, $0240
 	call _LABEL_632_
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld de, $2B00
 	ld hl, $80D8
@@ -3025,10 +3026,10 @@ JumpTable1_1B20:
 	ld (CharacterLevel), a
 	inc hl
 	ld a, (hl)
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	inc hl
 	ld a, (hl)
-	ld ($C908), a
+	ld (EquippedArmor), a
 	ld a, $02
 	ld ($FFFF), a
 	ld a, (Floor)
@@ -3122,7 +3123,7 @@ _LABEL_1BD5_:
 	ld ($FFFF), a
 	ld hl, $8000
 	call _LABEL_750_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	dec a
 	and $0C
 	rrca
@@ -3137,7 +3138,7 @@ _LABEL_1BD5_:
 	ld a, $02
 	ld ($C014), a
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $3C
 	ld ($CAC8), a
@@ -4931,7 +4932,7 @@ _LABEL_2802_:
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $2838
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	and $0F
 	cp $03
 	jr c, _LABEL_2826_
@@ -5135,7 +5136,7 @@ _LABEL_2A6C_:
 	ld a, ($C0D5)
 	or a
 	jr nz, _LABEL_2A80_
-	ld a, ($CAC4)
+	ld a, (CurrentMessage)
 	or a
 	jr nz, _LABEL_2A88_
 	ld a, ($CAC5)
@@ -5145,7 +5146,7 @@ _LABEL_2A6C_:
 
 _LABEL_2A80_:
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ret
 
@@ -5182,7 +5183,7 @@ _LABEL_2ABC_:
 	ld hl, $AA47
 	ld de, $C700
 	call DecompressToRAM
-	ld a, ($CAC4)
+	ld a, (CurrentMessage)
 	cp $01
 	jp z, _LABEL_2B88_
 	cp $02
@@ -5217,7 +5218,7 @@ _LABEL_2AF9_:
 	ld bc, $033E
 	call _LABEL_681_
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ret
 
 _LABEL_2B0B_:
@@ -5228,7 +5229,7 @@ _LABEL_2B10_:
 	call _LABEL_2198_
 _LABEL_2B13_:
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ret
 
@@ -5241,7 +5242,7 @@ _LABEL_2B1B_:
 _LABEL_2B23_:
 	call _LABEL_2B2B_
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ret
 
 _LABEL_2B2B_:
@@ -5616,7 +5617,7 @@ _LABEL_2D74_:
 	or a
 	ret z
 	ld a, $FE
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ret
 
 _LABEL_2D7F_:
@@ -5776,7 +5777,7 @@ _LABEL_2E6A_:
 	jr z, _LABEL_2E7F_
 	call _LABEL_2198_
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 _LABEL_2E7F_:
 	ld a, ($CA00)
@@ -6218,7 +6219,7 @@ _LABEL_3142_:
 	ld a, ($C932)
 	or a
 	jp nz, _LABEL_374A_
-	ld a, ($C931)
+	ld a, (CurrentItem)
 	or a
 	jp nz, _LABEL_3796_
 	ld a, ($C00D)
@@ -6271,7 +6272,7 @@ _LABEL_31CB_:
 	ld a, $B1
 	ld (SoundQueueSlots), a
 	ld a, $3D
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld (ix+24), $3C
 	ld (ix+0), $E6
@@ -6284,7 +6285,7 @@ _LABEL_31E6_:
 	dec (ix+24)
 	ret nz
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	call _LABEL_42C_
 	ld a, $0B
@@ -6296,7 +6297,7 @@ _LABEL_31FF_:
 	dec (hl)
 	jp nz, _LABEL_33D8_
 	ld a, $1B
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ret
 
 _LABEL_320C_:
@@ -6316,7 +6317,7 @@ _LABEL_321C_:
 	dec (hl)
 	jr nz, _LABEL_322D_
 	ld a, $4B
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 _LABEL_322D_:
 	call _LABEL_481B_
 	ld a, (ix+5)
@@ -6404,7 +6405,7 @@ _LABEL_327F_:
 	pop ix
 	call _LABEL_137_
 	ld a, $41
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($CAC5), a
 	ld a, $98
@@ -6421,7 +6422,7 @@ _LABEL_32C4_:
 	ld de, Data_3A3A
 	jp c, _LABEL_35CD_
 	ld a, $FF
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld l, (ix+5)
 	ld h, (ix+6)
@@ -6445,7 +6446,7 @@ _LABEL_3309_:
 	ld de, $3A3E
 	jp c, _LABEL_35CD_
 	ld a, $FF
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld l, (ix+5)
 	ld h, (ix+6)
@@ -6469,7 +6470,7 @@ _LABEL_334E_:
 	ld de, $3A42
 	jp c, _LABEL_35CD_
 	ld a, $FF
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld l, (ix+5)
 	ld h, (ix+6)
@@ -6493,7 +6494,7 @@ _LABEL_3393_:
 	ld de, $3A46
 	jp c, _LABEL_35CD_
 	ld a, $FF
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld l, (ix+5)
 	ld h, (ix+6)
@@ -6565,7 +6566,7 @@ _LABEL_343D_:
 	ld a, $01
 	ld ($C606), a
 	ld a, $0E
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
 	ret
@@ -6615,7 +6616,7 @@ _LABEL_3476_:
 	and $7F
 	ld ($CAC6), a
 	ld a, $03
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld b, $08
 _LABEL_349E_:
@@ -6648,7 +6649,7 @@ _LABEL_34A4_:
 
 _LABEL_34C7_:
 	ld a, $14
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
 _LABEL_34CF_:
@@ -6712,7 +6713,7 @@ _LABEL_3532_:
 	ld a, $01
 	ld ($C606), a
 	ld a, $0D
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
 	jp _LABEL_33D8_
@@ -6745,7 +6746,7 @@ _LABEL_3567_:
 	ld a, $01
 	ld ($C606), a
 	ld a, $0C
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
 	jp _LABEL_33D8_
@@ -6753,7 +6754,7 @@ _LABEL_3567_:
 _LABEL_357C_:
 	ld (hl), $04
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $01
 	ld ($C606), a
@@ -6795,7 +6796,7 @@ _LABEL_35CD_:
 	ld de, $001C
 	add hl, de
 	res 1, (hl)
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	and $7F
 	cp $0E
 	jr nz, _LABEL_35FD_
@@ -6835,7 +6836,7 @@ _LABEL_35FD_:
 	ld hl, ($C638)
 	ld bc, $001F
 	add hl, bc
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	and $7F
 	sub $09
 	jp c, _LABEL_36C7_
@@ -7026,18 +7027,18 @@ _LABEL_3781_:
 	jp _LABEL_3AAC_
 
 _LABEL_3796_:
-	ld a, ($C931)
+	ld a, (CurrentItem)
 	bit 7, a
 	jr z, _LABEL_37A5_
 	and $70
-	jp z, JumpTable7_467E
-	jp JumpTable7_468B
+	jp z, ItemActionTable_467E
+	jp ItemActionTable_468B
 
 _LABEL_37A5_:
 	sub $20
-	jr c, _LABEL_37C5_
+	jr c, DoItemAction
 	cp $20
-	jr nc, _LABEL_37C5_
+	jr nc, DoItemAction
 	and $70
 	rrca
 	rrca
@@ -7055,17 +7056,17 @@ _LABEL_37BB_:
 	add hl, de
 	ld a, (hl)
 	ld (ix+3), a
-_LABEL_37C5_:
-	ld a, ($C931)
-	sub $20
-	and $7F
+DoItemAction:
+	ld a, (CurrentItem)
+	sub $20					; Weapons are $0X, armor is $1X, subtract $20 to ignore those offsets
+	and $7F					; Ignore curse bit?
 	ld e, a
 	ld d, $00
-	ld hl, $37F0
+	ld hl, ItemActionOffsets
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, JumpTable7
+	ld hl, ItemActionTable
 	add hl, de
 	add hl, de
 	ld e, (hl)
@@ -7074,13 +7075,13 @@ _LABEL_37C5_:
 	ex de, hl
 	jp (hl)
 
-; Data from 37E0 to 382F (80 bytes)
+; Data from 37E0 to 37EF (16 bytes)
 Data_37E0:
-	.db $09 $04 $0E $13 $0A $05 $0F $14 $06 $01 $0B $10 $06 $01 $0B $10
-	.db $00 $01 $02 $03 $05 $06 $07 $0A $0B $0C $0D $09 $0E $30 $FF $FF
-	.db $0F $10 $11 $16 $12 $13 $15 $14 $17 $31 $04 $18 $FF $FF $FF $FF
-	.db $19 $1A $1B $1C $1D $33 $1F $08 $2E $2F $20 $32 $21 $FF $FF $FF
-	.db $22 $23 $22 $24 $25 $26 $28 $29 $2A $27 $FF $FF $FF $FF $FF $FF
+	.db $09 $04 $0E $13 $0A $05 $0F $14 $06 $01 $0B $10 $06 $01 $0B $10 ; Possibly identifies unidentified items?
+
+; Table mapping items to their offsets in the item action table
+ItemActionOffsets:
+	.include "items\behavior\item_action_offsets.asm"
 
 _LABEL_3830_:
 	ld a, (ix+15)
@@ -7203,7 +7204,7 @@ _LABEL_390A_:
 	dec (ix+24)
 	ret nz
 	ld a, $08
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
 _LABEL_3919_:
@@ -7211,7 +7212,7 @@ _LABEL_3919_:
 	dec (ix+24)
 	ret nz
 	ld a, $3C
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
 _LABEL_3928_:
@@ -7226,7 +7227,7 @@ _LABEL_3928_:
 	ret nz
 _LABEL_393C_:
 	ld a, $01
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld hl, ($C63A)
 	ld ($CAC6), hl
 	ld hl, ($C638)
@@ -7245,7 +7246,7 @@ _LABEL_393C_:
 	jr nz, _LABEL_39B9_
 _LABEL_3962_:
 	ld a, $09
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld iy, ($C638)
 	ld (iy+0), $0F
 	inc hl
@@ -7293,7 +7294,7 @@ _LABEL_39B9_:
 	sbc hl, de
 	jp c, _LABEL_33D8_
 	ld a, $0A
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld a, $A9
 	ld ($DD05), a
 	ld a, (CharacterLevel)
@@ -7486,7 +7487,7 @@ _LABEL_3B68_:
 	dec hl
 	ld (hl), e
 	ld a, $15
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld a, $A9
@@ -7515,7 +7516,7 @@ JumpTable6_3B7E:
 	dec hl
 	ld (hl), e
 	ld a, $18
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld a, $90
@@ -7529,7 +7530,7 @@ JumpTable6_3BAB:
 	add hl, de
 	set 0, (hl)
 	ld a, $16
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld a, $90
@@ -7544,7 +7545,7 @@ JumpTable6_3BC5:
 	set 1, (hl)
 	res 4, (hl)
 	ld a, $17
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld a, $90
@@ -7572,7 +7573,7 @@ _LABEL_3BFA_:
 	dec hl
 	ld (hl), e
 	ld a, $18
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld a, $90
@@ -7582,7 +7583,7 @@ _LABEL_3BFA_:
 ; 6th entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3C0E:
 	ld a, $19
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	jp _LABEL_3F1A_
@@ -7607,7 +7608,7 @@ JumpTable6_3C2A:
 	inc hl
 	ld (hl), d
 	ld a, $1A
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	jp _LABEL_3F1A_
@@ -7649,7 +7650,7 @@ _LABEL_3C74_:
 	ld a, $92
 	ld ($DD05), a
 	ld a, $08
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	jp _LABEL_3F1A_
@@ -7839,29 +7840,29 @@ _LABEL_3E51_:
 	ld a, $92
 	ld ($DD05), a
 	ld a, $08
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
 	ld (ix+0), $0F
 	ld (ix+1), $31
 	ret
 
-; Jump Table from 3E68 to 3ED7 (56 entries, indexed by unknown)
-JumpTable7:
-	.dw JumpTable7_3F53 JumpTable7_3F68 JumpTable7_3F74 JumpTable7_3F81
-	.dw JumpTable7_3FDA JumpTable7_3FE6 JumpTable7_401C JumpTable7_4077
-	.dw JumpTable7_409F JumpTable7_40B0 JumpTable7_411D JumpTable7_4140
-	.dw JumpTable7_4163 JumpTable7_4186 JumpTable7_41A9 JumpTable7_41B1
-	.dw JumpTable7_4226 JumpTable7_4240 JumpTable7_4259 JumpTable7_42AB
-	.dw JumpTable7_4339 JumpTable7_438C JumpTable7_43EE JumpTable7_4446
-	.dw JumpTable7_447F JumpTable7_4494 JumpTable7_44BC JumpTable7_44C5
-	.dw JumpTable7_44E0 JumpTable7_44FA JumpTable7_4545 JumpTable7_4565
-	.dw JumpTable7_458E JumpTable7_459C JumpTable7_45C9 JumpTable7_4610
-	.dw JumpTable7_4617 JumpTable7_461E JumpTable7_4633 JumpTable7_4649
-	.dw JumpTable7_4656 JumpTable7_4663 JumpTable7_4670 JumpTable7_467E
-	.dw JumpTable7_467E JumpTable7_468B JumpTable7_4698 JumpTable7_46AD
-	.dw JumpTable7_46C2 JumpTable7_46DF JumpTable7_474C JumpTable7_4758
-	.dw JumpTable7_4778 JumpTable7_4778 JumpTable7_4778 JumpTable7_4778
+; Jump Table from 3E68 to 3ED7 (56 entries, indexed by CurrentItem)
+ItemActionTable:
+	.dw BladeScrollAction     ShieldScrollAction   NorustScrollAction   BlessScrollAction
+	.dw NothingHappenedAction MapScrollAction      ShiftScrollAction    MadScrollAction
+	.dw FreezePotionAction    SummonScrollAction   MagiScrollAction     GasScrollAction
+	.dw GhostScrollAction     DragonScrollAction   BlankScrollAction    FlameRodAction
+	.dw FlashRodAction        ThunderRodAction     WindRodAction        BerserkRodAction
+	.dw SilentRodAction       ReshapeRodAction     TravelRodAction      DrainRodAction
+	.dw WitherRodAction       MinhealPotionAction  MidhealPotionAction  SlowPotionAction
+	.dw SlowfixPotionAction   FogPotionAction      ItemActionTable_4545 CurePotionAction
+	.dw MaxhealPotionAction   WitherPotionAction   HealFoodRingAction   MagicRingAction
+	.dw SightRingAction       ShieldRingAction     OgreRingAction       ShiftRingAction
+	.dw CursedRingAction      HungerRingAction     ToyRingAction        ItemActionTable_467E
+	.dw ItemActionTable_467E  ItemActionTable_468B PowerPotionAction    ReflexPotionAction
+	.dw PotionScrollAction    SpiritRodAction      WaterPotionAction    DazePotionAction
+	.dw ItemActionTable_4778  ItemActionTable_4778 ItemActionTable_4778 ItemActionTable_4778
 
 _LABEL_3ED8_:
 	ld a, $3F
@@ -7882,8 +7883,8 @@ _LABEL_3EF5_:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, ($C975)
-	ld ($CAC4), a
-	ld hl, $C931
+	ld (CurrentMessage), a
+	ld hl, CurrentItem
 	bit 7, (hl)
 	jr z, _LABEL_3F0B_
 	ld a, $AA
@@ -7930,7 +7931,7 @@ _LABEL_3F46_:
 	ret
 
 ; 1st entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3F53:
+BladeScrollAction:
 	ld a, (WeaponPW)
 	inc a
 	cp $3C
@@ -7943,7 +7944,7 @@ _LABEL_3F5D_:
 	jp _LABEL_3ED8_
 
 ; 2nd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3F68:
+ShieldScrollAction:
 	ld hl, ArmorAC
 	inc (hl)
 	ld a, $1D
@@ -7951,7 +7952,7 @@ JumpTable7_3F68:
 	jp _LABEL_3ED8_
 
 ; 3rd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3F74:
+NorustScrollAction:
 	ld a, $01
 	ld ($C631), a
 	ld a, $1E
@@ -7959,7 +7960,7 @@ JumpTable7_3F74:
 	jp _LABEL_3ED8_
 
 ; 4th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3F81:
+BlessScrollAction:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3F94_
@@ -7970,20 +7971,20 @@ JumpTable7_3F81:
 	cp $58
 	jr nz, _LABEL_3FA1_
 _LABEL_3F94_:
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	ld d, a
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	or d
 	ld d, a
 	and $80
-	jr z, JumpTable7_3FDA
+	jr z, NothingHappenedAction
 _LABEL_3FA1_:
-	ld hl, $C900
+	ld hl, EquippedWeapon
 	res 7, (hl)
-	call _LABEL_48F7_
-	ld hl, $C908
+	call EquipWeapon
+	ld hl, EquippedArmor
 	res 7, (hl)
-	call _LABEL_4916_
+	call EquipArmor
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3FD2_
@@ -8005,18 +8006,18 @@ _LABEL_3FD2_:
 	jp _LABEL_3ED8_
 
 ; 5th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3FDA:
+NothingHappenedAction:
 	ld a, $19
 	ld ($C975), a
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	jp _LABEL_3EDF_
 
 ; 6th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_3FE6:
+MapScrollAction:
 	ld a, (BlindnessTicksLeft)
 	or a
-	jr nz, JumpTable7_3FDA
+	jr nz, NothingHappenedAction
 	ld a, ($C020)
 	ld ($C0A9), a
 	ld a, $3F
@@ -8032,17 +8033,17 @@ _LABEL_4001_:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, $20
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	call _LABEL_2208_
 	ld a, $01
 	ld ($C60E), a
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	jp _LABEL_3F1A_
 
 ; 7th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_401C:
+ShiftScrollAction:
 	ld a, ($C020)
 	ld ($C0A9), a
 	ld a, $3F
@@ -8055,7 +8056,7 @@ _LABEL_4031_:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, $21
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $1E
 	ld hl, $4044
 	jp _LABEL_4786_
@@ -8074,8 +8075,8 @@ _LABEL_4044_:
 	call _LABEL_1F4F_
 	pop ix
 	xor a
-	ld ($C931), a
-	ld ($CAC4), a
+	ld (CurrentItem), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $98
 	ld ($DD05), a
@@ -8083,7 +8084,7 @@ _LABEL_4044_:
 	jp _LABEL_4786_
 
 ; 8th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4077:
+MadScrollAction:
 	ld iy, $C140
 	ld de, $0020
 	ld bc, $1600
@@ -8098,13 +8099,13 @@ _LABEL_408E_:
 	djnz _LABEL_4081_
 	ld a, c
 	or a
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld a, $16
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 9th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_409F:
+FreezePotionAction:
 	call GetRandomNumber
 	and $03
 	inc a
@@ -8114,9 +8115,9 @@ JumpTable7_409F:
 	jp _LABEL_3ED8_
 
 ; 10th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_40B0:
+SummonScrollAction:
 	call _LABEL_1F3A_
-	jp c, JumpTable7_3FDA
+	jp c, NothingHappenedAction
 	ld ($C638), hl
 	push hl
 	pop iy
@@ -8137,7 +8138,7 @@ _LABEL_40C9_:
 	ld h, (ix+6)
 	add hl, de
 	call _LABEL_2091_
-	jp c, JumpTable7_3FDA
+	jp c, NothingHappenedAction
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, ($C020)
@@ -8152,7 +8153,7 @@ _LABEL_40F4_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	call _LABEL_2054_
 	ld hl, ($C638)
@@ -8163,7 +8164,7 @@ _LABEL_40F4_:
 	add hl, de
 	ld (hl), a
 	ld a, $24
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; Data from 4115 to 411C (8 bytes)
@@ -8171,77 +8172,77 @@ Data_4115:
 	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 ; 11th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_411D:
-	ld a, ($C900)
+MagiScrollAction:
+	ld a, (EquippedWeapon)
 	cp $09
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld a, $09
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, $C01E
 	set 0, (hl)
-	call _LABEL_48F7_
+	call EquipWeapon
 	ld a, $25
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 12th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4140:
-	ld a, ($C900)
+GasScrollAction:
+	ld a, (EquippedWeapon)
 	cp $0A
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld a, $0A
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, $C01E
 	set 0, (hl)
-	call _LABEL_48F7_
+	call EquipWeapon
 	ld a, $25
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 13th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4163:
-	ld a, ($C900)
+GhostScrollAction:
+	ld a, (EquippedWeapon)
 	cp $0B
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld a, $0B
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, $C01E
 	set 0, (hl)
-	call _LABEL_48F7_
+	call EquipWeapon
 	ld a, $25
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 14th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4186:
-	ld a, ($C900)
+DragonScrollAction:
+	ld a, (EquippedWeapon)
 	cp $0C
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld a, $0C
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, $C01E
 	set 0, (hl)
-	call _LABEL_48F7_
+	call EquipWeapon
 	ld a, $25
 	ld ($C975), a
 	jp _LABEL_3ED8_
 
 ; 15th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_41A9:
+BlankScrollAction:
 	ld a, $26
 	ld ($C975), a
 	jp _LABEL_3EDF_
 
 ; 16th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_41B1:
+FlameRodAction:
 	ld a, (CharacterLevel)
 	add a, a
 	add a, a
@@ -8281,7 +8282,7 @@ _LABEL_41F4_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld hl, ($C63A)
 	ld a, ($C930)
@@ -8297,7 +8298,7 @@ _LABEL_4220_:
 	jp _LABEL_393C_
 
 ; 17th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4226:
+FlashRodAction:
 	ld a, (CharacterLevel)
 	add a, a
 	ld d, a
@@ -8313,7 +8314,7 @@ JumpTable7_4226:
 	jp _LABEL_41C6_
 
 ; 18th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4240:
+ThunderRodAction:
 	ld a, (CharacterLevel)
 	add a, a
 	add a, a
@@ -8328,7 +8329,7 @@ JumpTable7_4240:
 	jp _LABEL_41C6_
 
 ; 19th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4259:
+WindRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4266_
 	ld a, $22
@@ -8356,18 +8357,18 @@ _LABEL_4283_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld hl, ($C638)
 	ld (hl), $0F
 	inc hl
 	ld (hl), $31
 	ld a, $1A
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; 20th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_42AB:
+BerserkRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_42B8_
 	ld a, $22
@@ -8398,7 +8399,7 @@ _LABEL_42DE_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld hl, (CurrentHPLow)
 	ld e, l
@@ -8440,11 +8441,11 @@ _LABEL_4329_:
 	or d
 	jp z, _LABEL_3962_
 	ld a, $29
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; 21st entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4339:
+SilentRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4346_
 	ld a, $22
@@ -8472,18 +8473,18 @@ _LABEL_4363_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld hl, ($C638)
 	ld de, $001C
 	add hl, de
 	set 3, (hl)
 	ld a, $2A
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; 22nd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_438C:
+ReshapeRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4399_
 	ld a, $22
@@ -8512,7 +8513,7 @@ _LABEL_43BA_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 _LABEL_43D2_:
 	call _LABEL_2054_
@@ -8527,11 +8528,11 @@ _LABEL_43D2_:
 	inc hl
 	ld (hl), d
 	ld a, $2B
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; 23rd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_43EE:
+TravelRodAction:
 	ld a, (Floor)
 	cp $1E
 	jr c, _LABEL_43FD_
@@ -8552,10 +8553,10 @@ _LABEL_4412_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld a, $2C
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $1E
 	ld hl, $442C
 	jp _LABEL_4786_
@@ -8566,7 +8567,7 @@ _LABEL_442C_:
 	ld hl, Floor
 	inc (hl)
 	xor a
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld ($CAC5), a
 	call _LABEL_42C_
 	ld a, $08
@@ -8574,7 +8575,7 @@ _LABEL_442C_:
 	jp _LABEL_143_
 
 ; 24th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4446:
+DrainRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4453_
 	ld a, $22
@@ -8602,10 +8603,10 @@ _LABEL_4474_:
 	jp _LABEL_3ED8_
 
 ; 25th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_447F:
+WitherRodAction:
 	ld a, (CharacterLevel)
 	dec a
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld (CharacterLevel), a
 	call _LABEL_496B_
 	ld a, $2E
@@ -8613,7 +8614,7 @@ JumpTable7_447F:
 	jp _LABEL_3ED8_
 
 ; 26th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4494:
+MinhealPotionAction:
 	ld hl, (MaxHPLow)
 	srl h
 	rr l
@@ -8636,14 +8637,14 @@ _LABEL_44B1_:
 	jp _LABEL_3ED8_
 
 ; 27th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_44BC:
+MidhealPotionAction:
 	ld hl, (MaxHPLow)
 	srl h
 	rr l
 	jr _LABEL_449F_
 
 ; 28th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_44C5:
+SlowPotionAction:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr z, _LABEL_44D3_
@@ -8659,7 +8660,7 @@ _LABEL_44D3_:
 	jp _LABEL_3ED8_
 
 ; 29th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_44E0:
+SlowfixPotionAction:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_44EE_
@@ -8675,7 +8676,7 @@ _LABEL_44EE_:
 	jp _LABEL_3ED8_
 
 ; 30th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_44FA:
+FogPotionAction:
 	ld a, (BlindnessTicksLeft)
 	or a
 	jr z, _LABEL_4508_
@@ -8696,7 +8697,7 @@ _LABEL_451D_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	call _LABEL_21BF_
 	ld a, $01
@@ -8707,11 +8708,11 @@ _LABEL_451D_:
 	add a, $10
 	ld (BlindnessTicksLeft), a
 	ld a, $32
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; 31st entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4545:
+ItemActionTable_4545:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4553_
@@ -8729,7 +8730,7 @@ _LABEL_4553_:
 	jp _LABEL_3ED8_
 
 ; 32nd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4565:
+CurePotionAction:
 	ld a, (PoisonTicksLeft)
 	ld d, a
 	ld a, (BlindnessTicksLeft)
@@ -8752,7 +8753,7 @@ _LABEL_457C_:
 	jp _LABEL_3ED8_
 
 ; 33rd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_458E:
+MaxhealPotionAction:
 	ld hl, (MaxHPLow)
 	ld (CurrentHPLow), hl
 	ld a, $2F
@@ -8760,13 +8761,13 @@ JumpTable7_458E:
 	jp _LABEL_3ED8_
 
 ; 34th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_459C:
+WitherPotionAction:
 	call GetRandomNumber
 	and $01
 	jr z, _LABEL_45B6_
 	ld a, (BasePW)
 	or a
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	dec a
 	ld (BasePW), a
 	ld a, $35
@@ -8776,7 +8777,7 @@ JumpTable7_459C:
 _LABEL_45B6_:
 	ld a, (BaseAC)
 	or a
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	dec a
 	ld (BasePW), a
 	ld a, $35
@@ -8784,7 +8785,7 @@ _LABEL_45B6_:
 	jp _LABEL_3ED8_
 
 ; 35th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_45C9:
+HealFoodRingAction:
 	ld a, $2F
 	ld ($C975), a
 _LABEL_45CE_:
@@ -8801,8 +8802,8 @@ _LABEL_45E3_:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, ($C975)
-	ld ($CAC4), a
-	ld a, ($C931)
+	ld (CurrentMessage), a
+	ld a, (CurrentItem)
 	and $0F
 	cp $08
 	jr z, _LABEL_45FF_
@@ -8812,26 +8813,26 @@ _LABEL_45E3_:
 	ld ($DD05), a
 _LABEL_45FF_:
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld (ix+24), $1E
 	ld hl, $3142
 	jp _LABEL_4786_
 
 ; 36th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4610:
+MagicRingAction:
 	ld a, $36
 	ld ($C975), a
 	jr _LABEL_45CE_
 
 ; 37th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4617:
+SightRingAction:
 	ld a, $37
 	ld ($C975), a
 	jr _LABEL_45CE_
 
 ; 38th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_461E:
+ShieldRingAction:
 	ld a, (BaseAC)
 	add a, $04
 	cp $32
@@ -8844,7 +8845,7 @@ _LABEL_4629_:
 	jr _LABEL_45CE_
 
 ; 39th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4633:
+OgreRingAction:
 	ld a, (BasePW)
 	add a, $04
 	cp $3C
@@ -8857,7 +8858,7 @@ _LABEL_463E_:
 	jp _LABEL_45CE_
 
 ; 40th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4649:
+ShiftRingAction:
 	ld a, $21
 	ld ($C975), a
 	ld a, $00
@@ -8865,7 +8866,7 @@ JumpTable7_4649:
 	jp _LABEL_45D3_
 
 ; 41st entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4656:
+CursedRingAction:
 	ld a, $3A
 	ld ($C975), a
 	ld a, $00
@@ -8873,7 +8874,7 @@ JumpTable7_4656:
 	jp _LABEL_45D3_
 
 ; 42nd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4663:
+HungerRingAction:
 	ld a, $3A
 	ld ($C975), a
 	ld a, $00
@@ -8881,7 +8882,7 @@ JumpTable7_4663:
 	jp _LABEL_45D3_
 
 ; 43rd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4670:
+ToyRingAction:
 	ld a, $3B
 	ld ($C975), a
 	ld a, ($C020)
@@ -8889,7 +8890,7 @@ JumpTable7_4670:
 	jp _LABEL_45D3_
 
 ; 44th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_467E:
+ItemActionTable_467E:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $3F
@@ -8897,7 +8898,7 @@ JumpTable7_467E:
 	jp _LABEL_3EE5_
 
 ; 46th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_468B:
+ItemActionTable_468B:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $40
@@ -8905,7 +8906,7 @@ JumpTable7_468B:
 	jp _LABEL_3EE5_
 
 ; 47th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4698:
+PowerPotionAction:
 	ld a, (BasePW)
 	inc a
 	cp $3C
@@ -8918,7 +8919,7 @@ _LABEL_46A2_:
 	jp _LABEL_3ED8_
 
 ; 48th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_46AD:
+ReflexPotionAction:
 	ld a, (BaseAC)
 	inc a
 	cp $32
@@ -8931,10 +8932,10 @@ _LABEL_46B7_:
 	jp _LABEL_3ED8_
 
 ; 49th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_46C2:
+PotionScrollAction:
 	ld a, ($C920)
 	or a
-	jp z, JumpTable7_3FDA
+	jp z, NothingHappenedAction
 	ld hl, $C920
 	ld b, $08
 _LABEL_46CE_:
@@ -8950,9 +8951,9 @@ _LABEL_46D7_:
 	jp _LABEL_3ED8_
 
 ; 50th entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_46DF:
+SpiritRodAction:
 	call _LABEL_1F3A_
-	jp c, JumpTable7_3FDA
+	jp c, NothingHappenedAction
 	ld ($C638), hl
 	push hl
 	pop iy
@@ -8973,7 +8974,7 @@ _LABEL_46F8_:
 	ld h, (ix+6)
 	add hl, de
 	call _LABEL_2091_
-	jp c, JumpTable7_3FDA
+	jp c, NothingHappenedAction
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, ($C020)
@@ -8988,7 +8989,7 @@ _LABEL_4723_:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_4888_
 	call _LABEL_2054_
 	ld hl, ($C638)
@@ -8999,7 +9000,7 @@ _LABEL_4723_:
 	add hl, de
 	ld (hl), a
 	ld a, $4F
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
 ; Data from 4744 to 474B (8 bytes)
@@ -9007,15 +9008,15 @@ Data_4744:
 	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
 ; 51st entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_474C:
+WaterPotionAction:
 	ld a, $50
 	ld ($C975), a
 	xor a
-	ld ($C931), a
+	ld (CurrentItem), a
 	jp _LABEL_3EDF_
 
 ; 52nd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4758:
+DazePotionAction:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, _LABEL_4766_
@@ -9033,7 +9034,7 @@ _LABEL_4766_:
 	jp _LABEL_3ED8_
 
 ; 53rd entry of Jump Table from 3E68 (indexed by unknown)
-JumpTable7_4778:
+ItemActionTable_4778:
 	ld a, ($C020)
 	ld ($C0AB), a
 	ld a, $19
@@ -9285,53 +9286,52 @@ _LABEL_48E5_:
 Data_48E8:
 	.db $E0 $FF $20 $00 $FF $FF $01 $00
 
-_LABEL_48F0_:
-	call _LABEL_48F7_
-	call _LABEL_4916_
+EquipWeaponAndArmor:
+	call EquipWeapon
+	call EquipArmor
 	ret
 
-_LABEL_48F7_:
-	ld a, ($C900)
-	and $0F
-	add a, a
-	ld e, a
+EquipWeapon:
+	ld a, (EquippedWeapon)	; Get weapon to be equipped
+	and $0F					; Mask off type of item type to get just the weapon number
+	add a, a				; Double number to get statistic table offset
+	ld e, a					; Put table offset into de
 	ld d, $00
-	ld hl, Data_4935
-	add hl, de
-	ld de, WeaponHit
-	ldi
-	ldi
-	ld a, ($C900)
+	ld hl, WeaponStatistics	; Put statistics table address into hl
+	add hl, de				; Add offset
+	ld de, WeaponHit		; Destination is weapon hit
+	ldi						; Load weapon hit value
+	ldi						; Increment and load PW value
+	ld a, (EquippedWeapon)	; If weapon is cursed, no PW value?
 	bit 7, a
 	ret z
 	xor a
 	ld (WeaponPW), a
 	ret
 
-_LABEL_4916_:
-	ld a, ($C908)
-	and $0F
-	add a, a
-	ld e, a
+EquipArmor:
+	ld a, (EquippedArmor)	; Get armor to be equipped
+	and $0F					; Mask off type of item type to get just the armor number
+	add a, a				; Double number to get statistic table offset
+	ld e, a					; Put table offset into de
 	ld d, $00
-	ld hl, $4955
-	add hl, de
-	ld de, ArmorEvd
-	ldi
-	ldi
-	ld a, ($C908)
+	ld hl, ArmorStatistics	; Put statistics table address into hl
+	add hl, de				; Add offset
+	ld de, ArmorEvd			; Destination is armor evade
+	ldi						; Load evasion value
+	ldi						; Increment and load AC value
+	ld a, (EquippedArmor)	; If armor is cursed, no AC value?
 	bit 7, a
 	ret z
 	xor a
 	ld (ArmorAC), a
 	ret
 
-; Data from 4935 to 496A (54 bytes)
-Data_4935:
-	.db $00 $00 $00 $02 $04 $04 $08 $08 $10 $0E $14 $13 $18 $19 $1E $20
-	.db $28 $28 $0A $0C $28 $0D $1E $0D $28 $17 $14 $0E $00 $12 $28 $1E
-	.db $00 $00 $08 $02 $0C $05 $10 $09 $14 $0F $18 $14 $1D $1C $23 $24
-	.db $28 $2C $28 $10 $32 $32
+WeaponStatistics:
+	.include "items\behavior\weapon_statistics.asm"
+
+ArmorStatistics:
+	.include "items\behavior\armor_statistics.asm"
 
 _LABEL_496B_:
 	ld a, (CharacterLevel)
@@ -9416,7 +9416,7 @@ _LABEL_49FC_:
 	add a, e
 	ld e, a
 	ld d, $00
-	ld hl, $C900
+	ld hl, EquippedWeapon
 	add hl, de
 	ld a, (hl)
 	or a
@@ -9459,7 +9459,7 @@ _LABEL_4A4F_:
 	ld a, $02
 _LABEL_4A58_:
 	add a, $4C
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld a, $A8
 	ld ($DD05), a
 	ld (ix+24), $00
@@ -9532,7 +9532,7 @@ _LABEL_4AD8_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $C900
+	ld hl, EquippedWeapon
 	add hl, de
 	ld a, ($C478)
 	dec a
@@ -9553,7 +9553,7 @@ _LABEL_4AD8_:
 	ld b, d
 	add hl, de
 	ld a, (hl)
-	ld ($C931), a
+	ld (CurrentItem), a
 	ld e, l
 	ld d, h
 	inc hl
@@ -9564,7 +9564,7 @@ _LABEL_4AD8_:
 _LABEL_4B15_:
 	xor a
 	ld (de), a
-	ld hl, ($C931)
+	ld hl, (CurrentItem)
 	ld h, $00
 	ld de, $C915
 	add hl, de
@@ -9597,7 +9597,7 @@ _LABEL_4B41_:
 	ld (hl), a
 	ex af, af'
 	ld (de), a
-	ld ($C931), a
+	ld (CurrentItem), a
 	and $0F
 	ld e, a
 	ld d, $00
@@ -9623,19 +9623,19 @@ _LABEL_4B66_:
 	and $7F
 	cp $10
 	jr nc, _LABEL_4B8B_
-	call _LABEL_48F7_
-	ld a, ($C900)
+	call EquipWeapon
+	ld a, (EquippedWeapon)
 	bit 7, a
 	jr nz, _LABEL_4B95_
 	jr _LABEL_4BA0_
 
 _LABEL_4B8B_:
-	call _LABEL_4916_
-	ld a, ($C908)
+	call EquipArmor
+	ld a, (EquippedArmor)
 	bit 7, a
 	jr z, _LABEL_4BA0_
 _LABEL_4B95_:
-	ld ($C931), a
+	ld (CurrentItem), a
 	call _LABEL_42C_
 	ld a, $09
 	ld (TableIndex1), a
@@ -10051,7 +10051,7 @@ JumpTable8_4E43:
 	rst $08	; Interrupt8
 	ld a, $7B
 	out (VDPData), a
-	ld hl, $C900
+	ld hl, EquippedWeapon
 	ld de, $A000
 	jp _LABEL_4EBD_
 
@@ -10061,7 +10061,7 @@ JumpTable8_4E54:
 	rst $08	; Interrupt8
 	ld a, $7B
 	out (VDPData), a
-	ld hl, $C908
+	ld hl, EquippedArmor
 	ld de, $A020
 	jp _LABEL_4EBD_
 
@@ -10348,7 +10348,7 @@ _LABEL_5021_:
 
 _LABEL_5030_:
 	ld d, $1C
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $13
 	jr c, _LABEL_503F_
 	inc d
@@ -10512,7 +10512,7 @@ _LABEL_51A4_:
 	ret
 
 _LABEL_51A5_:
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $19
 	jr z, _LABEL_51B5_
 	ld a, (ix+28)
@@ -10526,7 +10526,7 @@ _LABEL_51B5_:
 	ret
 
 _LABEL_51B7_:
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $11
 	jr z, _LABEL_51DC_
 	cp $12
@@ -10777,7 +10777,7 @@ _LABEL_5336_:
 	ld h, $00
 	ld ($CAC6), hl
 	ld a, $02
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ret
 
 _LABEL_5356_:
@@ -10788,7 +10788,7 @@ _LABEL_5356_:
 
 _LABEL_5360_:
 	ld a, $0B
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+29), $01
 	ret
 
@@ -12170,7 +12170,7 @@ _LABEL_5DE5_:
 	add a, b
 	ld (PoisonTicksLeft), a
 	ld a, $42
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $2E
 	ld (ix+1), $5E
@@ -12696,7 +12696,7 @@ _LABEL_626F_:
 	add a, b
 	ld (DizzinessTicksLeft), a
 	ld a, $33
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $B9
 	ld (ix+1), $62
@@ -13122,38 +13122,38 @@ _LABEL_6649_:
 _LABEL_6661_:
 	call _LABEL_51B7_
 	jr c, _LABEL_66C7_
-	ld a, ($C908)
+	ld a, (EquippedArmor)
 	cp $10
 	jr z, _LABEL_66C7_
 	ld a, $10
-	ld ($C908), a
+	ld (EquippedArmor), a
 	ld (ix+24), $10
 	ld (ix+0), $7E
 	ld (ix+1), $66
 	dec (ix+24)
 	ret nz
-	call _LABEL_4916_
+	call EquipArmor
 	ld a, $43
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jr _LABEL_66C7_
 
 _LABEL_668C_:
 	ld a, (ix+28)
 	and $08
 	jr nz, _LABEL_66C7_
-	ld a, ($C900)
+	ld a, (EquippedWeapon)
 	cp $01
 	jr z, _LABEL_66C7_
 	ld a, $01
-	ld ($C900), a
+	ld (EquippedWeapon), a
 	ld (ix+24), $10
 	ld (ix+0), $AB
 	ld (ix+1), $66
 	dec (ix+24)
 	ret nz
-	call _LABEL_48F7_
+	call EquipWeapon
 	ld a, $44
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $C3
 	ld (ix+1), $66
@@ -13414,14 +13414,14 @@ _LABEL_68BC_:
 	ld a, $08
 	ld (BlindnessTicksLeft), a
 	ld a, $32
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jr _LABEL_6921_
 
 _LABEL_6918_:
 	pop af
 	ld (DizzinessTicksLeft), a
 	ld a, $33
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 _LABEL_6921_:
 	ld (ix+24), $10
 	ld (ix+0), $2D
@@ -14097,7 +14097,7 @@ _LABEL_6EBE_:
 	dec (ix+24)
 	ret nz
 	ld a, $45
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $E2
 	ld (ix+1), $6E
@@ -14303,7 +14303,7 @@ _LABEL_7085_:
 	dec (ix+24)
 	ret nz
 	ld a, $35
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $9A
 	ld (ix+1), $70
@@ -14791,12 +14791,12 @@ _LABEL_749E_:
 	cp $19
 	jr z, _LABEL_74C4_
 	ld a, $46
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 	jr _LABEL_74C9_
 
 _LABEL_74C4_:
 	ld a, $47
-	ld ($CAC4), a
+	ld (CurrentMessage), a
 _LABEL_74C9_:
 	ld (ix+24), $10
 	ld (ix+0), $D5
@@ -15541,10 +15541,10 @@ _LABEL_7B1C_:
 .include "map\map_block_table.asm"
 
 ; Pointer table for item and equipment names
-.include "items\item_name_pointer_table.asm"
+.include "items\names\item_name_pointer_table.asm"
 
 ; Item and equipment names
-.include "items\item_name_table.asm"
+.include "items\names\item_name_data_table.asm"
 
 ; Data from E976 to EB3E (456 bytes)
 .incbin "data\dcsms_e976.inc"

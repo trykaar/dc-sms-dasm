@@ -72,3 +72,9 @@
 .define FoodTimer 				$C63C
 .define HealTimer 				$C63D
 .define ContinuesSpent			$C63E
+
+.define CurrentItem				$C931
+.define EquippedWeapon			$C900
+.define EquippedArmor			$C908
+
+.define CurrentMessage			$CAC4
