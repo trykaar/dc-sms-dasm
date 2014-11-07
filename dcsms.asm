@@ -3,7 +3,6 @@
 
 ; Variable Definitions
 .include "defines\defines.i"
-.include "defines\macros.i"
 .include "defines\asciitable.i"
 .include "defines\sound_driver.i"
 
@@ -2042,7 +2041,7 @@ _LABEL_108F_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, Data_1123
+	ld hl, SwordColors
 	add hl, de
 	ld de, $C077
 	ldi
@@ -2070,9 +2069,8 @@ _LABEL_110A_:
 	ld (TableIndex1), a
 	jp _LABEL_143_
 
-; Data from 1123 to 1126 (4 bytes)
-Data_1123:
-	.db $0C $03 $30 $33
+; Sword colors
+.include "items\appearance\sword_color_palette.asm"
 
 ; 10th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_1127:
@@ -2111,7 +2109,7 @@ JumpTable1_1127:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, Data_1123
+	ld hl, SwordColors
 	add hl, de
 	ld a, (hl)
 	ld ($C077), a
@@ -2452,7 +2450,7 @@ _LABEL_13BF_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, Data_1123
+	ld hl, SwordColors
 	add hl, de
 	ld de, $C08E
 	ldi
@@ -2570,7 +2568,7 @@ _LABEL_14A7_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, Data_1123
+	ld hl, SwordColors
 	add hl, de
 	ld de, $C077
 	ldi
@@ -3130,7 +3128,7 @@ _LABEL_1BD5_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, Data_1123
+	ld hl, SwordColors
 	add hl, de
 	ld de, $C077
 	ldi
