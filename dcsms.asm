@@ -639,7 +639,7 @@ _LABEL_40C_:
 _LABEL_40F_:
 	ld a, $01
 	ld (TableIndex3), a
-	ld hl, $C020
+	ld hl, PaletteInRAM
 	ld de, $C021
 	ld bc, $001F
 	ld (hl), $00
@@ -653,8 +653,8 @@ _LABEL_40F_:
 _LABEL_42C_:
 	ld a, $02
 	ld (TableIndex3), a
-	ld hl, $C020
-	ld de, $C060
+	ld hl, PaletteInRAM
+	ld de, PaletteInRAM2
 	call LDI32
 	ld a, $04
 	ld ($C0A2), a
@@ -668,8 +668,8 @@ _LABEL_443_:
 	ld a, $03
 	ld (TableIndex3), a
 	ld a, $3F
-	ld ($C020), a
-	ld hl, $C020
+	ld (PaletteInRAM), a
+	ld hl, PaletteInRAM
 	ld de, $C021
 	call LDI32
 	ld hl, $C01E
@@ -681,8 +681,8 @@ _LABEL_443_:
 _LABEL_461_:
 	ld a, $04
 	ld (TableIndex3), a
-	ld hl, $C020
-	ld de, $C060
+	ld hl, PaletteInRAM
+	ld de, PaletteInRAM2
 	call LDI32
 	ld a, $04
 	ld ($C0A2), a
@@ -692,7 +692,7 @@ _LABEL_475_:
 	ld c, (hl)
 	ld b, $00
 	ex de, hl
-	ld hl, $C020
+	ld hl, PaletteInRAM
 	add hl, bc
 	ld ($C0A4), hl
 	inc de
@@ -722,8 +722,8 @@ _LABEL_49A_:
 _LABEL_4A9_:
 	ld a, $06
 	ld (TableIndex3), a
-	ld hl, $C020
-	ld de, $C060
+	ld hl, PaletteInRAM
+	ld de, PaletteInRAM2
 	call LDI32
 	ld a, $04
 	ld ($C0A2), a
@@ -775,8 +775,8 @@ JumpTable3_504:
 	ld a, ($C0A1)
 _LABEL_507_:
 	ld c, a
-	ld de, $C060
-	ld hl, $C020
+	ld de, PaletteInRAM2
+	ld hl, PaletteInRAM
 	ld b, $20
 _LABEL_510_:
 	push bc
@@ -826,8 +826,8 @@ JumpTable3_542:
 	ld a, ($C0A1)
 _LABEL_545_:
 	ld c, a
-	ld de, $C060
-	ld hl, $C020
+	ld de, PaletteInRAM2
+	ld hl, PaletteInRAM
 	ld b, $20
 _LABEL_54E_:
 	push bc
@@ -1221,14 +1221,14 @@ _LABEL_74B_:
 	ret
 
 _LABEL_750_:
-	ld de, $C060
+	ld de, PaletteInRAM2
 	jr _LABEL_760_
 
 _LABEL_755_:
 	ld a, ($C01E)
 	or $01
 	ld ($C01E), a
-	ld de, $C020
+	ld de, PaletteInRAM
 _LABEL_760_:
 	ld a, (hl)
 	inc hl
@@ -1246,7 +1246,7 @@ _LABEL_760_:
 	ret
 
 _LABEL_771_:
-	ld hl, $C020		; Zero out $C020-C040
+	ld hl, PaletteInRAM		; Zero out PaletteInRAM-C040
 	ld de, $C021
 	ld bc, $001F
 	ld (hl), $00
@@ -1260,7 +1260,7 @@ _LABEL_784_:
 	out (VDPControl), a
 	ld a, $C0
 	out (VDPControl), a
-	ld hl, $C020
+	ld hl, PaletteInRAM
 	ld c, VDPData
 	jp OUTI32
 
@@ -2029,7 +2029,7 @@ _LABEL_108F_:
 	ld hl, $8064
 	call _LABEL_750_
 	call _LABEL_27E3_
-	call _LABEL_2756_
+	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
@@ -2097,7 +2097,7 @@ JumpTable1_1127:
 	ld hl, $8064
 	call _LABEL_750_
 	call _LABEL_27E3_
-	call _LABEL_2756_
+	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
@@ -2437,7 +2437,7 @@ _LABEL_13BF_:
 	ld d, $00
 	ld hl, $ADF3
 	add hl, de
-	ld de, $C060
+	ld de, PaletteInRAM2
 	call LDI32
 	ld a, $04
 	ld ($FFFF), a
@@ -3116,7 +3116,7 @@ _LABEL_1BD5_:
 	ld hl, $8064
 	call _LABEL_750_
 	call _LABEL_27E3_
-	call _LABEL_2756_
+	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
@@ -4874,7 +4874,7 @@ _LABEL_2712_:
 	djnz _LABEL_2707_
 	ret
 
-_LABEL_2756_:
+LoadMonsterPalette:
 	ld a, (Floor)
 	dec a
 	and $FE
@@ -4882,28 +4882,13 @@ _LABEL_2756_:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld de, Data_276B
+	ld de, MonsterPalettes
 	add hl, de
 	ld de, $C078
 	jp LDI8
 
-; Data from 276B to 27E2 (120 bytes)
-Data_276B:
-	.db $04 $08 $09 $1E $02 $03 $07 $0B
-	.db $20 $34 $38 $3C $02 $03 $07 $0B
-	.db $20 $34 $38 $3C $15 $2A $2E $3F
-	.db $02 $03 $03 $0B $15 $2A $2E $3F
-	.db $02 $03 $03 $0B $15 $2A $2E $3F
-	.db $15 $2A $3E $3F $15 $2A $2E $3F
-	.db $15 $2A $3E $3F $20 $34 $38 $0C
-	.db $01 $02 $03 $0B $20 $34 $38 $0C
-	.db $01 $02 $03 $0B $20 $34 $38 $0C
-	.db $20 $34 $38 $3C $20 $34 $38 $0C
-	.db $20 $34 $38 $3C $15 $15 $2A $2A
-	.db $07 $0B $0F $0F $15 $15 $2A $2A
-	.db $07 $0B $0F $0F $01 $02 $03 $0B
-	.db $07 $0B $0F $0F $01 $02 $03 $0B
-	.db $07 $0B $0F $0F $04 $14 $19 $1A
+; Monster Palettes? from 276B to 27E2 (120 bytes)
+.include "monsters\monster_color_palettes.asm"
 
 _LABEL_27E3_:
 	ld a, $02
@@ -6759,7 +6744,7 @@ _LABEL_357C_:
 	ld ($C60E), a
 	ld a, $3F
 	ld ($C0AB), a
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $3C
 	ld (ix+0), $B2
@@ -7868,10 +7853,10 @@ _LABEL_3ED8_:
 	jr _LABEL_3EE5_
 
 _LABEL_3EDF_:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0AB), a
 _LABEL_3EE5_:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
 	ld hl, $3EF5
@@ -7914,7 +7899,7 @@ _LABEL_3F2B_:
 	jr nz, _LABEL_3F3C_
 	ld a, ($C0A9)
 _LABEL_3F3C_:
-	ld ($C020), a
+	ld (PaletteInRAM), a
 	ld hl, $C01E
 	set 0, (hl)
 	xor a
@@ -7922,7 +7907,7 @@ _LABEL_3F3C_:
 
 _LABEL_3F46_:
 	ld a, ($C0A9)
-	ld ($C020), a
+	ld (PaletteInRAM), a
 	ld hl, $C01E
 	set 0, (hl)
 	scf
@@ -8016,7 +8001,7 @@ MapScrollAction:
 	ld a, (BlindnessTicksLeft)
 	or a
 	jr nz, NothingHappenedAction
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8042,7 +8027,7 @@ _LABEL_4001_:
 
 ; 7th entry of Jump Table from 3E68 (indexed by unknown)
 ShiftScrollAction:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8139,7 +8124,7 @@ _LABEL_40C9_:
 	jp c, NothingHappenedAction
 	ld (iy+5), l
 	ld (iy+6), h
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8264,7 +8249,7 @@ _LABEL_41D8_:
 	ld ($C638), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
 	ld hl, $41F4
@@ -8337,7 +8322,7 @@ WindRodAction:
 _LABEL_4266_:
 	ld ($C638), iy
 	set 4, (iy+28)
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8377,7 +8362,7 @@ _LABEL_42B8_:
 	ld ($C638), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8453,7 +8438,7 @@ SilentRodAction:
 _LABEL_4346_:
 	ld ($C638), iy
 	set 4, (iy+28)
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8493,7 +8478,7 @@ _LABEL_4399_:
 	ld ($C638), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8539,7 +8524,7 @@ TravelRodAction:
 	jp _LABEL_3EDF_
 
 _LABEL_43FD_:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8683,7 +8668,7 @@ FogPotionAction:
 	jp _LABEL_3EDF_
 
 _LABEL_4508_:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -8790,7 +8775,7 @@ _LABEL_45CE_:
 	ld a, $3F
 	ld ($C0AB), a
 _LABEL_45D3_:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
 	ld hl, $45E3
@@ -8883,7 +8868,7 @@ HungerRingAction:
 ToyRingAction:
 	ld a, $3B
 	ld ($C975), a
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0AB), a
 	jp _LABEL_45D3_
 
@@ -8975,7 +8960,7 @@ _LABEL_46F8_:
 	jp c, NothingHappenedAction
 	ld (iy+5), l
 	ld (iy+6), h
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
 	ld ($C0AB), a
@@ -9033,7 +9018,7 @@ _LABEL_4766_:
 
 ; 53rd entry of Jump Table from 3E68 (indexed by unknown)
 ItemActionTable_4778:
-	ld a, ($C020)
+	ld a, (PaletteInRAM)
 	ld ($C0AB), a
 	ld a, $19
 	ld ($C975), a
@@ -10380,7 +10365,7 @@ _LABEL_505C_:
 _LABEL_507D_:
 	dec (ix+24)
 	ret nz
-	ld hl, $C020
+	ld hl, PaletteInRAM
 	ld ($C0A4), hl
 	ld a, $08
 	ld ($C0A3), a

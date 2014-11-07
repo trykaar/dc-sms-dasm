@@ -19,6 +19,10 @@
 ; Random Number Generation
 .define RNGSeed					$C016
 
+; Palette mirrors
+.define PaletteInRAM			$C020
+.define PaletteInRAM2			$C060
+
 ; Control
 .define PlayerSpeed				$C0CF	; Also controls animation speed?
 
