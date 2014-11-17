@@ -2,6 +2,9 @@
 .define VDPData					$BE
 .define VDPControl				$BF
 
+; Reset status
+.define CurrentlyResetting		$C004
+
 ; Autoplaying demo- starts after title screen
 ; Autoplay mode can be turned on during gameplay with PAR code 00C006?? where ?? is $02 or greater
 .define Autoplay 				$C006	; 00 is off, 01 during play goes to title screen
@@ -10,7 +13,8 @@
 .define AutoplayCountdownHigh 	$C009
 .define AutoplayVar3 			$C00A	; possibly randomly generated number
 
-.define ControllerDirection 	$C00C
+.define CurrentControllerState 	$C00C
+.define LastControllerState 	$C00D
 
 ; Title
 .define TitleScreenCounterLow	$C012
@@ -22,6 +26,7 @@
 ; Palette mirrors
 .define PaletteInRAM			$C020
 .define PaletteInRAM2			$C060
+.define PaletteInRAMStatus		$C01E
 
 ; Control
 .define PlayerSpeed				$C0CF	; Also controls animation speed?

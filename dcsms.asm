@@ -67,7 +67,7 @@ Interrupt18:
 .org $0028
 Interrupt28:
 	ld a, $E2
-	jp _LABEL_3B_
+	jp FinishVDPControlInterrupt
 
 ; Empty space
 .ds 3, $FF
@@ -75,7 +75,7 @@ Interrupt28:
 .org $0030
 Interrupt30:
 	ld a, $A2
-	jp _LABEL_3B_
+	jp FinishVDPControlInterrupt
 
 ; Empty space
 .ds 3, $FF
@@ -85,7 +85,7 @@ Interrupt30:
 VBlank:
 	jp VBlankHandler
 
-_LABEL_3B_:
+FinishVDPControlInterrupt:
 	out (VDPControl), a
 	ld a, $81
 	out (VDPControl), a
@@ -93,9 +93,9 @@ _LABEL_3B_:
 
 ; Data from 42 to 65 (36 bytes)
 Data_42:
-	.db $26 $80 $A2 $81 $FF $82 $FF $83
-	.db $FF $84 $FF $85 $FB $86 $00 $87
-	.db $00 $88 $00 $89 $00 $8A
+	.dw $8026 $81A2 $82FF $83FF
+	.dw $84FF $85FF $86FB $8700
+	.dw $8800 $8900 $8A00
 
 ; Empty space
 .ds 14, $FF
@@ -104,20 +104,20 @@ Data_42:
 .org $0066
 PauseHandler:
 	push af
-	ld a, ($C019)
+	ld a, ($C019)			; If $C019 is 10, do nothing
 	cp $0A
-	jr nz, _LABEL_7E_
-	ld a, (Autoplay)
+	jr nz, ++
+	ld a, (Autoplay)		; If autoplay is on, do nothing
 	or a
-	jr nz, _LABEL_7B_
+	jr nz, +
 	ld a, (PlayerSpeed)		; Get player speed
 	cpl						; Toggle between fast speed ($FF) and slow speed ($00)
 	ld (PlayerSpeed), a		; Save player speed
-_LABEL_7B_:
++:
 	pop af
 	retn
 
-_LABEL_7E_:
+++:
 	pop af
 	retn
 
@@ -143,18 +143,19 @@ WaitForLineB0:
 	cp $B0					; Is it $B0?
 	jr nz, WaitForLineB0	; If not, go back and wait
 	xor a					; Zero out a
-	out (VDPControl), a		; Write $C000 out to the VDP, set address to VDP $00000
+	out (VDPControl), a		; Write $C000 out to the VDP to select CRAM
 	ld a, $C0
 	out (VDPControl), a
 	xor a					; Zero out a again
 	ld b, $20				; Load counter with $20
 	ex (sp), hl				; Wait
 	ex (sp), hl
-_LABEL_B4_:
-	out (VDPData), a		; Output zero to VDPData
+-:
+	out (VDPData), a		; Set the next palette color to black
 	nop						; Wait
-	djnz _LABEL_B4_			; Do this $20 times (32 times)
-_LABEL_B9_:
+	djnz -					; Do this $20 times (32 times) for the whole palette
+	
+DoReset:					; If the game is reset, it jumps back to this point
 	di
 	ld sp, $DFF0			; Initialize stack pointer
 	xor a					; Zero out a
@@ -176,8 +177,8 @@ _LABEL_B9_:
 	ld (hl), $00
 	ldir
 	rst $30					; Interrupt30- write $A2, $81 to VDPControl
-	call _LABEL_771_		; Initializes more memory, sets a flag in $C01E
-	call _LABEL_59D_		; Some sort of display? Title screen, maybe?
+	call InitializePaletteInRAM ; Initializes more memory, sets a flag in PaletteInRAMStatus
+	call VDPOut_59D			; Some sort of display? Title screen, maybe?
 	ld a, $FF
 	ld (PlayerSpeed), a		; Set speed to fast ($FF)
 	ld a, $00				; Zero out $C019 and TableIndex1...
@@ -195,9 +196,9 @@ _LABEL_B9_:
 	ret						; Unreachable
 
 _LABEL_111_:
-	call _LABEL_321_
+	call UpdateControllerState
 	call _LABEL_4BD_
-	ld hl, $0111
+	ld hl, _LABEL_111_
 	push hl
 	ld hl, TableIndex1
 	ld a, ($C019)
@@ -273,7 +274,7 @@ _LABEL_175_:
 JumpTable1:
 	.dw JumpTable1_BD7    JumpTable1_BD7  JumpTable1_BEA  JumpTable1_C6D
 	.dw SetUpGameAutoplay Origin          JumpTable1_F4C  JumpTable1_F4C
-	.dw JumpTable1_1058   JumpTable1_1127 JumpTable1_11A0 JumpTable1_11DB
+	.dw JumpTable1_1058   JumpTable1_1127 JumpTable1_11A0 DoGameOver
 	.dw JumpTable1_1424   JumpTable1_1435 JumpTable1_152F JumpTable1_16F4
 	.dw JumpTable1_192B   JumpTable1_1B20 JumpTable1_1CA8 JumpTable1_1CD0
 	.dw JumpTable1_1D11   JumpTable1_1D4B JumpTable1_153B JumpTable1_1566
@@ -337,28 +338,28 @@ EndVBlank:
 
 ; 2nd entry of Jump Table from 1D1 (indexed by VBlankAction)
 VBlankActionTable_20E:
-	call _LABEL_308_
+	call CheckForReset
 	call _LABEL_2DD_
-	call _LABEL_2E9_
+	call VDPOut_2E9
 	ld b, $00
-_LABEL_219_:
-	djnz _LABEL_219_
-	ld a, ($C01E)
+-:
+	djnz -
+	ld a, (PaletteInRAMStatus)
 	and $01
 	call nz, _LABEL_784_
 	xor a
-	ld ($C01E), a
+	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
 	ld (VBlankAction), a
 	jr VBlankUpdateSound
 
 ; 3rd entry of Jump Table from 1D1 (indexed by VBlankAction)
 VBlankActionTable_22F:
-	call _LABEL_308_
+	call CheckForReset
 	call _LABEL_2DD_
-	call _LABEL_2E9_
+	call VDPOut_2E9
 	call _LABEL_2802_
-	ld a, ($C01E)
+	ld a, (PaletteInRAMStatus)
 	and $01
 	call nz, _LABEL_784_
 	call _LABEL_30CC_
@@ -366,23 +367,23 @@ VBlankActionTable_22F:
 	call _LABEL_30DF_
 	call _LABEL_28FD_
 	xor a
-	ld ($C01E), a
+	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
 	ld a, (PlayerSpeed)		; Get player speed
 	or a					; Is player speed slow ($00)?
-	jr nz, _LABEL_263_		; If not (speed is fast/$FF), go here
+	jr nz, PlayerSpeedIsFast		; If not (speed is fast/$FF), go here
 	ld hl, VBlankAction
 	inc (hl)
 	jp VBlankUpdateSound
 
-_LABEL_263_:
+PlayerSpeedIsFast:
 	ld hl, VBlankAction
 	ld (hl), $00
 	jp VBlankUpdateSound
 
 ; 4th entry of Jump Table from 1D1 (indexed by VBlankAction)
 VBlankActionTable_26B:
-	call _LABEL_308_
+	call CheckForReset
 	xor a
 	ld (VBlankAction), a
 	jp VBlankUpdateSound
@@ -394,15 +395,15 @@ VBlankActionTable_275:
 	ld a, $88
 	out (VDPControl), a
 	call _LABEL_2DD_
-	call _LABEL_2E9_
+	call VDPOut_2E9
 	ld b, $00
-_LABEL_285_:
-	djnz _LABEL_285_
-	ld a, ($C01E)
+-:
+	djnz -
+	ld a, (PaletteInRAMStatus)
 	and $01
 	call nz, _LABEL_784_
 	xor a
-	ld ($C01E), a
+	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
 	ld hl, VBlankAction
 	inc (hl)
@@ -424,15 +425,15 @@ VBlankActionTable_2AC:
 	out (VDPControl), a
 	ld a, $89
 	out (VDPControl), a
-	call _LABEL_2E9_
+	call VDPOut_2E9
 	ld b, $00
-_LABEL_2BA_:
-	djnz _LABEL_2BA_
-	ld a, ($C01E)
+-:
+	djnz -
+	ld a, (PaletteInRAMStatus)
 	and $01
 	call nz, _LABEL_784_
 	xor a
-	ld ($C01E), a
+	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
 	ld (VBlankAction), a
 	jp VBlankUpdateSound
@@ -459,7 +460,7 @@ _LABEL_2E7_:
 	rst $30	; Interrupt30
 	ret
 
-_LABEL_2E9_:
+VDPOut_2E9:
 	ld c, VDPData
 	ld a, $00
 	out (VDPControl), a
@@ -475,34 +476,33 @@ _LABEL_2E9_:
 	call OUTI128
 	ret
 
-_LABEL_308_:
+CheckForReset:
 	in a, ($DD)				; Read input from port $DD
 	cpl						; Invert- now 1 is on
 	and %00010000			; Check if RESET is on
-	jr z, _LABEL_31C_		; If not, jump down
-	ld a, ($C004)			; If it is set, check $C004
+	jr z, NoReset					; If not, jump down
+	ld a, (CurrentlyResetting)		; If it is set, check CurrentlyResetting
 	or a					; Is it zero?
 	ret nz					; If already set, return
 	ld a, $FF				; If it is zero, set it to $FF
-	ld ($C004), a
-	jp _LABEL_B9_
-
-_LABEL_31C_:
+	ld (CurrentlyResetting), a
+	jp DoReset
+NoReset:
 	xor a					; Zero out a
-	ld ($C004), a			; Set $C004 flag to zero
+	ld (CurrentlyResetting), a		; Set CurrentlyResetting flag to zero
 	ret
 
-_LABEL_321_:
-	ld a, (ControllerDirection)
-	cpl
-	ld d, a
-	in a, ($DC)
-	cpl
-	and $3F
-	ld (ControllerDirection), a
-	and d
-	ld ($C00D), a
-	ld a, (Autoplay)
+UpdateControllerState:
+	ld a, (CurrentControllerState) 	; Read previously stored controller state
+	cpl								; Invert- now 1 is off, as if it was read just from the port
+	ld d, a							; Save inverted input
+	in a, ($DC)						; Read from controller port
+	cpl								; Invert- now 1 is on
+	and %00111111					; Mask off bits used for player 2 controller
+	ld (CurrentControllerState), a 	; Store updated value in controller state
+	and d							; Get button press continued since last state
+	ld (LastControllerState), a		; Load into LastControllerState
+	ld a, (Autoplay)				; If autoplay is on, return
 	or a
 	ret z
 	dec a
@@ -510,10 +510,10 @@ _LABEL_321_:
 	jr _LABEL_384_
 
 _LABEL_33C_:
-	ld a, ($C00D)
-	and $30
-	jr z, _LABEL_35C_
-	xor a
+	ld a, (LastControllerState)
+	and %00110000					; Check for A or B button press
+	jr z, _LABEL_35C_				; If none, start autoplay
+	xor a							; Otherwise, zero out autoplay variables
 	ld (Autoplay), a
 	ld (AutoplayDirection), a
 	ld (AutoplayCountdownLow), a
@@ -556,12 +556,12 @@ _LABEL_38E_:
 	ld a, (AutoplayDirection)
 	ld hl, Data_3DE
 	ld b, $04
-_LABEL_396_:
+Loop_396:
 	rrca
 	jr c, _LABEL_39F_
 	inc hl
 	inc hl
-	djnz _LABEL_396_
+	djnz Loop_396
 	jr _LABEL_3BE_
 
 _LABEL_39F_:
@@ -579,9 +579,9 @@ _LABEL_39F_:
 	jr c, _LABEL_3BE_
 _LABEL_3B3_:
 	ld a, (AutoplayDirection)
-	ld (ControllerDirection), a
+	ld (CurrentControllerState), a
 	xor a
-	ld ($C00D), a
+	ld (LastControllerState), a
 	ret
 
 _LABEL_3BE_:
@@ -618,7 +618,7 @@ _LABEL_3EE_:
 	ld b, $18
 _LABEL_3F4_:
 	push bc
-	ld hl, $0403
+	ld hl, _LABEL_403_
 	push hl
 	ld l, (ix+0)
 	ld h, (ix+1)
@@ -644,7 +644,7 @@ _LABEL_40F_:
 	ld bc, $001F
 	ld (hl), $00
 	ldir
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	ld a, $04
 	ld ($C0A2), a
@@ -672,7 +672,7 @@ _LABEL_443_:
 	ld hl, PaletteInRAM
 	ld de, $C021
 	call LDI32
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	ld a, $04
 	ld ($C0A2), a
@@ -709,11 +709,11 @@ _LABEL_475_:
 	ld b, a
 	ld hl, ($C0A4)
 	xor a
-_LABEL_49A_:
+-:
 	ld (hl), a
 	inc hl
-	djnz _LABEL_49A_
-	ld hl, $C01E
+	djnz -
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	ld a, $04
 	ld ($C0A2), a
@@ -738,8 +738,8 @@ _LABEL_4BD_:
 	ld a, (TableIndex3)
 	or a
 	ret z
-	call _LABEL_4E4_
-	ld hl, $C01E
+	call CallJumpTable3
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	ld hl, $C0A1
 	inc (hl)
@@ -752,7 +752,7 @@ _LABEL_4DC_:
 	ld (TableIndex3), a
 	ret
 
-_LABEL_4E4_:
+CallJumpTable3:
 	ld a, (TableIndex3)			; Call func in jumptable based on TableIndex3
 	ld hl, JumpTable3
 	jp CallJumpTable
@@ -814,6 +814,7 @@ _LABEL_531_:
 	ret
 
 ; 4th entry of Jump Table from 4ED (indexed by TableIndex3)
+; Title screen?
 JumpTable3_539:
 	ld a, ($C0A1)
 	ld d, a
@@ -829,7 +830,7 @@ _LABEL_545_:
 	ld de, PaletteInRAM2
 	ld hl, PaletteInRAM
 	ld b, $20
-_LABEL_54E_:
+Loop_54E:
 	push bc
 	ld a, (de)
 	and $03
@@ -864,7 +865,7 @@ _LABEL_578_:
 	inc hl
 	inc de
 	pop bc
-	djnz _LABEL_54E_
+	djnz Loop_54E
 	ret
 
 ; 6th entry of Jump Table from 4ED (indexed by TableIndex3)
@@ -888,23 +889,23 @@ _LABEL_58C_:
 	ld b, a
 	jp _LABEL_510_
 
-_LABEL_59D_:
+VDPOut_59D:
 	ld de, $0000
 	ld hl, $0000
 	ld bc, $0010
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $2000
 	ld hl, $0000
 	ld bc, $0010
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3800
 	ld hl, $0000
 	ld bc, $0380
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3F00
 	ld a, $D0
 	ld bc, $0001
-	call _LABEL_618_
+	call VDPOut_618
 	ld hl, $C500
 	ld (hl), $D0
 	inc hl
@@ -923,7 +924,7 @@ _LABEL_5DE_:
 	ld de, $3F00
 	ld a, $D0
 	ld bc, $0001
-	call _LABEL_618_
+	call VDPOut_618
 	ld hl, $C500
 	ld (hl), $D0
 	inc hl
@@ -936,7 +937,7 @@ _LABEL_5DE_:
 _LABEL_608_:
 	rst $08	; Interrupt8
 	inc b
-_LABEL_60A_:
+Loop_60A:
 	ld a, b
 	ld b, c
 	ld c, VDPData
@@ -945,10 +946,10 @@ _LABEL_60E_:
 	jr nz, _LABEL_60E_
 	ld b, a
 	ld c, $00
-	djnz _LABEL_60A_
+	djnz Loop_60A
 	ret
 
-_LABEL_618_:
+VDPOut_618:
 	ex af, af'
 	rst $08	; Interrupt8
 	ex af, af'
@@ -957,7 +958,7 @@ _LABEL_618_:
 	ld b, c
 	jr _LABEL_623_
 
-_LABEL_620_:
+Loop_620:
 	push bc
 	ld b, $00
 _LABEL_623_:
@@ -965,7 +966,7 @@ _LABEL_623_:
 	nop
 	djnz -4
 	pop bc
-	djnz _LABEL_620_
+	djnz Loop_620
 	ret
 
 ; Unused?
@@ -975,32 +976,32 @@ _LABEL_62C_:
 	djnz -5
 	ret
 
-_LABEL_632_:
+VDPOut_Loop_632:
 	rst $08	; Interrupt8
 	inc b
 	ld d, c
 	ld c, VDPData
-	push bc
+	push bc							; Nested counters- rows and columns, maybe?
 	ld b, d
-	jr _LABEL_63E_
+	jr Inner_Loop_63E
 
-_LABEL_63B_:
+Outer_Loop_63B:
 	push bc
 	ld b, $00
-_LABEL_63E_:
+Inner_Loop_63E:
 	ld a, l
 	out (c), a
 	ld a, h
-	jr _LABEL_644_
+	jr +
 
-_LABEL_644_:
++:
 	out (c), a
-	djnz _LABEL_63E_
+	djnz Inner_Loop_63E
 	pop bc
-	djnz _LABEL_63B_
+	djnz Outer_Loop_63B
 	ret
 
-_LABEL_64C_:
+VDPOut_64C:
 	rst $08	; Interrupt8
 	push bc
 	ld b, c
@@ -1014,23 +1015,23 @@ _LABEL_651_:
 	add hl, bc
 	ex de, hl
 	pop bc
-	djnz _LABEL_64C_
+	djnz VDPOut_64C
 	ret
 
-_LABEL_661_:
+VDPOut_661:
 	rst $08	; Interrupt8
 	push bc
 	ld b, c
 	ld c, VDPData
-_LABEL_666_:
+Loop_666:
 	outi
 	nop
-	jr _LABEL_66B_
+	jr +
 
-_LABEL_66B_:
++:
 	outi
 	nop
-	jr nz, _LABEL_666_
+	jr nz, Loop_666
 	ex de, hl
 	ld bc, $0040
 	add hl, bc
@@ -1041,7 +1042,7 @@ _LABEL_66B_:
 _LABEL_67C_:
 	ex de, hl
 	pop bc
-	djnz _LABEL_661_
+	djnz VDPOut_661
 	ret
 
 _LABEL_681_:
@@ -1049,11 +1050,11 @@ _LABEL_681_:
 	add a, e
 	xor e
 	bit 6, a
-	jr z, _LABEL_661_
+	jr z, VDPOut_661
 	ld a, c
 	add a, e
 	and $3F
-	jr z, _LABEL_661_
+	jr z, VDPOut_661
 	ex af, af'
 	ld a, c
 	add a, e
@@ -1061,7 +1062,7 @@ _LABEL_681_:
 	neg
 	add a, c
 	ld c, a
-_LABEL_697_:
+Loop_697:
 	push bc
 	push de
 	rst $08	; Interrupt8
@@ -1103,7 +1104,7 @@ _LABEL_6B4_:
 _LABEL_6C6_:
 	ex de, hl
 	pop bc
-	djnz _LABEL_697_
+	djnz Loop_697
 	ret
 
 _LABEL_6CB_:
@@ -1175,7 +1176,7 @@ _LABEL_706_:
 	neg
 	add a, c
 	ld c, a
-_LABEL_71C_:
+Loop_71C:
 	push bc
 	push de
 	rst $18	; Interrupt18
@@ -1217,7 +1218,7 @@ _LABEL_739_:
 _LABEL_74B_:
 	ex de, hl
 	pop bc
-	djnz _LABEL_71C_
+	djnz Loop_71C
 	ret
 
 _LABEL_750_:
@@ -1225,9 +1226,9 @@ _LABEL_750_:
 	jr _LABEL_760_
 
 _LABEL_755_:
-	ld a, ($C01E)
+	ld a, (PaletteInRAMStatus)
 	or $01
-	ld ($C01E), a
+	ld (PaletteInRAMStatus), a
 	ld de, PaletteInRAM
 _LABEL_760_:
 	ld a, (hl)
@@ -1245,14 +1246,14 @@ _LABEL_760_:
 	ldir
 	ret
 
-_LABEL_771_:
-	ld hl, PaletteInRAM		; Zero out PaletteInRAM-C040
+InitializePaletteInRAM:
+	ld hl, PaletteInRAM		; Zero out PaletteInRAM-C040 (End palette in RAM?)
 	ld de, $C021
 	ld bc, $001F
 	ld (hl), $00
 	ldir
-	ld hl, $C01E
-	set 0, (hl)			; sets $C01E least significant byte to 1- when this is on, various functions will call _LABEL_784_
+	ld hl, PaletteInRAMStatus
+	set 0, (hl)			; sets PaletteInRAMStatus least significant byte to 1- when this is on, various functions will call _LABEL_784_
 	ret
 
 _LABEL_784_:
@@ -1264,6 +1265,7 @@ _LABEL_784_:
 	ld c, VDPData
 	jp OUTI32
 
+; Decompress to VDP
 DecompressToVDP:
 	ld a, (hl)
 	inc hl
@@ -1272,21 +1274,21 @@ DecompressToVDP:
 	ld d, $00
 	exx
 	ld b, a
-_LABEL_79B_:
+-:
 	push bc
 	push de
 	exx
 	pop hl
 	push hl
 	exx
-	call _LABEL_7AA_
+	call DecompressToVDP_7AA
 	pop de
 	inc de
 	pop bc
-	djnz _LABEL_79B_
+	djnz -
 	ret
 
-_LABEL_7AA_:
+DecompressToVDP_7AA:
 	ld a, (hl)
 	inc hl
 	or a
@@ -1297,32 +1299,33 @@ _LABEL_7AA_:
 	ld a, b
 	and $7F
 	ld b, a
-_LABEL_7B6_:
+DecompressToVDP_7B6:
 	rst $08	; Interrupt8
 	ex (sp), hl
 	ex (sp), hl
-	jr _LABEL_7BB_
+	jr DecompressToVDP_7BB
 
-_LABEL_7BB_:
+DecompressToVDP_7BB:
 	ld a, (hl)
 	out (VDPData), a
 	xor a
 	or c
-	jr z, _LABEL_7C3_
+	jr z, DecompressToVDP_7C3
 	inc hl
-_LABEL_7C3_:
+DecompressToVDP_7C3:
 	exx
 	add hl, de
 	push hl
 	exx
 	pop de
-	djnz _LABEL_7B6_
+	djnz DecompressToVDP_7B6
 	xor a
 	or c
-	jp nz, _LABEL_7AA_
+	jp nz, DecompressToVDP_7AA
 	inc hl
-	jp _LABEL_7AA_
+	jp DecompressToVDP_7AA
 
+; Decompress to RAM
 DecompressToRAM:
 	ld a, (hl)
 	inc hl
@@ -1331,21 +1334,21 @@ DecompressToRAM:
 	ld d, $00
 	exx
 	ld b, a
-_LABEL_7DB_:
+-:
 	push bc
 	push de
 	exx
 	pop hl
 	push hl
 	exx
-	call _LABEL_7EA_
+	call DecompressToRAM_7EA
 	pop de
 	inc de
 	pop bc
-	djnz _LABEL_7DB_
+	djnz -
 	ret
 
-_LABEL_7EA_:
+DecompressToRAM_7EA:
 	ld a, (hl)
 	inc hl
 	or a
@@ -1356,23 +1359,23 @@ _LABEL_7EA_:
 	ld a, b
 	and $7F
 	ld b, a
-_LABEL_7F6_:
+DecompressToRAM_7F6:
 	ld a, (hl)
 	ld (de), a
 	bit 7, c
-	jr z, _LABEL_7FD_
+	jr z, DecompressToRAM_7FD
 	inc hl
-_LABEL_7FD_:
+DecompressToRAM_7FD:
 	exx
 	add hl, de
 	push hl
 	exx
 	pop de
-	djnz _LABEL_7F6_
+	djnz DecompressToRAM_7F6
 	bit 7, c
-	jp nz, _LABEL_7EA_
+	jp nz, DecompressToRAM_7EA
 	inc hl
-	jp _LABEL_7EA_
+	jp DecompressToRAM_7EA
 
 _LABEL_80D_:
 	ld a, $01
@@ -1437,9 +1440,9 @@ GetRandomNumber:
 	xor l
 	rrca
 	adc hl, hl
-	jr nz, _LABEL_B92_
+	jr nz, ReseedRNG
 	ld hl, $733C
-_LABEL_B92_:
+ReseedRNG:
 	ld a, r
 	xor l
 	ld (RNGSeed), hl
@@ -1454,12 +1457,12 @@ _LABEL_B9A_:
 	jp _LABEL_137_
 
 _LABEL_BA3_:
-	call _LABEL_771_
+	call InitializePaletteInRAM
 	ld a, $01
 	ld ($C014), a
 	call _LABEL_137_
 	di
-	jp _LABEL_59D_
+	jp VDPOut_59D
 
 ; Data from BB2 to BC7 (22 bytes) - Unused?
 Data_BB2:
@@ -1520,11 +1523,11 @@ JumpTable1_BEA:
 	ld hl, $CB00
 	ld de, $3886
 	ld bc, $0A36
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld hl, $81E6
 	ld de, $3A98
 	ld bc, $0A10
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld hl, $0D0C
 	ld ($C100), hl
 	ld hl, $8000
@@ -1541,10 +1544,10 @@ JumpTable1_BEA:
 ; 4th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_C6D:
 	call _LABEL_137_
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $30
 	jr z, _LABEL_CF5_
-	ld a, (ControllerDirection)
+	ld a, (CurrentControllerState)
 	and $0F
 	cp $0A
 	jr z, SetUpGame
@@ -1801,7 +1804,7 @@ _LABEL_EA9_:
 	ld hl, $8096
 	ld de, $3D52
 	ld bc, $0220
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld (ix+0), $C8
 	ld (ix+1), $0E
 	ret
@@ -1814,7 +1817,7 @@ _LABEL_EC8_:
 	ld hl, $0F29
 _LABEL_ED7_:
 	ld ($C03E), hl
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	ret
 
@@ -1879,11 +1882,11 @@ JumpTable1_F4C:
 	ld a, $01
 	ld hl, $C935
 	ld b, $10
-_LABEL_F76_:
+-:
 	ld (hl), a
 	inc a
 	inc hl
-	djnz _LABEL_F76_
+	djnz -
 	ld hl, $C935
 	ld de, $C945
 	call LDI16
@@ -2048,15 +2051,15 @@ _LABEL_108F_:
 	call _LABEL_40F_
 	ld a, $02
 	ld ($C014), a
-	ld a, (Floor)
-	ld d, $84
-	cp $0B
-	jr c, _LABEL_110A_
+	ld a, (Floor)				; Select music for floor
+	ld d, $84					; Start with song $84
+	cp $0B						; If floor is 11 or greater, increment song
+	jr c, PlayFloorMusic
 	inc d
-	cp $15
-	jr c, _LABEL_110A_
+	cp $15						; If floor is 21 or greater, increment song
+	jr c, PlayFloorMusic
 	inc d
-_LABEL_110A_:
+PlayFloorMusic:
 	ld a, d
 	ld (SoundQueueSlots), a
 	xor a
@@ -2102,7 +2105,7 @@ JumpTable1_1127:
 	ld ($FFFF), a
 	ld hl, $8000
 	call _LABEL_750_
-	ld a, (EquippedWeapon)
+	ld a, (EquippedWeapon)					; Which color is the sword, 0, 1, 2, 3?
 	dec a
 	and $0C
 	rrca
@@ -2152,7 +2155,7 @@ _LABEL_11C8_:
 .include "ui\game_over_screen_1.asm"
 
 ; 12th entry of Jump Table from 17F (indexed by TableIndex1)
-JumpTable1_11DB:
+DoGameOver:
 	call _LABEL_B9A_
 	ld a, $02
 	ld ($FFFF), a
@@ -2194,7 +2197,7 @@ JumpTable1_11DB:
 	ex de, hl
 	ld de, $38CC
 	ld bc, $0A10
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld a, $07
 	ld ($FFFF), a
 	ld de, $3964
@@ -2203,9 +2206,9 @@ JumpTable1_11DB:
 	ld b, a
 	ld hl, $19AA
 	ld de, $0016
-_LABEL_1256_:
+-:
 	add hl, de
-	djnz _LABEL_1256_
+	djnz -
 	ld c, VDPData
 	call OUTI22
 	ld de, $3A24
@@ -2336,7 +2339,7 @@ _LABEL_131A_:
 _LABEL_131F_:
 	ld a, (ContinuesSpent)
 	cp $03
-	jp nc, _LABEL_13B9_
+	jp nc, UnableToContinue
 	ld d, a
 	ld a, (Floor)
 	and $FC
@@ -2367,7 +2370,7 @@ _LABEL_131F_:
 	sbc a, d
 	daa
 	ld h, a
-	jr c, _LABEL_13B9_
+	jr c, UnableToContinue
 	ld (MoneyMid), hl
 	ld de, $3C90
 	rst $08	; Interrupt8
@@ -2392,22 +2395,22 @@ _LABEL_131F_:
 	rst $08	; Interrupt8
 	ld a, (EquippedArmor)
 	cp $13
-	jr c, _LABEL_13A4_
+	jr c, PlayerDeadWithLightArmor
 	cp $16
-	jr c, _LABEL_139D_
+	jr c, PlayerDeadWithMediumArmor
 	ld a, $02
 	ld hl, $B5EE
-	jr _LABEL_13A9_
+	jr SelectGameOverGraphics
 
-_LABEL_139D_:
+PlayerDeadWithMediumArmor:
 	ld a, $04
 	ld hl, $B24A
-	jr _LABEL_13A9_
+	jr SelectGameOverGraphics
 
-_LABEL_13A4_:
+PlayerDeadWithLightArmor:
 	ld a, $04
 	ld hl, $95CA
-_LABEL_13A9_:
+SelectGameOverGraphics:
 	ld ($FFFF), a
 	ld c, VDPData
 	call OUTI128
@@ -2415,7 +2418,7 @@ _LABEL_13A9_:
 	call OUTI128
 	jr _LABEL_13BF_
 
-_LABEL_13B9_:
+UnableToContinue:
 	ld hl, $5010
 	ld ($C100), hl
 _LABEL_13BF_:
@@ -2459,7 +2462,7 @@ _LABEL_13BF_:
 	ld ($C0D5), a
 	ld a, $02
 	ld ($C014), a
-	ld a, $83
+	ld a, $83					; Play Game Over music
 	ld (SoundQueueSlots), a
 	ei
 	ld a, $0C
@@ -2483,7 +2486,7 @@ JumpTable1_1435:
 	ld ($C014), a
 	call _LABEL_137_
 	di
-	call _LABEL_59D_
+	call VDPOut_59D
 	call _LABEL_5DE_
 	call _LABEL_BC8_
 	ld a, $02
@@ -2511,19 +2514,19 @@ JumpTable1_1435:
 	jr c, _LABEL_149F_
 	cp $16
 	jr c, _LABEL_1495_
-	ld a, $02
+	ld a, $02						; Base armor graphics?
 	ld hl, $A02E
 	ld de, $B5EE
 	jr _LABEL_14A7_
 
 _LABEL_1495_:
-	ld a, $04
+	ld a, $04						; Gray armor graphics?
 	ld hl, $9C8A
 	ld de, $B24A
 	jr _LABEL_14A7_
 
 _LABEL_149F_:
-	ld a, $04
+	ld a, $04						; Elaborate gray armor graphics?
 	ld hl, $800A
 	ld de, $95CA
 _LABEL_14A7_:
@@ -2554,7 +2557,7 @@ _LABEL_14A7_:
 	ex de, hl
 	ld de, $3A98
 	ld bc, $0A10
-	call _LABEL_64C_
+	call VDPOut_64C
 	pop hl
 	ld e, (hl)
 	inc hl
@@ -2722,7 +2725,7 @@ JumpTable1_16F4:
 	ld de, $38C0
 	ld hl, $0158
 	ld bc, $0240
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	xor a
 	ld (CurrentMessage), a
 	ld ($CAC5), a
@@ -2750,39 +2753,39 @@ JumpTable1_16F4:
 	ld de, $38CA
 	ld hl, $9A18
 	ld bc, $022C
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld de, $39DC
 	ld hl, $1954
 	ld bc, $0A02
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld de, $39FC
 	ld hl, $1968
 	ld bc, $0A02
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld de, $39DE
 	ld hl, $0155
 	ld bc, $000F
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3C1E
 	ld hl, $0755
 	ld bc, $000F
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3CC4
 	ld hl, $197C
 	ld bc, $0502
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld de, $3CFA
 	ld hl, $1986
 	ld bc, $0502
-	call _LABEL_64C_
+	call VDPOut_64C
 	ld de, $3CC6
 	ld hl, $0155
 	ld bc, $001A
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3DC6
 	ld hl, $0755
 	ld bc, $001A
-	call _LABEL_632_
+	call VDPOut_Loop_632
 	ld de, $3D08
 	rst $08	; Interrupt8
 	ld c, VDPData
@@ -2807,9 +2810,9 @@ JumpTable1_16F4:
 	ld b, a
 	ld hl, $19AA
 	ld de, $0016
-_LABEL_17F5_:
+-:
 	add hl, de
-	djnz _LABEL_17F5_
+	djnz -
 	call OUTI22
 	ld de, $3D48
 	rst $08	; Interrupt8
@@ -2957,7 +2960,7 @@ JumpTable1_192B:
 	call _LABEL_1D9C_
 	call _LABEL_2DAD_
 	call _LABEL_137_
-	ld a, (ControllerDirection)
+	ld a, (CurrentControllerState)
 	and $80
 	ret nz
 	jp _LABEL_137_
@@ -3102,7 +3105,7 @@ _LABEL_1BD5_:
 	ld l, a
 	ld de, $3E00
 	ld bc, $0440
-	call _LABEL_661_
+	call VDPOut_661
 	ld hl, $311A
 	ld ($C100), hl
 	ld hl, $3CE6
@@ -3235,7 +3238,7 @@ JumpTable1_1D11:
 
 ; 22nd entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_1D4B:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $B0
 	jr nz, _LABEL_1D55_
 	jp _LABEL_137_
@@ -4682,6 +4685,8 @@ _LABEL_25EB_:
 ; This is a table of permutations of the routines at 259A, 25AA, 25E0, and 25C5
 ; and the data $D300, $D310, $D510, and $D500. All possible combinations of
 ; routines and data are represented.
+; Perhaps these are references to the four types of scenery?
+; Flowers, horseheads, mountains, and mushrooms
 JumpTable5:
 	.dw JumpTable5_259A $D300
 	.dw JumpTable5_25AA $D310
@@ -5508,15 +5513,15 @@ _LABEL_2CCE_:
 	inc de
 	ret
 
-_LABEL_2CDB_:
-	call _LABEL_2CEB_
-	call _LABEL_2D2D_
-	call _LABEL_2D7F_
-	call _LABEL_2D89_
-	call _LABEL_2DA3_
+HandleTimers:
+	call HandleFoodTimer
+	call HandleHealTimer
+	call HandlePoisonTimer
+	call HandleBlindnessTimer
+	call HandleDizzinessTimer
 	ret
 
-_LABEL_2CEB_:
+HandleFoodTimer:
 	ld d, $08
 	ld a, ($C930)
 	or a
@@ -5558,7 +5563,7 @@ _LABEL_2D1D_:
 	ld ($C63F), a
 	ret
 
-_LABEL_2D2D_:
+HandleHealTimer:
 	ld a, (PoisonTicksLeft)
 	or a
 	ret nz
@@ -5603,7 +5608,7 @@ _LABEL_2D74_:
 	ld (CurrentMessage), a
 	ret
 
-_LABEL_2D7F_:
+HandlePoisonTimer:
 	ld a, (PoisonTicksLeft)
 	or a
 	ret z
@@ -5611,7 +5616,7 @@ _LABEL_2D7F_:
 	ld (PoisonTicksLeft), a
 	ret
 
-_LABEL_2D89_:
+HandleBlindnessTimer:
 	ld a, (BlindnessTicksLeft)
 	or a
 	ret z
@@ -5627,7 +5632,7 @@ _LABEL_2D89_:
 	ld ($C60E), a
 	ret
 
-_LABEL_2DA3_:
+HandleDizzinessTimer:
 	ld a, (DizzinessTicksLeft)
 	or a
 	ret z
@@ -5677,7 +5682,7 @@ _LABEL_2DE6_:
 	ld de, $C06F
 	jr nz, _LABEL_2DF7_
 	ld de, $C02F
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 _LABEL_2DF7_:
 	ex de, hl
@@ -5737,7 +5742,7 @@ _LABEL_2E27_:
 	ld hl, $CB00
 	ld de, $3800
 	ld bc, $1840
-	call _LABEL_661_
+	call VDPOut_661
 	xor a
 	ld ($CA05), a
 	ld ($CA06), a
@@ -6205,12 +6210,12 @@ _LABEL_3142_:
 	ld a, (CurrentItem)
 	or a
 	jp nz, _LABEL_3796_
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	bit 5, a
 	jp nz, _LABEL_33F8_
 	bit 4, a
 	jp nz, _LABEL_31BD_
-	ld a, (ControllerDirection)
+	ld a, (CurrentControllerState)
 	and $0F
 	jp z, _LABEL_321C_
 	ld a, $5A
@@ -6218,10 +6223,10 @@ _LABEL_3142_:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr nz, _LABEL_31AA_
-	ld a, (ControllerDirection)
+	ld a, (CurrentControllerState)
 	and (ix+4)
 	jr nz, _LABEL_3199_
-	ld a, (ControllerDirection)
+	ld a, (CurrentControllerState)
 _LABEL_3199_:
 	rrca
 	jp c, _LABEL_32C4_
@@ -6272,7 +6277,7 @@ _LABEL_31E6_:
 	ld ($CAC5), a
 	call _LABEL_42C_
 	ld a, $0B
-	ld (TableIndex1), a
+	ld (TableIndex1), a			; Game over?
 	ret
 
 _LABEL_31FF_:
@@ -7165,7 +7170,7 @@ _LABEL_38D2_:
 	jr nz, _LABEL_38EC_
 	ld (ix+0), $42
 	ld (ix+1), $31
-	jp _LABEL_2CDB_
+	jp HandleTimers
 
 _LABEL_38EC_:
 	ld (ix+0), $0C
@@ -7180,7 +7185,7 @@ _LABEL_38F5_:
 	ret c
 	ld (ix+0), $42
 	ld (ix+1), $31
-	jp _LABEL_2CDB_
+	jp HandleTimers
 
 _LABEL_390A_:
 	call _LABEL_478D_
@@ -7900,7 +7905,7 @@ _LABEL_3F2B_:
 	ld a, ($C0A9)
 _LABEL_3F3C_:
 	ld (PaletteInRAM), a
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	xor a
 	ret
@@ -7908,7 +7913,7 @@ _LABEL_3F3C_:
 _LABEL_3F46_:
 	ld a, ($C0A9)
 	ld (PaletteInRAM), a
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	scf
 	ret
@@ -8163,7 +8168,7 @@ MagiScrollAction:
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
@@ -8179,7 +8184,7 @@ GasScrollAction:
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
@@ -8195,7 +8200,7 @@ GhostScrollAction:
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
@@ -8211,7 +8216,7 @@ DragonScrollAction:
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
-	ld hl, $C01E
+	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
@@ -9310,9 +9315,11 @@ EquipArmor:
 	ld (ArmorAC), a
 	ret
 
+; Hit, then PW
 WeaponStatistics:
 	.include "items\behavior\weapon_statistics.asm"
 
+; Evd, then AC
 ArmorStatistics:
 	.include "items\behavior\armor_statistics.asm"
 
@@ -9356,7 +9363,7 @@ _LABEL_49A7_:
 	ret
 
 _LABEL_49B4_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	bit 4, a
 	jr nz, _LABEL_49D0_
 	bit 5, a
@@ -9377,7 +9384,7 @@ _LABEL_49D0_:
 	jp _LABEL_137_
 
 _LABEL_49E0_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $30
 	ret z
 	bit 4, a
@@ -9465,7 +9472,7 @@ _LABEL_4A6F_:
 	ld (ix+24), $00
 	ld (ix+0), $B4
 	ld (ix+1), $49
-	jp _LABEL_4CAB_
+	jp CallJumpTable8
 
 _LABEL_4A97_:
 	ld hl, BaseAC
@@ -9496,7 +9503,7 @@ _LABEL_4AAD_:
 	jp _LABEL_4A30_
 
 _LABEL_4ABC_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $30
 	ret z
 	bit 4, a
@@ -9627,7 +9634,7 @@ _LABEL_4BA0_:
 	ld (ix+24), $00
 	ld (ix+0), $B4
 	ld (ix+1), $49
-	jp _LABEL_4CAB_
+	jp CallJumpTable8
 
 _LABEL_4BB2_:
 	ld de, ($C105)
@@ -9748,13 +9755,13 @@ _LABEL_4C62_:
 	ld a, ($C418)
 	or a
 	ret nz
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $0C
 	ret z
 	xor a
 	ld ($C458), a
 	ld ($C478), a
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	bit 2, a
 	jr z, _LABEL_4C92_
 	ld a, (ix+24)
@@ -9782,7 +9789,7 @@ _LABEL_4C9E_:
 	add a, a
 	add a, $28
 	ld (ix+17), a
-_LABEL_4CAB_:
+CallJumpTable8:
 	ld a, (TableIndex8)
 	ld hl, JumpTable8
 	jp CallJumpTable
@@ -9828,13 +9835,13 @@ _LABEL_4CEB_:
 	jr _LABEL_4D45_
 
 _LABEL_4D00_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $03
 	ret z
 	xor a
 	ld ($C478), a
 	call _LABEL_4D45_
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	rrca
 	jr nc, _LABEL_4D21_
 	ld a, (ix+24)
@@ -9917,11 +9924,11 @@ _LABEL_4D8A_:
 	jr _LABEL_4DE2_
 
 _LABEL_4D9F_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $03
 	ret z
 	call _LABEL_4DE2_
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	rrca
 	jr nc, _LABEL_4DBC_
 	ld a, (ix+24)
@@ -10021,7 +10028,7 @@ _LABEL_4E1B_:
 	ld bc, $050E
 	ld a, $03
 	ld ($FFFF), a
-	jp _LABEL_661_
+	jp VDPOut_661
 
 ; Data from 4E35 to 4E42 (14 bytes)
 Data_4E35:
@@ -10268,7 +10275,7 @@ _LABEL_4F98_:
 	ret
 
 _LABEL_4FB1_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $03
 	jr z, _LABEL_4FCD_
 	rrca
@@ -10281,7 +10288,7 @@ _LABEL_4FC5_:
 	ld (ix+24), $01
 	ld (ix+15), $B0
 _LABEL_4FCD_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $B0
 	ret z
 	bit 0, (ix+24)
@@ -10316,7 +10323,7 @@ _LABEL_5010_:
 	ret
 
 _LABEL_5019_:
-	ld a, ($C00D)
+	ld a, (LastControllerState)
 	and $B0
 	jr nz, _LABEL_5021_
 	ret
