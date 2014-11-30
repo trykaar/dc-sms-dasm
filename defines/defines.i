@@ -13,6 +13,7 @@
 .define AutoplayCountdownHigh 	$C009
 .define AutoplayVar3 			$C00A	; possibly randomly generated number
 
+; Controller status
 .define CurrentControllerState 	$C00C
 .define LastControllerState 	$C00D
 
@@ -86,4 +87,5 @@
 .define EquippedWeapon			$C900
 .define EquippedArmor			$C908
 
+.define NextMessage				$C975
 .define CurrentMessage			$CAC4

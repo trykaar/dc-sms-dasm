@@ -346,7 +346,7 @@ VBlankActionTable_20E:
 	djnz -
 	ld a, (PaletteInRAMStatus)
 	and $01
-	call nz, _LABEL_784_
+	call nz, WritePalette
 	xor a
 	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
@@ -361,7 +361,7 @@ VBlankActionTable_22F:
 	call _LABEL_2802_
 	ld a, (PaletteInRAMStatus)
 	and $01
-	call nz, _LABEL_784_
+	call nz, WritePalette
 	call _LABEL_30CC_
 	call _LABEL_28B2_
 	call _LABEL_30DF_
@@ -401,7 +401,7 @@ VBlankActionTable_275:
 	djnz -
 	ld a, (PaletteInRAMStatus)
 	and $01
-	call nz, _LABEL_784_
+	call nz, WritePalette
 	xor a
 	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
@@ -431,7 +431,7 @@ VBlankActionTable_2AC:
 	djnz -
 	ld a, (PaletteInRAMStatus)
 	and $01
-	call nz, _LABEL_784_
+	call nz, WritePalette
 	xor a
 	ld (PaletteInRAMStatus), a
 	ld ($C01F), a
@@ -635,7 +635,7 @@ _LABEL_403_:
 	ret
 
 _LABEL_40C_:
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 _LABEL_40F_:
 	ld a, $01
 	ld (TableIndex3), a
@@ -700,7 +700,7 @@ _LABEL_475_:
 	ld ($C0A3), a
 	dec de
 	ex de, hl
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, $05
 	ld (TableIndex3), a
 	ld a, ($C0A3)
@@ -1221,16 +1221,16 @@ _LABEL_74B_:
 	djnz Loop_71C
 	ret
 
-_LABEL_750_:
+LoadPaletteToRAMMirror:
 	ld de, PaletteInRAM2
-	jr _LABEL_760_
+	jr DoLoadPalette
 
-_LABEL_755_:
-	ld a, (PaletteInRAMStatus)
+LoadPaletteToRAMPrimary:
+	ld a, (PaletteInRAMStatus)		; Set palette in RAM status to dirty
 	or $01
 	ld (PaletteInRAMStatus), a
 	ld de, PaletteInRAM
-_LABEL_760_:
+DoLoadPalette:
 	ld a, (hl)
 	inc hl
 	push hl
@@ -1253,10 +1253,10 @@ InitializePaletteInRAM:
 	ld (hl), $00
 	ldir
 	ld hl, PaletteInRAMStatus
-	set 0, (hl)			; sets PaletteInRAMStatus least significant byte to 1- when this is on, various functions will call _LABEL_784_
+	set 0, (hl)				; Set palette status flag clean
 	ret
 
-_LABEL_784_:
+WritePalette:
 	xor a
 	out (VDPControl), a
 	ld a, $C0
@@ -1531,7 +1531,7 @@ JumpTable1_BEA:
 	ld hl, $0D0C
 	ld ($C100), hl
 	ld hl, $8000
-	call _LABEL_755_
+	call LoadPaletteToRAMPrimary
 	ld a, $02
 	ld ($C014), a
 	ei
@@ -1610,6 +1610,7 @@ _LABEL_CF5_:
 	ld (TableIndex1), a
 	jp _LABEL_137_
 
+; Palette
 _LABEL_D0C_:
 	inc (ix+24)
 	ld a, (ix+24)
@@ -2030,13 +2031,13 @@ _LABEL_108F_:
 	ld (hl), $00
 	call LDI5
 	ld hl, $8064
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	call _LABEL_27E3_
 	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, (EquippedWeapon)
 	dec a
 	and $0C
@@ -2098,13 +2099,13 @@ JumpTable1_1127:
 	call _LABEL_2E69_
 	call _LABEL_1F4F_
 	ld hl, $8064
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	call _LABEL_27E3_
 	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, (EquippedWeapon)					; Which color is the sword, 0, 1, 2, 3?
 	dec a
 	and $0C
@@ -2427,7 +2428,7 @@ _LABEL_13BF_:
 	ld a, $02
 	ld ($FFFF), a
 	ld hl, $8064
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, $07
 	ld ($FFFF), a
 	ld a, ($C01D)
@@ -2445,7 +2446,7 @@ _LABEL_13BF_:
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, (EquippedWeapon)
 	dec a
 	and $0C
@@ -2563,7 +2564,7 @@ _LABEL_14A7_:
 	inc hl
 	ld d, (hl)
 	ex de, hl
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, (EquippedWeapon)
 	dec a
 	and $0C
@@ -2940,7 +2941,7 @@ _LABEL_18B2_:
 	ld hl, $4D5D
 	ld ($C460), hl
 	ld hl, $8064
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld hl, $9646
 	call _LABEL_40C_
 	xor a
@@ -3117,13 +3118,13 @@ _LABEL_1BD5_:
 	ld a, $02
 	ld ($FFFF), a
 	ld hl, $8064
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	call _LABEL_27E3_
 	call LoadMonsterPalette
 	ld a, $04
 	ld ($FFFF), a
 	ld hl, $8000
-	call _LABEL_750_
+	call LoadPaletteToRAMMirror
 	ld a, (EquippedWeapon)
 	dec a
 	and $0C
@@ -4908,7 +4909,7 @@ _LABEL_27E3_:
 	inc hl
 	ld h, (hl)
 	ld l, a
-	jp _LABEL_750_
+	jp LoadPaletteToRAMMirror
 
 ; Data from 27FA to 2801 (8 bytes)
 Data_27FA:
@@ -7870,7 +7871,7 @@ _LABEL_3EE5_:
 _LABEL_3EF5_:
 	call _LABEL_3F2B_
 	ret nc
-	ld a, ($C975)
+	ld a, (NextMessage)
 	ld (CurrentMessage), a
 	ld hl, CurrentItem
 	bit 7, (hl)
@@ -7928,7 +7929,7 @@ BladeScrollAction:
 _LABEL_3F5D_:
 	ld (WeaponPW), a
 	ld a, $1C
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 2nd entry of Jump Table from 3E68 (indexed by unknown)
@@ -7936,7 +7937,7 @@ ShieldScrollAction:
 	ld hl, ArmorAC
 	inc (hl)
 	ld a, $1D
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 3rd entry of Jump Table from 3E68 (indexed by unknown)
@@ -7944,7 +7945,7 @@ NorustScrollAction:
 	ld a, $01
 	ld ($C631), a
 	ld a, $1E
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 4th entry of Jump Table from 3E68 (indexed by unknown)
@@ -7990,13 +7991,13 @@ _LABEL_3FA1_:
 	ld ($C930), a
 _LABEL_3FD2_:
 	ld a, $1F
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 5th entry of Jump Table from 3E68 (indexed by unknown)
 NothingHappenedAction:
 	ld a, $19
-	ld ($C975), a
+	ld (NextMessage), a
 	xor a
 	ld (CurrentItem), a
 	jp _LABEL_3EDF_
@@ -8089,7 +8090,7 @@ _LABEL_408E_:
 	or a
 	jp z, NothingHappenedAction
 	ld a, $16
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 9th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8099,7 +8100,7 @@ FreezePotionAction:
 	inc a
 	ld (ParalysisTicksLeft), a
 	ld a, $23
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 10th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8172,7 +8173,7 @@ MagiScrollAction:
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 12th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8188,7 +8189,7 @@ GasScrollAction:
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 13th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8204,7 +8205,7 @@ GhostScrollAction:
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 14th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8220,13 +8221,13 @@ DragonScrollAction:
 	set 0, (hl)
 	call EquipWeapon
 	ld a, $25
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 15th entry of Jump Table from 3E68 (indexed by unknown)
 BlankScrollAction:
 	ld a, $26
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 ; 16th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8245,7 +8246,7 @@ _LABEL_41C6_:
 	call _LABEL_489C_
 	jr nc, _LABEL_41D8_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	ld a, $00
 	ld ($DD05), a
 	jp _LABEL_3EE5_
@@ -8321,7 +8322,7 @@ WindRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4266_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 _LABEL_4266_:
@@ -8360,7 +8361,7 @@ BerserkRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_42B8_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 _LABEL_42B8_:
@@ -8437,7 +8438,7 @@ SilentRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4346_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 _LABEL_4346_:
@@ -8476,7 +8477,7 @@ ReshapeRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4399_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 _LABEL_4399_:
@@ -8525,7 +8526,7 @@ TravelRodAction:
 	cp $1E
 	jr c, _LABEL_43FD_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_43FD_:
@@ -8567,7 +8568,7 @@ DrainRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4453_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_4453_:
@@ -8587,7 +8588,7 @@ _LABEL_4453_:
 _LABEL_4474_:
 	ld (CurrentHPLow), hl
 	ld a, $2D
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 25th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8598,7 +8599,7 @@ WitherRodAction:
 	ld (CharacterLevel), a
 	call _LABEL_496B_
 	ld a, $2E
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 26th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8621,7 +8622,7 @@ _LABEL_449F_:
 _LABEL_44B1_:
 	ld (CurrentHPLow), hl
 	ld a, $2F
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 27th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8637,14 +8638,14 @@ SlowPotionAction:
 	or a
 	jr z, _LABEL_44D3_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_44D3_:
 	ld a, $01
 	ld (SluggishTicksLeft), a
 	ld a, $30
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 29th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8653,14 +8654,14 @@ SlowfixPotionAction:
 	or a
 	jr nz, _LABEL_44EE_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_44EE_:
 	xor a
 	ld (SluggishTicksLeft), a
 	ld a, $31
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 30th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8669,7 +8670,7 @@ FogPotionAction:
 	or a
 	jr z, _LABEL_4508_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_4508_:
@@ -8705,7 +8706,7 @@ ItemActionTable_4545:
 	or a
 	jr z, _LABEL_4553_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_4553_:
@@ -8714,7 +8715,7 @@ _LABEL_4553_:
 	add a, $10
 	ld (DizzinessTicksLeft), a
 	ld a, $33
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 32nd entry of Jump Table from 3E68 (indexed by unknown)
@@ -8728,7 +8729,7 @@ CurePotionAction:
 	or d
 	jr nz, _LABEL_457C_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_457C_:
@@ -8737,7 +8738,7 @@ _LABEL_457C_:
 	ld (BlindnessTicksLeft), a
 	ld (DizzinessTicksLeft), a
 	ld a, $34
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 33rd entry of Jump Table from 3E68 (indexed by unknown)
@@ -8745,7 +8746,7 @@ MaxhealPotionAction:
 	ld hl, (MaxHPLow)
 	ld (CurrentHPLow), hl
 	ld a, $2F
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 34th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8759,7 +8760,7 @@ WitherPotionAction:
 	dec a
 	ld (BasePW), a
 	ld a, $35
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 _LABEL_45B6_:
@@ -8769,13 +8770,13 @@ _LABEL_45B6_:
 	dec a
 	ld (BasePW), a
 	ld a, $35
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 35th entry of Jump Table from 3E68 (indexed by unknown)
 HealFoodRingAction:
 	ld a, $2F
-	ld ($C975), a
+	ld (NextMessage), a
 _LABEL_45CE_:
 	ld a, $3F
 	ld ($C0AB), a
@@ -8789,7 +8790,7 @@ _LABEL_45D3_:
 _LABEL_45E3_:
 	call _LABEL_3F2B_
 	ret nc
-	ld a, ($C975)
+	ld a, (NextMessage)
 	ld (CurrentMessage), a
 	ld a, (CurrentItem)
 	and $0F
@@ -8810,13 +8811,13 @@ _LABEL_45FF_:
 ; 36th entry of Jump Table from 3E68 (indexed by unknown)
 MagicRingAction:
 	ld a, $36
-	ld ($C975), a
+	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 37th entry of Jump Table from 3E68 (indexed by unknown)
 SightRingAction:
 	ld a, $37
-	ld ($C975), a
+	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 38th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8829,7 +8830,7 @@ ShieldRingAction:
 _LABEL_4629_:
 	ld (BaseAC), a
 	ld a, $38
-	ld ($C975), a
+	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 39th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8842,13 +8843,13 @@ OgreRingAction:
 _LABEL_463E_:
 	ld (BasePW), a
 	ld a, $39
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_45CE_
 
 ; 40th entry of Jump Table from 3E68 (indexed by unknown)
 ShiftRingAction:
 	ld a, $21
-	ld ($C975), a
+	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
 	jp _LABEL_45D3_
@@ -8856,7 +8857,7 @@ ShiftRingAction:
 ; 41st entry of Jump Table from 3E68 (indexed by unknown)
 CursedRingAction:
 	ld a, $3A
-	ld ($C975), a
+	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
 	jp _LABEL_45D3_
@@ -8864,7 +8865,7 @@ CursedRingAction:
 ; 42nd entry of Jump Table from 3E68 (indexed by unknown)
 HungerRingAction:
 	ld a, $3A
-	ld ($C975), a
+	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
 	jp _LABEL_45D3_
@@ -8872,7 +8873,7 @@ HungerRingAction:
 ; 43rd entry of Jump Table from 3E68 (indexed by unknown)
 ToyRingAction:
 	ld a, $3B
-	ld ($C975), a
+	ld (NextMessage), a
 	ld a, (PaletteInRAM)
 	ld ($C0AB), a
 	jp _LABEL_45D3_
@@ -8882,7 +8883,7 @@ ItemActionTable_467E:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $3F
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
 ; 46th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8890,7 +8891,7 @@ ItemActionTable_468B:
 	ld a, $00
 	ld ($C0AB), a
 	ld a, $40
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
 ; 47th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8903,7 +8904,7 @@ PowerPotionAction:
 _LABEL_46A2_:
 	ld (BasePW), a
 	ld a, $48
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 48th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8916,7 +8917,7 @@ ReflexPotionAction:
 _LABEL_46B7_:
 	ld (BaseAC), a
 	ld a, $49
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 49th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8935,7 +8936,7 @@ _LABEL_46CE_:
 	djnz _LABEL_46CE_
 _LABEL_46D7_:
 	ld a, $4A
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 50th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8998,7 +8999,7 @@ Data_4744:
 ; 51st entry of Jump Table from 3E68 (indexed by unknown)
 WaterPotionAction:
 	ld a, $50
-	ld ($C975), a
+	ld (NextMessage), a
 	xor a
 	ld (CurrentItem), a
 	jp _LABEL_3EDF_
@@ -9009,7 +9010,7 @@ DazePotionAction:
 	or a
 	jr z, _LABEL_4766_
 	ld a, $22
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_4766_:
@@ -9018,7 +9019,7 @@ _LABEL_4766_:
 	add a, $10
 	ld (DizzinessTicksLeft), a
 	ld a, $51
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 53rd entry of Jump Table from 3E68 (indexed by unknown)
@@ -9026,7 +9027,7 @@ ItemActionTable_4778:
 	ld a, (PaletteInRAM)
 	ld ($C0AB), a
 	ld a, $19
-	ld ($C975), a
+	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
 _LABEL_4786_:
