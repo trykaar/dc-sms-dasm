@@ -2373,7 +2373,7 @@ _LABEL_131F_:
 	ld h, a
 	jr c, UnableToContinue
 	ld (MoneyMid), hl
-	ld de, $3C90
+	ld de, Data_3C90
 	rst $08	; Interrupt8
 	ld c, VDPData
 	ld hl, $AE45
@@ -2477,8 +2477,9 @@ JumpTable1_1424:
 	jp _LABEL_137_
 
 ; Data from 142D to 1434 (8 bytes)
+; Pointers to graphics data
 Data_142D:
-	.db $E6 $81 $26 $83 $C6 $83 $86 $82
+	.dw $81E6 $8326 $83C6 $8286
 
 ; 14th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_1435:
@@ -2591,9 +2592,10 @@ _LABEL_14A7_:
 	jp _LABEL_137_
 
 ; Data from 151F to 152E (16 bytes)
+; Pointers to graphics data
 Data_151F:
-	.db $E6 $81 $26 $80 $86 $82 $42 $80
-	.db $26 $83 $5E $80 $C6 $83 $7A $80
+	.dw $81E6 $8026 $8286 $8042
+	.dw $8326 $805E $83C6 $807A
 
 ; 15th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_152F:
@@ -3019,7 +3021,7 @@ JumpTable1_1B20:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $1C90
+	ld hl, Data_1C90
 	add hl, de
 	ld a, (hl)
 	ld (Floor), a
@@ -3151,11 +3153,15 @@ _LABEL_1BD5_:
 	ld (TableIndex1), a
 	jp _LABEL_143_
 
-; Data from 1C78 to 1CA7 (48 bytes)
+; Data from 1C78 to 1C8F (24 bytes)
+; Looks like words? Pointer table?
 Data_1C78:
 	.db $49 $B2 $49 $B3 $49 $B4 $49 $B5
 	.db $49 $B6 $49 $B7 $09 $B0 $C9 $B0
 	.db $89 $B1 $09 $B0 $89 $B1 $C9 $B0
+
+; Data from 1C90-1CA8 (24 bytes)
+Data_1C90:
 	.db $01 $01 $01 $10 $08 $04 $02 $12
 	.db $0A $07 $03 $12 $12 $0A $08 $15
 	.db $18 $0C $0C $1A $1D $10 $0C $1A
@@ -7371,7 +7377,7 @@ _LABEL_3AAC_:
 	add hl, de
 	res 1, (hl)
 	cp $40
-	jr nc, _LABEL_3B38_
+	jr nc, DoJumpTable6
 	ld a, ($C932)
 	cp $0E
 	jr nz, _LABEL_3AE9_
@@ -7433,12 +7439,12 @@ _LABEL_3B2E_:
 	ld ($C932), a
 	jp _LABEL_393C_
 
-_LABEL_3B38_:
+DoJumpTable6:
 	set 4, (hl)
 	sub $40
 	ld e, a
 	ld d, $00
-	ld hl, $3CA0
+	ld hl, JumpTable6ActionOffsets
 	add hl, de
 	ld a, (hl)
 	add a, a
@@ -7642,12 +7648,20 @@ _LABEL_3C74_:
 	ld ($C932), a
 	jp _LABEL_3F1A_
 
-; Data from 3C85 to 3CBF (59 bytes)
+; Data from 3C85 to 3C8F (11 bytes)
 Data_3C85:
-	.db $00 $01 $02 $03 $05 $08 $0B $0E $12 $06 $06 $08 $08 $04 $08 $0C
-	.db $00 $01 $02 $03 $04 $05 $06 $06 $0A $04 $0A $00 $00 $01 $00 $02
-	.db $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00 $00 $09 $00 $09 $00
-	.db $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
+	.db $00 $01 $02 $03 $05 $08 $0B $0E $12 $06 $06
+
+; Data from 3C90 to 3C9F (16 bytes)
+Data_3C90:
+	.db $08 $08 $04 $08 $0C $00 $01 $02 $03 $04 $05 $06 $06 $0A $04 $0A 
+
+; Data from 3CA0 to 3CBF (32 bytes)
+; Same number of actions as monsters, but doesn't seem to match up
+; with monster speed or behavior
+JumpTable6ActionOffsets:
+	.db $00 $00 $01 $00 $02 $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00
+	.db $00 $09 $00 $09 $00 $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
 
 ; Jump Table from 3CC0 to 3CD5 (11 entries, indexed by unknown)
 JumpTable6:
