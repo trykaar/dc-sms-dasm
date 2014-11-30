@@ -71,7 +71,7 @@
 .define BasePW 					$C62F
 .define BaseAC 					$C630
 
-; C631 is written every floor to 00
+.define PreventArmorRust		$C631
 
 .define ParalysisTicksLeft		$C632
 .define SluggishTicksLeft 		$C633
@@ -83,9 +83,11 @@
 .define HealTimer 				$C63D
 .define ContinuesSpent			$C63E
 
-.define CurrentItem				$C931
 .define EquippedWeapon			$C900
 .define EquippedArmor			$C908
+.define EquippedRing			$C928
+
+.define CurrentItem				$C931
 
 .define NextMessage				$C975
 .define CurrentMessage			$CAC4

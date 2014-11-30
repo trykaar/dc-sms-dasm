@@ -2026,7 +2026,7 @@ _LABEL_108F_:
 	ld ($C100), hl
 	ld hl, $3CE6
 	ld ($C120), hl
-	ld hl, $C631
+	ld hl, PreventArmorRust
 	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
@@ -3111,7 +3111,7 @@ _LABEL_1BD5_:
 	ld ($C100), hl
 	ld hl, $3CE6
 	ld ($C120), hl
-	ld hl, $C631
+	ld hl, PreventArmorRust
 	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
@@ -5528,7 +5528,7 @@ HandleFoodTimer:
 	or a
 	jr z, _LABEL_2D06_
 	ld d, $10
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	and $0F
 	cp $02
 	jr z, _LABEL_2D06_
@@ -5576,7 +5576,7 @@ HandleHealTimer:
 	ld a, $08
 	ld de, $0001
 	jr z, _LABEL_2D50_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $56
 	ret z
 	cp $50
@@ -6373,7 +6373,7 @@ _LABEL_327F_:
 	ld a, ($C930)
 	or a
 	ret z
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	and $7F
 	cp $59
 	ret nz
@@ -6540,7 +6540,7 @@ _LABEL_3424_:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3431_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $53
 	jr z, _LABEL_343D_
 _LABEL_3431_:
@@ -7943,7 +7943,7 @@ ShieldScrollAction:
 ; 3rd entry of Jump Table from 3E68 (indexed by unknown)
 NorustScrollAction:
 	ld a, $01
-	ld ($C631), a
+	ld (PreventArmorRust), a
 	ld a, $1E
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
@@ -7953,7 +7953,7 @@ BlessScrollAction:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3F94_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	and $7F
 	cp $56
 	jr c, _LABEL_3F94_
@@ -7977,14 +7977,14 @@ _LABEL_3FA1_:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_3FD2_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	and $7F
 	cp $56
 	jr c, _LABEL_3FD2_
 	cp $58
 	jr z, _LABEL_3FD2_
 	ld hl, $C929
-	ld de, $C928
+	ld de, EquippedRing
 	call LDI7
 	xor a
 	ld (de), a
@@ -8277,7 +8277,7 @@ _LABEL_41F4_:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_4220_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $51
 	jr nz, _LABEL_4220_
 	add hl, hl
@@ -8403,7 +8403,7 @@ _LABEL_4306_:
 	ld (CurrentHPLow), hl
 	ex de, hl
 	add hl, hl
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $51
 	jr nz, _LABEL_4313_
 	add hl, hl
@@ -9437,7 +9437,7 @@ _LABEL_4A36_:
 	ld a, ($C458)
 	or a
 	jr nz, _LABEL_4A1E_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	and $7F
 	cp $56
 	jr c, _LABEL_4A6F_
@@ -9460,7 +9460,7 @@ _LABEL_4A58_:
 	ret
 
 _LABEL_4A6F_:
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $54
 	call z, _LABEL_4A97_
 	cp $55
@@ -9566,7 +9566,7 @@ _LABEL_4B25_:
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_4B41_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $58
 	jr z, _LABEL_4B41_
 	cp $56
@@ -9578,7 +9578,7 @@ _LABEL_4B25_:
 _LABEL_4B41_:
 	ld a, $01
 	ld ($C930), a
-	ld de, $C928
+	ld de, EquippedRing
 	ld hl, ($C458)
 	ld h, $00
 	add hl, de
@@ -10100,7 +10100,7 @@ JumpTable8_4EA1:
 	ld a, $58
 _LABEL_4EAF_:
 	out (VDPData), a
-	ld hl, $C928
+	ld hl, EquippedRing
 	ld de, $A100
 	ld bc, $C965
 	jp _LABEL_4EFE_
@@ -10304,7 +10304,7 @@ _LABEL_4FCD_:
 _LABEL_4FE8_:
 	ld hl, ContinuesSpent
 	inc (hl)
-	ld hl, $C631
+	ld hl, PreventArmorRust
 	ld de, ParalysisTicksLeft
 	ld (hl), $00
 	call LDI5
@@ -10516,27 +10516,27 @@ _LABEL_51B5_:
 	scf
 	ret
 
-_LABEL_51B7_:
+RustArmor:
 	ld a, (EquippedArmor)
-	cp $11
-	jr z, _LABEL_51DC_
-	cp $12
-	jr z, _LABEL_51DC_
-	cp $19
-	jr z, _LABEL_51DC_
-	ld a, ($C928)
-	cp $54
-	jr z, _LABEL_51DC_
+	cp $11					; Leathersuit won't rust
+	jr z, ArmorDidntRust
+	cp $12					; Lamellar won't rust
+	jr z, ArmorDidntRust
+	cp $19					; Mystic Suit won't rust
+	jr z, ArmorDidntRust
+	ld a, (EquippedRing)
+	cp $54					; Shield ring prevents rusting
+	jr z, ArmorDidntRust
 	ld a, (ix+28)
 	and $08
-	jr nz, _LABEL_51DC_
-	ld a, ($C631)
+	jr nz, ArmorDidntRust
+	ld a, (PreventArmorRust)		; No rust effect (set by Norust scroll) prevents rusting
 	or a
-	jr nz, _LABEL_51DC_
+	jr nz, ArmorDidntRust
 	xor a
 	ret
 
-_LABEL_51DC_:
+ArmorDidntRust:
 	scf
 	ret
 
@@ -13111,7 +13111,7 @@ _LABEL_6649_:
 	jr _LABEL_66C7_
 
 _LABEL_6661_:
-	call _LABEL_51B7_
+	call RustArmor
 	jr c, _LABEL_66C7_
 	ld a, (EquippedArmor)
 	cp $10
@@ -14729,7 +14729,7 @@ _LABEL_743B_:
 	ld a, (ix+31)
 	cp $19
 	jr z, _LABEL_7489_
-	ld a, ($C928)
+	ld a, (EquippedRing)
 	cp $55
 	jp z, _LABEL_74D9_
 	ld a, (ix+31)
