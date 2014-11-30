@@ -7296,7 +7296,7 @@ _LABEL_39DA_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $3A8C
+	ld hl, ExperienceNeededTable+1			; Use high byte/low byte operator?
 	add hl, de
 	ld a, (hl)
 	ld (NextLevelLow), a
@@ -7352,13 +7352,11 @@ Data_3A3A:
 	.db $04 $02 $12 $10
 
 ; Data from 3A50 to 3AAB (98 bytes)
-.db $01 $00 $02 $00 $06 $00 $0A $00 $03 $00 $06 $00 $01 $00 $08 $00
-.db $05 $00 $0A $00 $19 $00 $30 $00 $0C $00 $20 $00 $14 $00 $16 $00
-.db $2C $00 $3E $00 $48 $00 $34 $00 $4E $00 $6E $00 $3C $00 $96 $00
-.db $8C $00 $2C $01 $6E $00 $60 $00 $1E $00 $82 $00 $FA $00 $78 $00
-.db $78 $00 $00 $00 $14 $00 $46 $00 $82 $00 $C8 $00 $54 $01 $30 $02
-.db $5C $03 $14 $05 $D0 $07 $B8 $0B $68 $10 $E0 $15 $E8 $1C $80 $25
-.db $B0 $36
+; Experience given by monsters! 3A50-3A8A
+.include "monsters/monster_experience_table.asm"
+
+; Experience table 3A8B-3AAB
+.include "player/player_experience_needed_table.asm"
 
 _LABEL_3AAC_:
 	ld hl, ($C3E0)
@@ -9347,7 +9345,7 @@ _LABEL_498D_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $3A8D
+	ld hl, ExperienceNeededTable+2
 	add hl, de
 	ld de, NextLevelHigh
 	ldd
