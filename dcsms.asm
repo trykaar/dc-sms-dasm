@@ -7857,7 +7857,7 @@ ItemActionTable:
 	.dw FlashRodAction        ThunderRodAction     WindRodAction        BerserkRodAction
 	.dw SilentRodAction       ReshapeRodAction     TravelRodAction      DrainRodAction
 	.dw WitherRodAction       MinhealPotionAction  MidhealPotionAction  SlowPotionAction
-	.dw SlowfixPotionAction   FogPotionAction      ItemActionTable_4545 CurePotionAction
+	.dw SlowfixPotionAction   FogPotionAction      UnusedDizzinessItem  CurePotionAction
 	.dw MaxhealPotionAction   WitherPotionAction   HealFoodRingAction   MagicRingAction
 	.dw SightRingAction       ShieldRingAction     OgreRingAction       ShiftRingAction
 	.dw CursedRingAction      HungerRingAction     ToyRingAction        ItemActionTable_467E
@@ -7935,10 +7935,10 @@ _LABEL_3F46_:
 BladeScrollAction:
 	ld a, (WeaponPW)
 	inc a
-	cp $3C
-	jr c, _LABEL_3F5D_
+	cp $3C					; Cap weapon power at 59
+	jr c, SetWeaponPW
 	ld a, $3B
-_LABEL_3F5D_:
+SetWeaponPW:
 	ld (WeaponPW), a
 	ld a, $1C
 	ld (NextMessage), a
@@ -8024,7 +8024,7 @@ MapScrollAction:
 	ld a, $3F
 	ld ($C0AB), a
 	ld (ix+24), $1E
-	ld hl, $4001
+	ld hl, _LABEL_4001_
 	jp _LABEL_4786_
 
 .BANK 1 SLOT 1
@@ -8050,7 +8050,7 @@ ShiftScrollAction:
 	ld a, $3F
 	ld ($C0AB), a
 	ld (ix+24), $1E
-	ld hl, $4031
+	ld hl, _LABEL_4031_
 	jp _LABEL_4786_
 
 _LABEL_4031_:
@@ -8059,7 +8059,7 @@ _LABEL_4031_:
 	ld a, $21
 	ld (CurrentMessage), a
 	ld (ix+24), $1E
-	ld hl, $4044
+	ld hl, _LABEL_4044_
 	jp _LABEL_4786_
 
 _LABEL_4044_:
@@ -8713,20 +8713,20 @@ _LABEL_451D_:
 	jp _LABEL_3F1A_
 
 ; 31st entry of Jump Table from 3E68 (indexed by unknown)
-ItemActionTable_4545:
-	ld a, (DizzinessTicksLeft)
+UnusedDizzinessItem:
+	ld a, (DizzinessTicksLeft)	; Causes 16-31 ticks of dizziness if player isn't already dizzy
 	or a
-	jr z, _LABEL_4553_
-	ld a, $22
+	jr z, NotDizzyYet1
+	ld a, $22					; Nothing happened
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
-_LABEL_4553_:
+NotDizzyYet1:
 	call GetRandomNumber
 	and $0F
 	add a, $10
 	ld (DizzinessTicksLeft), a
-	ld a, $33
+	ld a, $33					; Uses same message as monster-attack-induced dizziness
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8737,14 +8737,14 @@ CurePotionAction:
 	ld a, (BlindnessTicksLeft)
 	ld e, a
 	ld a, (DizzinessTicksLeft)
-	or e
-	or d
-	jr nz, _LABEL_457C_
+	or e						; Either blinded or dizzy
+	or d						; Either poisoned or dizzy
+	jr nz, CureStatusEffect		; If any of the three...
 	ld a, $22
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
-_LABEL_457C_:
+CureStatusEffect:
 	xor a
 	ld (PoisonTicksLeft), a
 	ld (BlindnessTicksLeft), a
@@ -8765,7 +8765,7 @@ MaxhealPotionAction:
 WitherPotionAction:
 	call GetRandomNumber
 	and $01
-	jr z, _LABEL_45B6_
+	jr z, DecreaseAC				; If 0, decrease AC, if 1, decrease PW
 	ld a, (BasePW)
 	or a
 	jp z, NothingHappenedAction
@@ -8775,7 +8775,7 @@ WitherPotionAction:
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
-_LABEL_45B6_:
+DecreaseAC:
 	ld a, (BaseAC)
 	or a
 	jp z, NothingHappenedAction
@@ -9020,12 +9020,12 @@ WaterPotionAction:
 DazePotionAction:
 	ld a, (DizzinessTicksLeft)
 	or a
-	jr z, _LABEL_4766_
+	jr z, NotDizzyYet2
 	ld a, $22
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
-_LABEL_4766_:
+NotDizzyYet2:
 	call GetRandomNumber
 	and $0F
 	add a, $10

@@ -703,7 +703,7 @@
 0000:3f3c _LABEL_3F3C_
 0000:3f46 _LABEL_3F46_
 0000:3f53 BladeScrollAction
-0000:3f5d _LABEL_3F5D_
+0000:3f5d SetWeaponPW
 0000:3f68 ShieldScrollAction
 0000:3f74 NorustScrollAction
 0000:3f81 BlessScrollAction
@@ -772,13 +772,13 @@
 0001:44fa FogPotionAction
 0001:4508 _LABEL_4508_
 0001:451d _LABEL_451D_
-0001:4545 ItemActionTable_4545
-0001:4553 _LABEL_4553_
+0001:4545 UnusedDizzinessItem
+0001:4553 NotDizzyYet1
 0001:4565 CurePotionAction
-0001:457c _LABEL_457C_
+0001:457c CureStatusEffect
 0001:458e MaxhealPotionAction
 0001:459c WitherPotionAction
-0001:45b6 _LABEL_45B6_
+0001:45b6 DecreaseAC
 0001:45c9 HealFoodRingAction
 0001:45ce _LABEL_45CE_
 0001:45d3 _LABEL_45D3_
@@ -810,7 +810,7 @@
 0001:4744 Data_4744
 0001:474c WaterPotionAction
 0001:4758 DazePotionAction
-0001:4766 _LABEL_4766_
+0001:4766 NotDizzyYet2
 0001:4778 ItemActionTable_4778
 0001:4786 _LABEL_4786_
 0001:478d _LABEL_478D_
