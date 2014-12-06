@@ -1,300 +1,300 @@
 ; Battle and exploration messages
-MonsterDamagedMessage1:
+MonsterDamagedMessage1Ptr:
 	.db $0d
 	.asc "MONSTER DOWN "
 
-MonsterDamagedMessage2:
+MonsterDamagedMessage2Ptr:
 	.db $0e
 	.asc " HIT POINT(S)!"
 
-PlayerDamagedMessage1:
+PlayerDamagedMessage1Ptr:
 	.db $0c
 	.asc "YOU'RE DOWN "
 
-PlayerDamagedMessage2:
+PlayerDamagedMessage2Ptr:
 	.db $0e
 	.asc " HIT POINT(S)!"
 
-ItemFoundMessage1:
+ItemFoundMessage1Ptr:
 	.db $0c
 	.asc "YOU FOUND A "
 
-ItemFoundMessage2:
+ItemFoundMessage2Ptr:
 	.db $01
 	.asc "."
 
-PlayerMissedMessage:
+PlayerMissedMessagePtr:
 	.db $07
 	.asc "MISSED!"
 
-VictoryMessage:
+VictoryMessagePtr:
 	.db $08
 	.asc "VICTORY!"
 
-LevelUpMessage:
+LevelUpMessagePtr:
 	.db $0d
 	.asc "LEVEL GAINED!"
 
-PlayerDodgedMessage:
+PlayerDodgedMessagePtr:
 	.db $16
 	.asc "YOU DODGER THE ATTACK!"	; Typo
 
-FoodFoundMessage:
+FoodFoundMessagePtr:
 	.db $14
 	.asc "YOU FOUND SOME FOOD."
 
-GoldFoundMessage:
+GoldFoundMessagePtr:
 	.db $05
 	.asc "GOLD!"
 
-SecretPathFoundMessage:
+SecretPathFoundMessagePtr:
 	.db $07
 	.asc "A PATH!"
 
-OutOfFoodMessage:
+OutOfFoodMessagePtr:
 	.db $10
 	.asc "I'M OUT OF FOOD."
 
-RecoveryMessage:
+RecoveryMessagePtr:
 	.db $09
 	.asc "RECOVERY!"
 
-HandsFullMessage:
+HandsFullMessagePtr:
 	.db $14
 	.asc "YOUR HANDS ARE FULL."
 
-MonsterEnragedMessage:
+MonsterEnragedMessagePtr:
 	.db $1b
 	.asc "YOU'VE ENRAGED THE MONSTER!"
 
-MonsterConfusedMessage:
+MonsterConfusedMessagePtr:
 	.db $1c
 	.asc "YOU'VE CONFUSED THE MONSTER!"
 
-MonsterParalyzedMessage:
+MonsterParalyzedMessagePtr:
 	.db $1d
 	.asc "YOU'VE PARALYZED THE MONSTER!"
 
-MonsterSlowMessage:
+MonsterSlowMessagePtr:
 	.db $16
 	.asc "THE MONSTER HESITATES!"
 
-NothingHappenedMessage:
+NothingHappenedMessagePtr:
 	.db $11
 	.asc "NOTHING HAPPENED."
 
-MonsterBlownAwayMessage:
+MonsterBlownAwayMessagePtr:
 	.db $1a
 	.asc "THE MONSTER IS BLOWN AWAY!"
 
-PlayerAwakenedMessage:
+PlayerAwakenedMessagePtr:
 	.db $10
 	.asc "YOU'VE AWAKENED!"
 
-WeaponStrongerMessage:
+WeaponStrongerMessagePtr:
 	.db $10
 	.asc "MY WEAPON BECAME SHARPER."		; The length should be $19- the message cuts off
 
-ArmorStrongerMessage:
+ArmorStrongerMessagePtr:
 	.db $16
 	.asc "MY ARMOR GOT STRONGER."
 
-NoRustMessage:
+NoRustMessagePtr:
 	.db $14
 	.asc "MY ARMOR WON'T RUST."
 
-CurseRemovedMessage:
+CurseRemovedMessagePtr:
 	.db $17
 	.asc "I AWOKE FROM THE SPELL."
 
-FloorMapRevealedMessage:
+FloorMapRevealedMessagePtr:
 	.db $10
 	.asc "I FOUND THE MAP."
 
-TeleportRandomRoomMessage:
+TeleportRandomRoomMessagePtr:
 	.db $0f
 	.asc "I FEEL LIGHTER."
 
-NoEffectMessage:
+NoEffectMessagePtr:
 	.db $0a
 	.asc "NO EFFECT!"
 
-PlayerParalyzedMessage:
+PlayerParalyzedMessagePtr:
 	.db $11
 	.asc "YOU'RE PARALYZED!"
 
-EnemySummonedMessage:
+EnemySummonedMessagePtr:
 	.db $06
 	.asc "ENEMY!"
 
-SwordTransformedMessage:
+SwordTransformedMessagePtr:
 	.db $11
 	.asc "MY SWORD CHANGED!"
 
-BlankScrollNothingMessage:
+BlankScrollNothingMessagePtr:
 	.db $0b
 	.asc "IT'S BLANK!"
 
-PlayerUsedMagicMessage:
+PlayerUsedMagicMessagePtr:
 	.db $0d
 	.asc "I USED MAGIC."
 
-PlayerBerserkMessage:
+PlayerBerserkMessagePtr:
 	.db $0f
 	.asc "YOU GO BERSERK!"
 
-MonsterNoMagicMessage:
+MonsterNoMagicMessagePtr:
 	.db $1d
 	.asc "THE ENEMY SPELL IS DEFLECTED!"
 
-EnemyTransformedMessage:
+EnemyTransformedMessagePtr:
 	.db $12
 	.asc "THE ENEMY MUTATES!"
 
-TeleportNextFloorMessage:
+TeleportNextFloorMessagePtr:
 	.db $1d
 	.asc "YOU'RE SLIPPING THROUGH TIME!"
 
-HitPointSwapMessage:
+HitPointSwapMessagePtr:
 	.db $1a
 	.asc "YOU'VE SWAPPED HIT POINTS!"
 
-LevelDownMessage1:
+LevelDownMessage1Ptr:
 	.db $17
 	.asc "YOU'VE DROPPED A LEVEL!"
 
-PlayerHealedMessage:
+PlayerHealedMessagePtr:
 	.db $15
 	.asc "YOUR HEALTH IMPROVES."
 
-PlayerSlowMessage:
+PlayerSlowMessagePtr:
 	.db $12
 	.asc "YOU FEEL SLUGGISH!"
 
-PlayerSlowHealedMessage:
+PlayerSlowHealedMessagePtr:
 	.db $14
 	.asc "YOUR SPEED IMPROVES!"
 
-PlayerFogMessage:
+PlayerFogMessagePtr:
 	.db $1c
 	.asc "YOU'RE BLINDED BY DENSE FOG!"
 
-PlayerLightheadedMessage:
+PlayerLightheadedMessagePtr:
 	.db $17
 	.asc "YOU FEEL LIGHTHEADED..."
 
-PlayerStatusHealedMessage:
+PlayerStatusHealedMessagePtr:
 	.db $1c
 	.asc "YOU RECOVER FROM THE POISON!"
 
-PlayerStrengthDownMessage1:
+PlayerStrengthDownMessage1Ptr:
 	.db $1a
 	.asc "YOU'RE STRENGTH DECREASES!"	; Typo
 
-PlayerMagicUpMessage:
+PlayerMagicUpMessagePtr:
 	.db $1b
 	.asc "YOU FEEL A SURGE OF ENERGY!"
 
-PlayerSightUpMessage:
+PlayerSightUpMessagePtr:
 	.db $19
 	.asc "YOUR SENSES ARE ENHANCED!"
 
-PlayerDefenseUpMessage1:
+PlayerDefenseUpMessage1Ptr:
 	.db $19
 	.asc "YOU CONJURE A MAGIC WALL!"
 
-PlayerStrengthUpMessage1:
+PlayerStrengthUpMessage1Ptr:
 	.db $17
 	.asc "YOUR STRENGTH IMPROVES!"
 
-PlayerCursedMessage:
+PlayerCursedMessagePtr:
 	.db $13
 	.asc "YOU'VE BEEN CURSED!"
 
-RingDoesNothingMessage:
+RingDoesNothingMessagePtr:
 	.db $0a
 	.asc "NO EFFECT."
 
-SwordDoesNothingMessage:
+SwordDoesNothingMessagePtr:
 	.db $17
 	.asc "YOUR SWORD DOESN'T CUT!"
 
-PlayerDeadMessage:
+PlayerDeadMessagePtr:
 	.db $13
 	.asc "YOU CAN'T GO ON...."
 
-SwordCursedMessage:
+SwordCursedMessagePtr:
 	.db $14
 	.asc "THE SWORD IS CURSED!"
 
-ArmorCursedMessage:
+ArmorCursedMessagePtr:
 	.db $14
 	.asc "THE ARMOR IS CURSED!"
 
-WarpMessage:
+WarpMessagePtr:
 	.db $05
 	.asc "WARP!"
 
-PlayerPoisonedMessage:
+PlayerPoisonedMessagePtr:
 	.db $12
 	.asc "YOU'RE POISONED..."
 
-ArmorRustMessage:
+ArmorRustMessagePtr:
 	.db $11
 	.asc "YOUR ARMOR RUSTS!"
 
-WeaponRustMessage:
+WeaponRustMessagePtr:
 	.db $12
 	.asc "YOUR WEAPON RUSTS!"
 
-FoodStolenMessage:
+FoodStolenMessagePtr:
 	.db $1c
 	.asc "THE MONSTER STOLE YOUR FOOD!"
 
-PlayerStrengthDownMessage2:
+PlayerStrengthDownMessage2Ptr:
 	.db $10
 	.asc "I LOST STRENGTH!"
 
-LevelDownMessage2:
+LevelDownMessage2Ptr:
 	.db $14
 	.asc "MY LEVEL WENT DOWN!!"
 
-PlayerStrengthUpMessage2:
+PlayerStrengthUpMessage2Ptr:
 	.db $1b
 	.asc "YOU FEEL A SURGE OF ENERGY!"
 
-PlayerDefenseUpMessage2:
+PlayerDefenseUpMessage2Ptr:
 	.db $1d
 	.asc "YOUR REACTIONS ARE SHARPENED!"
 
-PotionTransformedMessage:
+PotionTransformedMessagePtr:
 	.db $14
 	.asc "THE POTIONS CHANGED."
 
-PlayerIdleMessage:
+PlayerIdleMessagePtr:
 	.db $12
 	.asc "WHAT SHALL YOU DO?"
 
-CursedSwordEquippedMessage:
+CursedSwordEquippedMessagePtr:
 	.db $1b
 	.asc "THE SWORD CAN'T BE DROPPED!"
 
-CursedArmorEquippedMessage:
+CursedArmorEquippedMessagePtr:
 	.db $1b
 	.asc "THE ARMOR CAN'T BE REMOVED!"
 
-CursedRingEquippedMessage:
+CursedRingEquippedMessagePtr:
 	.db $1a
 	.asc "THE RING CAN'T BE REMOVED!"
 
-MonsterSummonedMessage:
+MonsterSummonedMessagePtr:
 	.db $16
 	.asc "A MONSTER IS SUMMONED!"
 
-WaterPotionMessage:
+WaterPotionMessagePtr:
 	.db $18
 	.asc "YOUR THIRST IS QUENCHED."
 
-PlayerDizzinessMessage:
+PlayerDizzinessMessagePtr:
 	.db $1d
 	.asc "YOUR HEAD SPINS IN CONFUSION!"

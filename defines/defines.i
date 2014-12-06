@@ -91,3 +91,5 @@
 
 .define NextMessage				$C975
 .define CurrentMessage			$CAC4
+
+.define PlayerIdleTimer			$CAC8

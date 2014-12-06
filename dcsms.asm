@@ -5,6 +5,8 @@
 .include "defines\defines.i"
 .include "defines\asciitable.i"
 .include "defines\sound_driver.i"
+.include "defines\game_message_constants.i"
+.include "defines\item_constants.i"
 
 ; End Definitions
 
@@ -1587,9 +1589,9 @@ SetUpGame:
 	ld a, $1E
 	ld (BasePW), a
 	ld (BaseAC), a
-	ld a, $01
+	ld a, DaggerSword
 	ld (EquippedWeapon), a
-	ld a, $10
+	ld a, RobeArmor
 	ld (EquippedArmor), a
 	call _LABEL_101A_
 	ld a, $07
@@ -1856,9 +1858,9 @@ SetUpGameAutoplay:
 	ld (BaseAC), a
 	ld a, $01
 	ld (Floor), a
-	ld a, $01
+	ld a, DaggerSword
 	ld (EquippedWeapon), a
-	ld a, $10
+	ld a, RobeArmor
 	ld (EquippedArmor), a
 	ld a, $08
 	ld (TableIndex1), a
@@ -1926,9 +1928,9 @@ JumpTable1_F4C:
 	ld (MoneyHigh), a
 	ld (BasePW), a
 	ld (BaseAC), a
-	ld a, $01
+	ld a, DaggerSword
 	ld (EquippedWeapon), a
-	ld a, $10
+	ld a, RobeArmor
 	ld (EquippedArmor), a
 	call _LABEL_101A_
 	call _LABEL_42C_
@@ -1967,7 +1969,7 @@ _LABEL_101A_:
 	ld (hl), $00
 	call LDI6
 	ld a, (EquippedWeapon)
-	cp $0E
+	cp $0E                   ; GreatSword?
 	jr nz, _LABEL_1034_
 	ld a, $03
 	ld ($C901), a
@@ -2067,7 +2069,7 @@ PlayFloorMusic:
 	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $3C
-	ld ($CAC8), a
+	ld (PlayerIdleTimer), a
 	ei
 	ld a, $0A
 	ld (TableIndex1), a
@@ -2119,7 +2121,7 @@ JumpTable1_1127:
 	ld ($C077), a
 	call _LABEL_40F_
 	ld a, $3C
-	ld ($CAC8), a
+	ld (PlayerIdleTimer), a
 	ld a, $02
 	ld ($C014), a
 	ei
@@ -2395,9 +2397,9 @@ _LABEL_131F_:
 	ld de, $1400
 	rst $08	; Interrupt8
 	ld a, (EquippedArmor)
-	cp $13
+	cp CuirassArmor                 ; $13 or less
 	jr c, PlayerDeadWithLightArmor
-	cp $16
+	cp PlateArmor                   ; $16 or less
 	jr c, PlayerDeadWithMediumArmor
 	ld a, $02
 	ld hl, $B5EE
@@ -2512,9 +2514,9 @@ JumpTable1_1435:
 	ld de, $1200
 	rst $08	; Interrupt8
 	ld a, (EquippedArmor)
-	cp $13
+	cp CuirassArmor                 ; Cuirass or less
 	jr c, _LABEL_149F_
-	cp $16
+	cp PlateArmor                   ; Plate armor or less
 	jr c, _LABEL_1495_
 	ld a, $02						; Base armor graphics?
 	ld hl, $A02E
@@ -3145,7 +3147,7 @@ _LABEL_1BD5_:
 	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, $3C
-	ld ($CAC8), a
+	ld (PlayerIdleTimer), a
 	ei
 	ld hl, $0078
 	ld (TitleScreenCounterLow), hl
@@ -5583,9 +5585,9 @@ HandleHealTimer:
 	ld de, $0001
 	jr z, _LABEL_2D50_
 	ld a, (EquippedRing)
-	cp $56
+	cp CursedRing
 	ret z
-	cp $50
+	cp HealRing
 	ld a, $04
 	jr nz, _LABEL_2D50_
 	ld a, $02
@@ -6210,7 +6212,7 @@ _LABEL_3142_:
 	ret nz
 	ld a, (ParalysisTicksLeft)
 	or a
-	jp nz, _LABEL_31FF_
+	jp nz, HandleParalysisTimer
 	ld a, ($C932)
 	or a
 	jp nz, _LABEL_374A_
@@ -6226,7 +6228,7 @@ _LABEL_3142_:
 	and $0F
 	jp z, _LABEL_321C_
 	ld a, $5A
-	ld ($CAC8), a
+	ld (PlayerIdleTimer), a
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr nz, _LABEL_31AA_
@@ -6266,7 +6268,7 @@ _LABEL_31BD_:
 _LABEL_31CB_:
 	ld a, $B1
 	ld (SoundQueueSlots), a
-	ld a, $3D
+	ld a, PlayerDeadMessage
 	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld (ix+24), $3C
@@ -6287,11 +6289,11 @@ _LABEL_31E6_:
 	ld (TableIndex1), a			; Game over?
 	ret
 
-_LABEL_31FF_:
+HandleParalysisTimer:
 	ld hl, ParalysisTicksLeft
 	dec (hl)
 	jp nz, _LABEL_33D8_
-	ld a, $1B
+	ld a, PlayerAwakenedMessage
 	ld (CurrentMessage), a
 	ret
 
@@ -6308,10 +6310,10 @@ _LABEL_321C_:
 	ld a, ($CAC5)
 	or a
 	jr nz, _LABEL_322D_
-	ld hl, $CAC8
+	ld hl, PlayerIdleTimer
 	dec (hl)
 	jr nz, _LABEL_322D_
-	ld a, $4B
+	ld a, PlayerIdleMessage
 	ld (CurrentMessage), a
 _LABEL_322D_:
 	call _LABEL_481B_
@@ -6381,7 +6383,7 @@ _LABEL_327F_:
 	ret z
 	ld a, (EquippedRing)
 	and $7F
-	cp $59
+	cp ShiftRing
 	ret nz
 	call GetRandomNumber
 	and $0F
@@ -6399,7 +6401,7 @@ _LABEL_327F_:
 	call _LABEL_1F4F_
 	pop ix
 	call _LABEL_137_
-	ld a, $41
+	ld a, WarpMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($CAC5), a
@@ -6547,7 +6549,7 @@ _LABEL_3424_:
 	or a
 	jr z, _LABEL_3431_
 	ld a, (EquippedRing)
-	cp $53
+	cp SightRing
 	jr z, _LABEL_343D_
 _LABEL_3431_:
 	call GetRandomNumber
@@ -6560,7 +6562,7 @@ _LABEL_343D_:
 	ld (hl), $05
 	ld a, $01
 	ld ($C606), a
-	ld a, $0E
+	ld a, SecretPathFoundMessage
 	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
@@ -6610,7 +6612,7 @@ _LABEL_3476_:
 	ld a, (de)
 	and $7F
 	ld ($CAC6), a
-	ld a, $03
+	ld a, ItemFoundMessage1
 	ld (CurrentMessage), a
 	xor a
 	ld b, $08
@@ -6643,7 +6645,7 @@ _LABEL_34A4_:
 	jp _LABEL_33D8_
 
 _LABEL_34C7_:
-	ld a, $14
+	ld a, HandsFullMessage
 	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
@@ -6707,7 +6709,7 @@ _LABEL_34ED_:
 _LABEL_3532_:
 	ld a, $01
 	ld ($C606), a
-	ld a, $0D
+	ld a, GoldFoundMessage
 	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
@@ -6740,7 +6742,7 @@ _LABEL_3567_:
 	ld (Food), a
 	ld a, $01
 	ld ($C606), a
-	ld a, $0C
+	ld a, FoodFoundMessage
 	ld (CurrentMessage), a
 	ld a, $93
 	ld ($DD05), a
@@ -7198,7 +7200,7 @@ _LABEL_390A_:
 	call _LABEL_478D_
 	dec (ix+24)
 	ret nz
-	ld a, $08
+	ld a, PlayerMissedMessage
 	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
@@ -7206,7 +7208,7 @@ _LABEL_3919_:
 	call _LABEL_478D_
 	dec (ix+24)
 	ret nz
-	ld a, $3C
+	ld a, SwordDoesNothingMessage
 	ld (CurrentMessage), a
 	jp _LABEL_33D8_
 
@@ -7221,7 +7223,7 @@ _LABEL_3928_:
 	dec (ix+24)
 	ret nz
 _LABEL_393C_:
-	ld a, $01
+	ld a, MonsterDamagedMessage1_Mirror
 	ld (CurrentMessage), a
 	ld hl, ($C63A)
 	ld ($CAC6), hl
@@ -7240,7 +7242,7 @@ _LABEL_393C_:
 	or (hl)
 	jr nz, _LABEL_39B9_
 _LABEL_3962_:
-	ld a, $09
+	ld a, VictoryMessage
 	ld (CurrentMessage), a
 	ld iy, ($C638)
 	ld (iy+0), $0F
@@ -7288,7 +7290,7 @@ _LABEL_39B9_:
 	or a
 	sbc hl, de
 	jp c, _LABEL_33D8_
-	ld a, $0A
+	ld a, LevelUpMessage
 	ld (CurrentMessage), a
 	ld a, $A9
 	ld ($DD05), a
@@ -7439,6 +7441,7 @@ _LABEL_3B2E_:
 	ld ($C932), a
 	jp _LABEL_393C_
 
+; Seems to be effects of thrown objects?
 DoJumpTable6:
 	set 4, (hl)
 	sub $40
@@ -7479,7 +7482,7 @@ _LABEL_3B68_:
 	ld (hl), d
 	dec hl
 	ld (hl), e
-	ld a, $15
+	ld a, MonsterEnragedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7508,7 +7511,7 @@ JumpTable6_3B7E:
 	ld (hl), d
 	dec hl
 	ld (hl), e
-	ld a, $18
+	ld a, MonsterSlowMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7522,7 +7525,7 @@ JumpTable6_3BAB:
 	ld de, $001C
 	add hl, de
 	set 0, (hl)
-	ld a, $16
+	ld a, MonsterConfusedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7537,7 +7540,7 @@ JumpTable6_3BC5:
 	add hl, de
 	set 1, (hl)
 	res 4, (hl)
-	ld a, $17
+	ld a, MonsterParalyzedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7565,7 +7568,7 @@ _LABEL_3BFA_:
 	ld (hl), d
 	dec hl
 	ld (hl), e
-	ld a, $18
+	ld a, MonsterSlowMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7575,7 +7578,7 @@ _LABEL_3BFA_:
 
 ; 6th entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3C0E:
-	ld a, $19
+	ld a, NothingHappenedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7600,7 +7603,7 @@ JumpTable6_3C2A:
 	ld (hl), e
 	inc hl
 	ld (hl), d
-	ld a, $1A
+	ld a, MonsterBlownAwayMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7642,7 +7645,7 @@ JumpTable6_3C70:
 _LABEL_3C74_:
 	ld a, $92
 	ld ($DD05), a
-	ld a, $08
+	ld a, PlayerMissedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7659,6 +7662,7 @@ Data_3C90:
 ; Data from 3CA0 to 3CBF (32 bytes)
 ; Same number of actions as monsters, but doesn't seem to match up
 ; with monster speed or behavior
+; No- appears to be combat actions based on item?
 JumpTable6ActionOffsets:
 	.db $00 $00 $01 $00 $02 $02 $08 $03 $00 $00 $00 $09 $04 $00 $00 $00
 	.db $00 $09 $00 $09 $00 $00 $04 $0A $09 $07 $00 $00 $00 $00 $00 $00
@@ -7840,7 +7844,7 @@ _LABEL_3E42_:
 _LABEL_3E51_:
 	ld a, $92
 	ld ($DD05), a
-	ld a, $08
+	ld a, PlayerMissedMessage
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
@@ -7940,7 +7944,7 @@ BladeScrollAction:
 	ld a, $3B
 SetWeaponPW:
 	ld (WeaponPW), a
-	ld a, $1C
+	ld a, WeaponStrongerMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -7948,7 +7952,7 @@ SetWeaponPW:
 ShieldScrollAction:
 	ld hl, ArmorAC
 	inc (hl)
-	ld a, $1D
+	ld a, ArmorStrongerMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -7956,7 +7960,7 @@ ShieldScrollAction:
 NorustScrollAction:
 	ld a, $01
 	ld (PreventArmorRust), a
-	ld a, $1E
+	ld a, NoRustMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -7967,9 +7971,9 @@ BlessScrollAction:
 	jr z, _LABEL_3F94_
 	ld a, (EquippedRing)
 	and $7F
-	cp $56
+	cp CursedRing
 	jr c, _LABEL_3F94_
-	cp $58
+	cp ToyRing
 	jr nz, _LABEL_3FA1_
 _LABEL_3F94_:
 	ld a, (EquippedWeapon)
@@ -7991,9 +7995,9 @@ _LABEL_3FA1_:
 	jr z, _LABEL_3FD2_
 	ld a, (EquippedRing)
 	and $7F
-	cp $56
+	cp CursedRing
 	jr c, _LABEL_3FD2_
-	cp $58
+	cp ToyRing
 	jr z, _LABEL_3FD2_
 	ld hl, $C929
 	ld de, EquippedRing
@@ -8002,13 +8006,13 @@ _LABEL_3FA1_:
 	ld (de), a
 	ld ($C930), a
 _LABEL_3FD2_:
-	ld a, $1F
+	ld a, CurseRemovedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 5th entry of Jump Table from 3E68 (indexed by unknown)
 NothingHappenedAction:
-	ld a, $19
+	ld a, NothingHappenedMessage
 	ld (NextMessage), a
 	xor a
 	ld (CurrentItem), a
@@ -8033,7 +8037,7 @@ MapScrollAction:
 _LABEL_4001_:
 	call _LABEL_3F2B_
 	ret nc
-	ld a, $20
+	ld a, FloorMapRevealedMessage
 	ld (CurrentMessage), a
 	call _LABEL_2208_
 	ld a, $01
@@ -8056,7 +8060,7 @@ ShiftScrollAction:
 _LABEL_4031_:
 	call _LABEL_3F2B_
 	ret nc
-	ld a, $21
+	ld a, TeleportRandomRoomMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $1E
 	ld hl, _LABEL_4044_
@@ -8101,7 +8105,7 @@ _LABEL_408E_:
 	ld a, c
 	or a
 	jp z, NothingHappenedAction
-	ld a, $16
+	ld a, MonsterConfusedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8111,7 +8115,7 @@ FreezePotionAction:
 	and $03
 	inc a
 	ld (ParalysisTicksLeft), a
-	ld a, $23
+	ld a, PlayerParalyzedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8164,7 +8168,7 @@ _LABEL_40F4_:
 	ld de, $001E
 	add hl, de
 	ld (hl), a
-	ld a, $24
+	ld a, EnemySummonedMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8175,70 +8179,70 @@ Data_4115:
 ; 11th entry of Jump Table from 3E68 (indexed by unknown)
 MagiScrollAction:
 	ld a, (EquippedWeapon)
-	cp $09
+	cp MagiMasherSword
 	jp z, NothingHappenedAction
-	ld a, $09
+	ld a, MagiMasherSword
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
-	ld a, $25
+	ld a, SwordTransformedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 12th entry of Jump Table from 3E68 (indexed by unknown)
 GasScrollAction:
 	ld a, (EquippedWeapon)
-	cp $0A
+	cp BushidoBladeSword
 	jp z, NothingHappenedAction
-	ld a, $0A
+	ld a, BushidoBladeSword
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
-	ld a, $25
+	ld a, SwordTransformedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 13th entry of Jump Table from 3E68 (indexed by unknown)
 GhostScrollAction:
 	ld a, (EquippedWeapon)
-	cp $0B
+	cp GhostKillerSword
 	jp z, NothingHappenedAction
-	ld a, $0B
+	ld a, GhostKillerSword
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
-	ld a, $25
+	ld a, SwordTransformedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 14th entry of Jump Table from 3E68 (indexed by unknown)
 DragonScrollAction:
 	ld a, (EquippedWeapon)
-	cp $0C
+	cp DragonslayerSword
 	jp z, NothingHappenedAction
-	ld a, $0C
+	ld a, DragonslayerSword
 	ld (EquippedWeapon), a
 	ld hl, $0F00
 	ld ($C04E), hl
 	ld hl, PaletteInRAMStatus
 	set 0, (hl)
 	call EquipWeapon
-	ld a, $25
+	ld a, SwordTransformedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 15th entry of Jump Table from 3E68 (indexed by unknown)
 BlankScrollAction:
-	ld a, $26
+	ld a, BlankScrollNothingMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8257,7 +8261,7 @@ FlameRodAction:
 _LABEL_41C6_:
 	call _LABEL_489C_
 	jr nc, _LABEL_41D8_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	ld a, $00
 	ld ($DD05), a
@@ -8290,7 +8294,7 @@ _LABEL_41F4_:
 	or a
 	jr z, _LABEL_4220_
 	ld a, (EquippedRing)
-	cp $51
+	cp MagicRing
 	jr nz, _LABEL_4220_
 	add hl, hl
 	ld ($C63A), hl
@@ -8333,7 +8337,7 @@ ThunderRodAction:
 WindRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4266_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8364,7 +8368,7 @@ _LABEL_4283_:
 	ld (hl), $0F
 	inc hl
 	ld (hl), $31
-	ld a, $1A
+	ld a, MonsterBlownAwayMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8372,7 +8376,7 @@ _LABEL_4283_:
 BerserkRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_42B8_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8416,7 +8420,7 @@ _LABEL_4306_:
 	ex de, hl
 	add hl, hl
 	ld a, (EquippedRing)
-	cp $51
+	cp MagicRing
 	jr nz, _LABEL_4313_
 	add hl, hl
 _LABEL_4313_:
@@ -8441,7 +8445,7 @@ _LABEL_4329_:
 	ld a, e
 	or d
 	jp z, _LABEL_3962_
-	ld a, $29
+	ld a, PlayerBerserkMessage_Mirror
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8449,7 +8453,7 @@ _LABEL_4329_:
 SilentRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4346_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8480,7 +8484,7 @@ _LABEL_4363_:
 	ld de, $001C
 	add hl, de
 	set 3, (hl)
-	ld a, $2A
+	ld a, MonsterNoMagicMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8488,7 +8492,7 @@ _LABEL_4363_:
 ReshapeRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4399_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8528,7 +8532,7 @@ _LABEL_43D2_:
 	ld (hl), e
 	inc hl
 	ld (hl), d
-	ld a, $2B
+	ld a, EnemyTransformedMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8537,7 +8541,7 @@ TravelRodAction:
 	ld a, (Floor)
 	cp $1E
 	jr c, _LABEL_43FD_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8556,7 +8560,7 @@ _LABEL_4412_:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	ld a, $2C
+	ld a, TeleportNextFloorMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $1E
 	ld hl, $442C
@@ -8579,7 +8583,7 @@ _LABEL_442C_:
 DrainRodAction:
 	call _LABEL_489C_
 	jr nc, _LABEL_4453_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8599,7 +8603,7 @@ _LABEL_4453_:
 	add hl, de
 _LABEL_4474_:
 	ld (CurrentHPLow), hl
-	ld a, $2D
+	ld a, HitPointSwapMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8610,7 +8614,7 @@ WitherRodAction:
 	jp z, NothingHappenedAction
 	ld (CharacterLevel), a
 	call _LABEL_496B_
-	ld a, $2E
+	ld a, LevelDownMessage1
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8633,7 +8637,7 @@ _LABEL_449F_:
 	ld hl, (MaxHPLow)
 _LABEL_44B1_:
 	ld (CurrentHPLow), hl
-	ld a, $2F
+	ld a, PlayerHealedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8649,14 +8653,14 @@ SlowPotionAction:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr z, _LABEL_44D3_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_44D3_:
 	ld a, $01
 	ld (SluggishTicksLeft), a
-	ld a, $30
+	ld a, PlayerSlowMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8665,14 +8669,14 @@ SlowfixPotionAction:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_44EE_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
 _LABEL_44EE_:
 	xor a
 	ld (SluggishTicksLeft), a
-	ld a, $31
+	ld a, PlayerSlowHealedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8681,7 +8685,7 @@ FogPotionAction:
 	ld a, (BlindnessTicksLeft)
 	or a
 	jr z, _LABEL_4508_
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8708,7 +8712,7 @@ _LABEL_451D_:
 	and $0F
 	add a, $10
 	ld (BlindnessTicksLeft), a
-	ld a, $32
+	ld a, PlayerFogMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -8717,7 +8721,7 @@ UnusedDizzinessItem:
 	ld a, (DizzinessTicksLeft)	; Causes 16-31 ticks of dizziness if player isn't already dizzy
 	or a
 	jr z, NotDizzyYet1
-	ld a, $22					; Nothing happened
+	ld a, NoEffectMessage			; Nothing happened
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8726,7 +8730,7 @@ NotDizzyYet1:
 	and $0F
 	add a, $10
 	ld (DizzinessTicksLeft), a
-	ld a, $33					; Uses same message as monster-attack-induced dizziness
+	ld a, PlayerLightheadedMessage	; Uses same message as monster-attack-induced dizziness
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8740,7 +8744,7 @@ CurePotionAction:
 	or e						; Either blinded or dizzy
 	or d						; Either poisoned or dizzy
 	jr nz, CureStatusEffect		; If any of the three...
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -8749,7 +8753,7 @@ CureStatusEffect:
 	ld (PoisonTicksLeft), a
 	ld (BlindnessTicksLeft), a
 	ld (DizzinessTicksLeft), a
-	ld a, $34
+	ld a, PlayerStatusHealedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8757,7 +8761,7 @@ CureStatusEffect:
 MaxhealPotionAction:
 	ld hl, (MaxHPLow)
 	ld (CurrentHPLow), hl
-	ld a, $2F
+	ld a, PlayerHealedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8771,7 +8775,7 @@ WitherPotionAction:
 	jp z, NothingHappenedAction
 	dec a
 	ld (BasePW), a
-	ld a, $35
+	ld a, PlayerStrengthDownMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8781,13 +8785,13 @@ DecreaseAC:
 	jp z, NothingHappenedAction
 	dec a
 	ld (BasePW), a
-	ld a, $35
+	ld a, PlayerStrengthDownMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
 ; 35th entry of Jump Table from 3E68 (indexed by unknown)
 HealFoodRingAction:
-	ld a, $2F
+	ld a, PlayerHealedMessage
 	ld (NextMessage), a
 _LABEL_45CE_:
 	ld a, $3F
@@ -8822,13 +8826,13 @@ _LABEL_45FF_:
 
 ; 36th entry of Jump Table from 3E68 (indexed by unknown)
 MagicRingAction:
-	ld a, $36
+	ld a, PlayerMagicUpMessage
 	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 37th entry of Jump Table from 3E68 (indexed by unknown)
 SightRingAction:
-	ld a, $37
+	ld a, PlayerSightUpMessage
 	ld (NextMessage), a
 	jr _LABEL_45CE_
 
@@ -8841,7 +8845,7 @@ ShieldRingAction:
 	ld a, $31
 _LABEL_4629_:
 	ld (BaseAC), a
-	ld a, $38
+	ld a, PlayerDefenseUpMessage1
 	ld (NextMessage), a
 	jr _LABEL_45CE_
 
@@ -8854,13 +8858,13 @@ OgreRingAction:
 	ld a, $3B
 _LABEL_463E_:
 	ld (BasePW), a
-	ld a, $39
+	ld a, PlayerStrengthUpMessage1
 	ld (NextMessage), a
 	jp _LABEL_45CE_
 
 ; 40th entry of Jump Table from 3E68 (indexed by unknown)
 ShiftRingAction:
-	ld a, $21
+	ld a, TeleportRandomRoomMessage
 	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
@@ -8868,7 +8872,7 @@ ShiftRingAction:
 
 ; 41st entry of Jump Table from 3E68 (indexed by unknown)
 CursedRingAction:
-	ld a, $3A
+	ld a, PlayerCursedMessage
 	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
@@ -8876,7 +8880,7 @@ CursedRingAction:
 
 ; 42nd entry of Jump Table from 3E68 (indexed by unknown)
 HungerRingAction:
-	ld a, $3A
+	ld a, PlayerCursedMessage
 	ld (NextMessage), a
 	ld a, $00
 	ld ($C0AB), a
@@ -9000,7 +9004,7 @@ _LABEL_4723_:
 	ld de, $001E
 	add hl, de
 	ld (hl), a
-	ld a, $4F
+	ld a, MonsterSummonedMessage
 	ld (CurrentMessage), a
 	jp _LABEL_3F1A_
 
@@ -9010,7 +9014,7 @@ Data_4744:
 
 ; 51st entry of Jump Table from 3E68 (indexed by unknown)
 WaterPotionAction:
-	ld a, $50
+	ld a, WaterPotionMessage
 	ld (NextMessage), a
 	xor a
 	ld (CurrentItem), a
@@ -9021,7 +9025,7 @@ DazePotionAction:
 	ld a, (DizzinessTicksLeft)
 	or a
 	jr z, NotDizzyYet2
-	ld a, $22
+	ld a, NoEffectMessage
 	ld (NextMessage), a
 	jp _LABEL_3EDF_
 
@@ -9030,7 +9034,7 @@ NotDizzyYet2:
 	and $0F
 	add a, $10
 	ld (DizzinessTicksLeft), a
-	ld a, $51
+	ld a, PlayerDizzinessMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -9451,9 +9455,9 @@ _LABEL_4A36_:
 	jr nz, _LABEL_4A1E_
 	ld a, (EquippedRing)
 	and $7F
-	cp $56
+	cp CursedRing
 	jr c, _LABEL_4A6F_
-	cp $58
+	cp ToyRing
 	jr z, _LABEL_4A6F_
 _LABEL_4A4F_:
 	ld a, (TableIndex8)
@@ -9461,7 +9465,7 @@ _LABEL_4A4F_:
 	jr c, _LABEL_4A58_
 	ld a, $02
 _LABEL_4A58_:
-	add a, $4C
+	add a, $4C					; ?
 	ld (CurrentMessage), a
 	ld a, $A8
 	ld ($DD05), a
@@ -9473,9 +9477,9 @@ _LABEL_4A58_:
 
 _LABEL_4A6F_:
 	ld a, (EquippedRing)
-	cp $54
+	cp ShieldRing
 	call z, _LABEL_4A97_
-	cp $55
+	cp OgreRing
 	call z, _LABEL_4AA2_
 	call _LABEL_4F51_
 	ld a, $9B
@@ -9579,13 +9583,13 @@ _LABEL_4B25_:
 	or a
 	jr z, _LABEL_4B41_
 	ld a, (EquippedRing)
-	cp $58
+	cp ToyRing
 	jr z, _LABEL_4B41_
-	cp $56
+	cp CursedRing
 	jp nc, _LABEL_4A4F_
-	cp $54
+	cp ShieldRing
 	call z, _LABEL_4A97_
-	cp $55
+	cp OgreRing
 	call z, _LABEL_4AA2_
 _LABEL_4B41_:
 	ld a, $01
@@ -10352,10 +10356,10 @@ _LABEL_5021_:
 _LABEL_5030_:
 	ld d, $1C
 	ld a, (EquippedArmor)
-	cp $13
+	cp CuirassArmor        ; $13 or less
 	jr c, _LABEL_503F_
 	inc d
-	cp $16
+	cp PlateArmor          ; $16 or less
 	jr c, _LABEL_503F_
 	inc d
 _LABEL_503F_:
@@ -10516,7 +10520,7 @@ _LABEL_51A4_:
 
 _LABEL_51A5_:
 	ld a, (EquippedArmor)
-	cp $19
+	cp MysticSuitArmor
 	jr z, _LABEL_51B5_
 	ld a, (ix+28)
 	and $08
@@ -10537,12 +10541,12 @@ RustArmor:
 	cp $19					; Mystic Suit won't rust
 	jr z, ArmorDidntRust
 	ld a, (EquippedRing)
-	cp $54					; Shield ring prevents rusting
+	cp ShieldRing			; Shield ring prevents rusting
 	jr z, ArmorDidntRust
 	ld a, (ix+28)
 	and $08
 	jr nz, ArmorDidntRust
-	ld a, (PreventArmorRust)		; No rust effect (set by Norust scroll) prevents rusting
+	ld a, (PreventArmorRust) ; No rust effect (set by Norust scroll) prevents rusting
 	or a
 	jr nz, ArmorDidntRust
 	xor a
@@ -10779,7 +10783,7 @@ _LABEL_5336_:
 	ld l, a
 	ld h, $00
 	ld ($CAC6), hl
-	ld a, $02
+	ld a, PlayerDamagedMessage1
 	ld (CurrentMessage), a
 	ret
 
@@ -10790,7 +10794,7 @@ _LABEL_5356_:
 	ret
 
 _LABEL_5360_:
-	ld a, $0B
+	ld a, PlayerDodgedMessage
 	ld (CurrentMessage), a
 	ld (ix+29), $01
 	ret
@@ -12172,7 +12176,7 @@ _LABEL_5DE5_:
 	ld b, $10
 	add a, b
 	ld (PoisonTicksLeft), a
-	ld a, $42
+	ld a, PlayerPoisonedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $2E
@@ -12698,7 +12702,7 @@ _LABEL_626F_:
 	ld b, $08
 	add a, b
 	ld (DizzinessTicksLeft), a
-	ld a, $33
+	ld a, PlayerLightheadedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $B9
@@ -13122,13 +13126,14 @@ _LABEL_6649_:
 	jr z, _LABEL_668C_
 	jr _LABEL_66C7_
 
+; Rust armor
 _LABEL_6661_:
 	call RustArmor
 	jr c, _LABEL_66C7_
 	ld a, (EquippedArmor)
-	cp $10
+	cp RobeArmor
 	jr z, _LABEL_66C7_
-	ld a, $10
+	ld a, RobeArmor
 	ld (EquippedArmor), a
 	ld (ix+24), $10
 	ld (ix+0), $7E
@@ -13136,18 +13141,19 @@ _LABEL_6661_:
 	dec (ix+24)
 	ret nz
 	call EquipArmor
-	ld a, $43
+	ld a, ArmorRustMessage
 	ld (CurrentMessage), a
 	jr _LABEL_66C7_
 
+; Rust weapon
 _LABEL_668C_:
 	ld a, (ix+28)
 	and $08
 	jr nz, _LABEL_66C7_
 	ld a, (EquippedWeapon)
-	cp $01
+	cp DaggerSword
 	jr z, _LABEL_66C7_
-	ld a, $01
+	ld a, DaggerSword
 	ld (EquippedWeapon), a
 	ld (ix+24), $10
 	ld (ix+0), $AB
@@ -13155,7 +13161,7 @@ _LABEL_668C_:
 	dec (ix+24)
 	ret nz
 	call EquipWeapon
-	ld a, $44
+	ld a, WeaponRustMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $C3
@@ -13416,14 +13422,14 @@ _LABEL_68BC_:
 	ld ($C606), a
 	ld a, $08
 	ld (BlindnessTicksLeft), a
-	ld a, $32
+	ld a, PlayerFogMessage
 	ld (CurrentMessage), a
 	jr _LABEL_6921_
 
 _LABEL_6918_:
 	pop af
 	ld (DizzinessTicksLeft), a
-	ld a, $33
+	ld a, PlayerLightheadedMessage
 	ld (CurrentMessage), a
 _LABEL_6921_:
 	ld (ix+24), $10
@@ -14099,7 +14105,7 @@ _LABEL_6EBE_:
 	ld (ix+1), $6E
 	dec (ix+24)
 	ret nz
-	ld a, $45
+	ld a, FoodStolenMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $E2
@@ -14305,7 +14311,7 @@ _LABEL_7082_:
 _LABEL_7085_:
 	dec (ix+24)
 	ret nz
-	ld a, $35
+	ld a, PlayerStrengthDownMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
 	ld (ix+0), $9A
@@ -14742,7 +14748,7 @@ _LABEL_743B_:
 	cp $19
 	jr z, _LABEL_7489_
 	ld a, (EquippedRing)
-	cp $55
+	cp OgreRing
 	jp z, _LABEL_74D9_
 	ld a, (ix+31)
 	cp $15
@@ -14793,12 +14799,12 @@ _LABEL_749E_:
 	ld a, (ix+31)
 	cp $19
 	jr z, _LABEL_74C4_
-	ld a, $46
+	ld a, PlayerStrengthDownMessage2
 	ld (CurrentMessage), a
 	jr _LABEL_74C9_
 
 _LABEL_74C4_:
-	ld a, $47
+	ld a, LevelDownMessage2
 	ld (CurrentMessage), a
 _LABEL_74C9_:
 	ld (ix+24), $10
