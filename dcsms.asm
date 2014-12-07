@@ -7304,7 +7304,7 @@ _LABEL_39DA_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, ExperienceNeededTable+1			; Use high byte/low byte operator?
+	ld hl, ExperienceNeededTable			; Use high byte/low byte operator?
 	add hl, de
 	ld a, (hl)
 	ld (NextLevelLow), a
@@ -9363,7 +9363,7 @@ _LABEL_498D_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, ExperienceNeededTable+2
+	ld hl, ExperienceNeededTable+1
 	add hl, de
 	ld de, NextLevelHigh
 	ldd

@@ -60,5 +60,5 @@ UnidentifiedPotionName15:
 	.asc "MAUVE POTION  "
 
 UnidentifiedPotionName16:
-	.db $0c
+	.db $0d
 	.asc "VIOLET POTION "

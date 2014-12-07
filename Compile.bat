@@ -27,3 +27,7 @@ ren dc.sym dc.sms.sym
 rem Cleanup to avoid mess
 if exist linkfile del linkfile
 if exist object.o del object.o
+
+rem Check byte-perfect compatibility
+echo.
+if exist "Dragon Crystal (Europe).sms" fc /b "Dragon Crystal (Europe).sms" dc.sms

@@ -54,19 +54,19 @@
 
 .define Food 					$C620
 
-.define CurrentHPHigh			$C621
-.define CurrentHPLow			$C622
-.define MaxHPHigh				$C623
-.define MaxHPLow				$C624
+.define CurrentHPLow			$C621
+.define CurrentHPHigh			$C622
+.define MaxHPLow				$C623
+.define MaxHPHigh				$C624
 
-.define ExperienceHigh			$C625
-.define ExperienceLow			$C626
-.define NextLevelHigh			$C628
-.define NextLevelLow			$C629
+.define ExperienceLow			$C625
+.define ExperienceHigh			$C626
+.define NextLevelLow			$C628
+.define NextLevelHigh			$C629
 
-.define MoneyHigh				$C62B
+.define MoneyLow				$C62B
 .define MoneyMid				$C62C
-.define MoneyLow				$C62D
+.define MoneyHigh				$C62D
 
 .define BasePW 					$C62F
 .define BaseAC 					$C630
