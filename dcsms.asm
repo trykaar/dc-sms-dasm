@@ -2,12 +2,12 @@
 ; Disassembled with Emulicious 
 
 ; Variable Definitions
-.include "defines\defines.i"
 .include "defines\asciitable.i"
-.include "defines\sound_driver.i"
+.include "defines\ram_map.i"
 .include "defines\game_message_constants.i"
 .include "defines\item_constants.i"
 .include "defines\music_constants.i"
+.include "defines\system_constants.i"
 
 ; End Definitions
 
@@ -614,12 +614,12 @@ Data_3DE:
 _LABEL_3E6_:
 	ld ix, $C400
 	ld b, $08
-	jr _LABEL_3F4_
+	jr ContinueFromSavedFunction
 
 _LABEL_3EE_:
 	ld ix, $C100
 	ld b, $18
-_LABEL_3F4_:
+ContinueFromSavedFunction:
 	push bc
 	ld hl, _LABEL_403_
 	push hl
@@ -634,7 +634,7 @@ _LABEL_403_:
 	ld de, $0020
 	add ix, de
 	pop bc
-	djnz _LABEL_3F4_
+	djnz ContinueFromSavedFunction
 	ret
 
 _LABEL_40C_:
@@ -3718,6 +3718,7 @@ _LABEL_1FDD_:
 	ret
 
 ; Jump Table from 2012 to 2053 (33 entries, indexed by unknown)
+; Appears to be related to monster generation
 JumpTable4:
 	.dw JumpTable4_56C8 JumpTable4_5C9D JumpTable4_5EE6 JumpTable4_60E7
 	.dw JumpTable4_583E JumpTable4_5E90 JumpTable4_631A JumpTable4_64E7
@@ -3729,7 +3730,7 @@ JumpTable4:
 	.dw JumpTable4_5B40 JumpTable4_6F48 JumpTable4_7124 JumpTable4_7596
 	.dw JumpTable4_77D1
 
-_LABEL_2054_:
+DoJumpTable4:
 	ld a, $02
 	ld ($FFFF), a
 	ld hl, (Floor)
@@ -3750,7 +3751,7 @@ _LABEL_2054_:
 	ld l, a
 	ld h, $00
 	add hl, hl
-	ld de, $2012
+	ld de, JumpTable4
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5252,11 +5253,11 @@ _LABEL_2B2B_:
 	ld hl, (CurrentHPLow)
 	call _LABEL_2C98_
 	ld hl, $C7CC
-	ld (hl), $60
+	ld (hl), $60 ; H
 	inc hl
 	ld (hl), $11
 	inc hl
-	ld (hl), $68
+	ld (hl), $68 ; P
 	inc hl
 	ld (hl), $11
 	inc hl
@@ -6758,7 +6759,7 @@ _LABEL_357C_:
 	ld ($C606), a
 	ld ($C60E), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $3C
@@ -6933,7 +6934,7 @@ _LABEL_36C4_:
 	add hl, hl
 	ex de, hl
 _LABEL_36C7_:
-	ld ($C63A), de
+	ld (DamageDealt), de
 	ex de, hl
 	call _LABEL_486E_
 	ld a, e
@@ -6951,6 +6952,7 @@ _LABEL_36D7_:
 	jp _LABEL_3928_
 
 ; Data from 36F1 to 3711 (33 bytes)
+; Monsters?
 Data_36F1:
 	.db $00 $04 $08 $0A $00 $05 $0E $18
 	.db $00 $08 $04 $32 $00 $14 $0C $0A
@@ -7029,8 +7031,8 @@ _LABEL_3796_:
 	bit 7, a
 	jr z, _LABEL_37A5_
 	and $70
-	jp z, ItemActionTable_467E
-	jp ItemActionTable_468B
+	jp z, CursedSwordAction
+	jp CursedArmorAction
 
 _LABEL_37A5_:
 	sub $20
@@ -7226,7 +7228,7 @@ _LABEL_3928_:
 _LABEL_393C_:
 	ld a, MonsterDamagedMessage1_Mirror
 	ld (CurrentMessage), a
-	ld hl, ($C63A)
+	ld hl, (DamageDealt)
 	ld ($CAC6), hl
 	ld hl, ($C638)
 	ld de, $001C
@@ -7429,7 +7431,7 @@ _LABEL_3B16_:
 	call _LABEL_4848_
 	ld l, a
 	ld h, $00
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	call _LABEL_486E_
 	ld a, e
 	or d
@@ -7590,7 +7592,7 @@ JumpTable6_3C1A:
 	xor a
 	ld ($C932), a
 	ld hl, $0001
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	call _LABEL_486E_
 	jp _LABEL_393C_
 
@@ -7629,7 +7631,7 @@ _LABEL_3C5C_:
 	xor a
 	ld ($C932), a
 	ld hl, $03E7
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	call _LABEL_486E_
 	jp _LABEL_393C_
 
@@ -7863,27 +7865,27 @@ ItemActionTable:
 	.dw SilentRodAction       ReshapeRodAction     TravelRodAction      DrainRodAction
 	.dw WitherRodAction       MinhealPotionAction  MidhealPotionAction  SlowPotionAction
 	.dw SlowfixPotionAction   FogPotionAction      UnusedDizzinessItem  CurePotionAction
-	.dw MaxhealPotionAction   WitherPotionAction   HealFoodRingAction   MagicRingAction
-	.dw SightRingAction       ShieldRingAction     OgreRingAction       ShiftRingAction
-	.dw CursedRingAction      HungerRingAction     ToyRingAction        ItemActionTable_467E
-	.dw ItemActionTable_467E  ItemActionTable_468B PowerPotionAction    ReflexPotionAction
+	.dw MaxhealPotionAction   WitherPotionAction    HealFoodRingEquipAction MagicRingEquipAction
+	.dw SightRingEquipAction  ShieldRingEquipAction OgreRingEquipAction     ShiftRingEquipAction
+	.dw CursedRingEquipAction HungerRingEquipAction ToyRingEquipAction      CursedSwordAction
+	.dw CursedSwordAction     CursedArmorAction     PowerPotionAction       ReflexPotionAction
 	.dw PotionScrollAction    SpiritRodAction      WaterPotionAction    DazePotionAction
-	.dw ItemActionTable_4778  ItemActionTable_4778 ItemActionTable_4778 ItemActionTable_4778
+	.dw UnusedNothingItem     UnusedNothingItem     UnusedNothingItem       UnusedNothingItem
 
 _LABEL_3ED8_:
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	jr _LABEL_3EE5_
 
 _LABEL_3EDF_:
 	ld a, (PaletteInRAM)
-	ld ($C0AB), a
+	ld (FlashColor), a
 _LABEL_3EE5_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
-	ld hl, $3EF5
-	jp _LABEL_4786_
+	ld hl, _LABEL_3EF5_
+	jp SetVBlankContinuation
 
 _LABEL_3EF5_:
 	call _LABEL_3F2B_
@@ -7893,21 +7895,21 @@ _LABEL_3EF5_:
 	ld hl, CurrentItem
 	bit 7, (hl)
 	jr z, _LABEL_3F0B_
-	ld a, $AA
+	ld a, SoundEffectAA
 	ld ($DD05), a
 _LABEL_3F0B_:
 	ld a, (hl)
 	cp $23
 	jr nz, _LABEL_3F15_
-	ld a, $AB
+	ld a, SoundEffectAB
 	ld ($DD05), a
 _LABEL_3F15_:
 	ld (hl), $00
 	call _LABEL_4888_
 _LABEL_3F1A_:
 	ld (ix+24), $0F
-	ld hl, $3F24
-	jp _LABEL_4786_
+	ld hl, _LABEL_3F24_
+	jp SetVBlankContinuation
 
 _LABEL_3F24_:
 	dec (ix+24)
@@ -7917,7 +7919,7 @@ _LABEL_3F24_:
 _LABEL_3F2B_:
 	dec (ix+24)
 	jr z, _LABEL_3F46_
-	ld a, ($C0AB)
+	ld a, (FlashColor)
 	bit 0, (ix+24)
 	jr nz, _LABEL_3F3C_
 	ld a, ($C0A9)
@@ -8027,15 +8029,15 @@ MapScrollAction:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, _LABEL_4001_
-	jp _LABEL_4786_
+	ld hl, CompleteMapScrollAction
+	jp SetVBlankContinuation
 
 .BANK 1 SLOT 1
 .ORG $0000
 
-_LABEL_4001_:
+CompleteMapScrollAction:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, FloorMapRevealedMessage
@@ -8053,21 +8055,21 @@ ShiftScrollAction:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, _LABEL_4031_
-	jp _LABEL_4786_
+	ld hl, ContinueShiftScrollAction
+	jp SetVBlankContinuation
 
-_LABEL_4031_:
+ContinueShiftScrollAction:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, TeleportRandomRoomMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $1E
-	ld hl, _LABEL_4044_
-	jp _LABEL_4786_
+	ld hl, CompleteShiftScrollAction
+	jp SetVBlankContinuation
 
-_LABEL_4044_:
+CompleteShiftScrollAction:
 	dec (ix+24)
 	ret nz
 	call _LABEL_1F8F_
@@ -8086,8 +8088,8 @@ _LABEL_4044_:
 	ld ($CAC5), a
 	ld a, SoundEffect98
 	ld ($DD05), a
-	ld hl, $3142
-	jp _LABEL_4786_
+	ld hl, _LABEL_3142_
+	jp SetVBlankContinuation
 
 ; 8th entry of Jump Table from 3E68 (indexed by unknown)
 MadScrollAction:
@@ -8150,18 +8152,18 @@ _LABEL_40C9_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $40F4
-	jp _LABEL_4786_
+	ld hl, CompleteSummonScrollAction
+	jp SetVBlankContinuation
 
-_LABEL_40F4_:
+CompleteSummonScrollAction:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	call _LABEL_2054_
+	call DoJumpTable4
 	ld hl, ($C638)
 	ld (hl), e
 	inc hl
@@ -8254,12 +8256,13 @@ FlameRodAction:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	ld a, $03
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld a, SoundEffect96
 	ld ($DD05), a
-_LABEL_41C6_:
+
+DoRodDamage:
 	call _LABEL_489C_
 	jr nc, _LABEL_41D8_
 	ld a, NoEffectMessage
@@ -8275,10 +8278,10 @@ _LABEL_41D8_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
-	ld hl, $41F4
-	jp _LABEL_4786_
+	ld hl, CompleteRodDamage
+	jp SetVBlankContinuation
 
-_LABEL_41F4_:
+CompleteRodDamage:
 	ld a, (ix+24)
 	and $01
 	ld hl, ($C638)
@@ -8290,7 +8293,7 @@ _LABEL_41F4_:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	ld hl, ($C63A)
+	ld hl, (DamageDealt)
 	ld a, ($C930)
 	or a
 	jr z, _LABEL_4220_
@@ -8298,7 +8301,7 @@ _LABEL_41F4_:
 	cp MagicRing
 	jr nz, _LABEL_4220_
 	add hl, hl
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 _LABEL_4220_:
 	call _LABEL_486E_
 	jp _LABEL_393C_
@@ -8312,12 +8315,12 @@ FlashRodAction:
 	add a, d
 	ld l, a
 	ld h, $00
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld a, SoundEffect97
 	ld ($DD05), a
-	jp _LABEL_41C6_
+	jp DoRodDamage
 
 ; 18th entry of Jump Table from 3E68 (indexed by unknown)
 ThunderRodAction:
@@ -8327,12 +8330,12 @@ ThunderRodAction:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld ($C63A), hl
+	ld (DamageDealt), hl
 	ld a, $0F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld a, SoundEffect95
 	ld ($DD05), a
-	jp _LABEL_41C6_
+	jp DoRodDamage
 
 ; 19th entry of Jump Table from 3E68 (indexed by unknown)
 WindRodAction:
@@ -8348,12 +8351,12 @@ _LABEL_4266_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $4283
-	jp _LABEL_4786_
+	ld hl, CompleteWindRodAction
+	jp SetVBlankContinuation
 
-_LABEL_4283_:
+CompleteWindRodAction:
 	ld a, (ix+24)
 	and $01
 	ld hl, ($C638)
@@ -8388,14 +8391,14 @@ _LABEL_42B8_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld a, SoundEffect96
 	ld ($DD05), a
 	ld (ix+24), $1E
-	ld hl, $42DE
-	jp _LABEL_4786_
+	ld hl, CompleteBerserkRodAction
+	jp SetVBlankContinuation
 
-_LABEL_42DE_:
+CompleteBerserkRodAction:
 	ld a, (ix+24)
 	and $01
 	ld hl, ($C638)
@@ -8464,12 +8467,12 @@ _LABEL_4346_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $4363
-	jp _LABEL_4786_
+	ld hl, CompleteSilentRodAction
+	jp SetVBlankContinuation
 
-_LABEL_4363_:
+CompleteSilentRodAction:
 	ld a, (ix+24)
 	and $01
 	ld hl, ($C638)
@@ -8504,12 +8507,12 @@ _LABEL_4399_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $43BA
-	jp _LABEL_4786_
+	ld hl, CompleteReshapeRodAction
+	jp SetVBlankContinuation
 
-_LABEL_43BA_:
+CompleteReshapeRodAction:
 	ld a, (ix+24)
 	and $01
 	ld hl, ($C638)
@@ -8522,7 +8525,7 @@ _LABEL_43BA_:
 	ld (CurrentItem), a
 	call _LABEL_4888_
 _LABEL_43D2_:
-	call _LABEL_2054_
+	call DoJumpTable4
 	ld hl, ($C638)
 	ld bc, $001F
 	add hl, bc
@@ -8550,12 +8553,12 @@ _LABEL_43FD_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $4412
-	jp _LABEL_4786_
+	ld hl, ContinueTravelRodAction
+	jp SetVBlankContinuation
 
-_LABEL_4412_:
+ContinueTravelRodAction:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
@@ -8564,10 +8567,10 @@ _LABEL_4412_:
 	ld a, TeleportNextFloorMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $1E
-	ld hl, $442C
-	jp _LABEL_4786_
+	ld hl, CompleteTravelRodAction
+	jp SetVBlankContinuation
 
-_LABEL_442C_:
+CompleteTravelRodAction:
 	dec (ix+24)
 	ret nz
 	ld hl, Floor
@@ -8626,7 +8629,7 @@ MinhealPotionAction:
 	rr l
 	srl h
 	rr l
-_LABEL_449F_:
+DoPotionHealing:
 	ld de, (CurrentHPLow)
 	add hl, de
 	ex de, hl
@@ -8647,7 +8650,7 @@ MidhealPotionAction:
 	ld hl, (MaxHPLow)
 	srl h
 	rr l
-	jr _LABEL_449F_
+	jr DoPotionHealing
 
 ; 28th entry of Jump Table from 3E68 (indexed by unknown)
 SlowPotionAction:
@@ -8694,12 +8697,12 @@ _LABEL_4508_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $451D
-	jp _LABEL_4786_
+	ld hl, CompleteFogPotionAction
+	jp SetVBlankContinuation
 
-_LABEL_451D_:
+CompleteFogPotionAction:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
@@ -8791,20 +8794,20 @@ DecreaseAC:
 	jp _LABEL_3ED8_
 
 ; 35th entry of Jump Table from 3E68 (indexed by unknown)
-HealFoodRingAction:
+HealFoodRingEquipAction:
 	ld a, PlayerHealedMessage
 	ld (NextMessage), a
 _LABEL_45CE_:
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 _LABEL_45D3_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld (ix+24), $1E
-	ld hl, $45E3
-	jp _LABEL_4786_
+	ld hl, CompleteHealFoodRingEquipAction
+	jp SetVBlankContinuation
 
-_LABEL_45E3_:
+CompleteHealFoodRingEquipAction:
 	call _LABEL_3F2B_
 	ret nc
 	ld a, (NextMessage)
@@ -8822,23 +8825,23 @@ _LABEL_45FF_:
 	ld (CurrentItem), a
 	call _LABEL_4888_
 	ld (ix+24), $1E
-	ld hl, $3142
-	jp _LABEL_4786_
+	ld hl, _LABEL_3142_
+	jp SetVBlankContinuation
 
 ; 36th entry of Jump Table from 3E68 (indexed by unknown)
-MagicRingAction:
+MagicRingEquipAction:
 	ld a, PlayerMagicUpMessage
 	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 37th entry of Jump Table from 3E68 (indexed by unknown)
-SightRingAction:
+SightRingEquipAction:
 	ld a, PlayerSightUpMessage
 	ld (NextMessage), a
 	jr _LABEL_45CE_
 
 ; 38th entry of Jump Table from 3E68 (indexed by unknown)
-ShieldRingAction:
+ShieldRingEquipAction:
 	ld a, (BaseAC)
 	add a, $04
 	cp $32
@@ -8851,7 +8854,7 @@ _LABEL_4629_:
 	jr _LABEL_45CE_
 
 ; 39th entry of Jump Table from 3E68 (indexed by unknown)
-OgreRingAction:
+OgreRingEquipAction:
 	ld a, (BasePW)
 	add a, $04
 	cp $3C
@@ -8864,50 +8867,50 @@ _LABEL_463E_:
 	jp _LABEL_45CE_
 
 ; 40th entry of Jump Table from 3E68 (indexed by unknown)
-ShiftRingAction:
+ShiftRingEquipAction:
 	ld a, TeleportRandomRoomMessage
 	ld (NextMessage), a
 	ld a, $00
-	ld ($C0AB), a
+	ld (FlashColor), a
 	jp _LABEL_45D3_
 
 ; 41st entry of Jump Table from 3E68 (indexed by unknown)
-CursedRingAction:
+CursedRingEquipAction:
 	ld a, PlayerCursedMessage
 	ld (NextMessage), a
 	ld a, $00
-	ld ($C0AB), a
+	ld (FlashColor), a
 	jp _LABEL_45D3_
 
 ; 42nd entry of Jump Table from 3E68 (indexed by unknown)
-HungerRingAction:
+HungerRingEquipAction:
 	ld a, PlayerCursedMessage
 	ld (NextMessage), a
 	ld a, $00
-	ld ($C0AB), a
+	ld (FlashColor), a
 	jp _LABEL_45D3_
 
 ; 43rd entry of Jump Table from 3E68 (indexed by unknown)
-ToyRingAction:
+ToyRingEquipAction:
 	ld a, $3B
 	ld (NextMessage), a
 	ld a, (PaletteInRAM)
-	ld ($C0AB), a
+	ld (FlashColor), a
 	jp _LABEL_45D3_
 
 ; 44th entry of Jump Table from 3E68 (indexed by unknown)
-ItemActionTable_467E:
+CursedSwordAction:
 	ld a, $00
-	ld ($C0AB), a
-	ld a, $3F
+	ld (FlashColor), a
+	ld a, SwordCursedMessage_Mirror
 	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
 ; 46th entry of Jump Table from 3E68 (indexed by unknown)
-ItemActionTable_468B:
+CursedArmorAction:
 	ld a, $00
-	ld ($C0AB), a
-	ld a, $40
+	ld (FlashColor), a
+	ld a, ArmorCursedMessage
 	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
@@ -8986,18 +8989,18 @@ _LABEL_46F8_:
 	ld a, (PaletteInRAM)
 	ld ($C0A9), a
 	ld a, $3F
-	ld ($C0AB), a
+	ld (FlashColor), a
 	ld (ix+24), $1E
-	ld hl, $4723
-	jp _LABEL_4786_
+	ld hl, CompleteSpiritRodAction
+	jp SetVBlankContinuation
 
-_LABEL_4723_:
+CompleteSpiritRodAction:
 	call _LABEL_3F2B_
 	ret nc
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	call _LABEL_2054_
+	call DoJumpTable4
 	ld hl, ($C638)
 	ld (hl), e
 	inc hl
@@ -9040,14 +9043,14 @@ NotDizzyYet2:
 	jp _LABEL_3ED8_
 
 ; 53rd entry of Jump Table from 3E68 (indexed by unknown)
-ItemActionTable_4778:
+UnusedNothingItem:
 	ld a, (PaletteInRAM)
-	ld ($C0AB), a
-	ld a, $19
+	ld (FlashColor), a
+	ld a, NothingHappenedMessage
 	ld (NextMessage), a
 	jp _LABEL_3EE5_
 
-_LABEL_4786_:
+SetVBlankContinuation:
 	ld (ix+0), l
 	ld (ix+1), h
 	ret

@@ -55,6 +55,7 @@
 .define SwordDoesNothingMessage       $3C
 .define PlayerDeadMessage             $3D
 .define SwordCursedMessage            $3E ; Mirrored at 3F
+.define SwordCursedMessage_Mirror     $3F ; Mirror
 .define ArmorCursedMessage            $40
 .define WarpMessage                   $41
 .define PlayerPoisonedMessage         $42
