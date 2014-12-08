@@ -487,9 +487,9 @@
 0000:2cce _LABEL_2CCE_
 0000:2cdb HandleTimers
 0000:2ceb HandleFoodTimer
-0000:2d06 _LABEL_2D06_
-0000:2d0f _LABEL_2D0F_
-0000:2d1d _LABEL_2D1D_
+0000:2d06 CheckFoodTimer
+0000:2d0f Eat
+0000:2d1d Starve
 0000:2d2d HandleHealTimer
 0000:2d50 _LABEL_2D50_
 0000:2d58 _LABEL_2D58_
@@ -801,8 +801,8 @@
 0001:46ad ReflexPotionAction
 0001:46b7 _LABEL_46B7_
 0001:46c2 PotionScrollAction
-0001:46ce _LABEL_46CE_
-0001:46d7 _LABEL_46D7_
+0001:46ce ChangeNextPotion
+0001:46d7 NoMorePotions
 0001:46df SpiritRodAction
 0001:46f1 _LABEL_46F1_
 0001:46f8 _LABEL_46F8_

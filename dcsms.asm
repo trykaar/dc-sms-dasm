@@ -2,12 +2,14 @@
 ; Disassembled with Emulicious 
 
 ; Variable Definitions
+.include "defines\system_constants.i"
 .include "defines\asciitable.i"
 .include "defines\ram_map.i"
-.include "defines\game_message_constants.i"
 .include "defines\item_constants.i"
+.include "defines\game_variables.i"
+.include "defines\game_message_constants.i"
+.include "defines\mask_constants.i"
 .include "defines\music_constants.i"
-.include "defines\system_constants.i"
 
 ; End Definitions
 
@@ -2342,7 +2344,7 @@ _LABEL_131A_:
 	jr nz, _LABEL_1315_
 _LABEL_131F_:
 	ld a, (ContinuesSpent)
-	cp $03
+	cp ContinueLimit
 	jp nc, UnableToContinue
 	ld d, a
 	ld a, (Floor)
@@ -4538,7 +4540,7 @@ _LABEL_2523_:
 	add hl, de
 	djnz _LABEL_2523_
 	ld a, (Floor)
-	cp $1E
+	cp LastFloor
 	ld a, $01
 	jr z, _LABEL_2535_
 	xor a
@@ -4806,7 +4808,7 @@ _LABEL_26C1_:
 	pop hl
 	djnz _LABEL_26A8_
 	ld a, (Floor)
-	cp $1E
+	cp LastFloor
 	ret nz
 	call _LABEL_26DD_
 	ld a, $8F
@@ -5533,37 +5535,37 @@ HandleTimers:
 	ret
 
 HandleFoodTimer:
-	ld d, $08
+	ld d, NormalFoodTicks
 	ld a, ($C930)
 	or a
-	jr z, _LABEL_2D06_
-	ld d, $10
+	jr z, CheckFoodTimer
+	ld d, FoodRingFoodTicks
 	ld a, (EquippedRing)
-	and $0F
-	cp $02
-	jr z, _LABEL_2D06_
+	and IgnoreItemTypeMask
+	cp (FoodRing & IgnoreItemTypeMask)
+	jr z, CheckFoodTimer
 	ld d, $04
 	cp $07
-	jr nz, _LABEL_2D06_
+	jr nz, CheckFoodTimer
 	ld d, $02
-_LABEL_2D06_:
+CheckFoodTimer:
 	ld a, d
 	ld hl, FoodTimer
 	cp (hl)
-	jr c, _LABEL_2D0F_
+	jr c, Eat
 	inc (hl)
 	ret
 
-_LABEL_2D0F_:
+Eat:
 	ld (hl), $00
 	ld a, (Food)
 	sub $01
 	daa
-	jr c, _LABEL_2D1D_
+	jr c, Starve
 	ld (Food), a
 	ret
 
-_LABEL_2D1D_:
+Starve:
 	ld hl, (CurrentHPLow)
 	dec hl
 	ld (CurrentHPLow), hl
@@ -6229,7 +6231,7 @@ _LABEL_3142_:
 	ld a, (CurrentControllerState)
 	and $0F
 	jp z, _LABEL_321C_
-	ld a, $5A
+	ld a, PlayerIdleTimeout
 	ld (PlayerIdleTimer), a
 	ld a, (DizzinessTicksLeft)
 	or a
@@ -6384,7 +6386,7 @@ _LABEL_327F_:
 	or a
 	ret z
 	ld a, (EquippedRing)
-	and $7F
+	and IgnoreCurseMask
 	cp ShiftRing
 	ret nz
 	call GetRandomNumber
@@ -6796,8 +6798,8 @@ _LABEL_35CD_:
 	add hl, de
 	res 1, (hl)
 	ld a, (EquippedWeapon)
-	and $7F
-	cp $0E
+	and IgnoreCurseMask
+	cp $0E                 ; Great Sword?
 	jr nz, _LABEL_35FD_
 	ld de, $0003
 	add hl, de
@@ -7059,7 +7061,7 @@ _LABEL_37BB_:
 DoItemAction:
 	ld a, (CurrentItem)
 	sub $20					; Weapons are $0X, armor is $1X, subtract $20 to ignore those offsets
-	and $7F					; Ignore curse bit?
+	and IgnoreCurseMask		; Ignore curse bit?
 	ld e, a
 	ld d, $00
 	ld hl, ItemActionOffsets
@@ -7299,9 +7301,9 @@ _LABEL_39B9_:
 	ld ($DD05), a
 	ld a, (CharacterLevel)
 	inc a
-	cp $10
+	cp MaximumCharacterLevel
 	jr c, _LABEL_39DA_
-	ld a, $10
+	ld a, MaximumCharacterLevel
 _LABEL_39DA_:
 	ld (CharacterLevel), a
 	add a, a
@@ -7857,19 +7859,19 @@ _LABEL_3E51_:
 
 ; Jump Table from 3E68 to 3ED7 (56 entries, indexed by CurrentItem)
 ItemActionTable:
-	.dw BladeScrollAction     ShieldScrollAction   NorustScrollAction   BlessScrollAction
-	.dw NothingHappenedAction MapScrollAction      ShiftScrollAction    MadScrollAction
-	.dw FreezePotionAction    SummonScrollAction   MagiScrollAction     GasScrollAction
-	.dw GhostScrollAction     DragonScrollAction   BlankScrollAction    FlameRodAction
-	.dw FlashRodAction        ThunderRodAction     WindRodAction        BerserkRodAction
-	.dw SilentRodAction       ReshapeRodAction     TravelRodAction      DrainRodAction
-	.dw WitherRodAction       MinhealPotionAction  MidhealPotionAction  SlowPotionAction
-	.dw SlowfixPotionAction   FogPotionAction      UnusedDizzinessItem  CurePotionAction
+	.dw BladeScrollAction     ShieldScrollAction    NorustScrollAction      BlessScrollAction
+	.dw NothingHappenedAction MapScrollAction       ShiftScrollAction       MadScrollAction
+	.dw FreezePotionAction    SummonScrollAction    MagiScrollAction        GasScrollAction
+	.dw GhostScrollAction     DragonScrollAction    BlankScrollAction       FlameRodAction
+	.dw FlashRodAction        ThunderRodAction      WindRodAction           BerserkRodAction
+	.dw SilentRodAction       ReshapeRodAction      TravelRodAction         DrainRodAction
+	.dw WitherRodAction       MinhealPotionAction   MidhealPotionAction     SlowPotionAction
+	.dw SlowfixPotionAction   FogPotionAction       UnusedDizzinessItem     CurePotionAction
 	.dw MaxhealPotionAction   WitherPotionAction    HealFoodRingEquipAction MagicRingEquipAction
 	.dw SightRingEquipAction  ShieldRingEquipAction OgreRingEquipAction     ShiftRingEquipAction
 	.dw CursedRingEquipAction HungerRingEquipAction ToyRingEquipAction      CursedSwordAction
 	.dw CursedSwordAction     CursedArmorAction     PowerPotionAction       ReflexPotionAction
-	.dw PotionScrollAction    SpiritRodAction      WaterPotionAction    DazePotionAction
+	.dw PotionScrollAction    SpiritRodAction       WaterPotionAction       DazePotionAction
 	.dw UnusedNothingItem     UnusedNothingItem     UnusedNothingItem       UnusedNothingItem
 
 _LABEL_3ED8_:
@@ -7942,9 +7944,9 @@ _LABEL_3F46_:
 BladeScrollAction:
 	ld a, (WeaponPW)
 	inc a
-	cp $3C					; Cap weapon power at 59
+	cp WeaponPWCap					; Cap weapon power at 59
 	jr c, SetWeaponPW
-	ld a, $3B
+	ld a, WeaponPWCap-1
 SetWeaponPW:
 	ld (WeaponPW), a
 	ld a, WeaponStrongerMessage
@@ -7973,7 +7975,7 @@ BlessScrollAction:
 	or a
 	jr z, _LABEL_3F94_
 	ld a, (EquippedRing)
-	and $7F
+	and IgnoreCurseMask
 	cp CursedRing
 	jr c, _LABEL_3F94_
 	cp ToyRing
@@ -7997,7 +7999,7 @@ _LABEL_3FA1_:
 	or a
 	jr z, _LABEL_3FD2_
 	ld a, (EquippedRing)
-	and $7F
+	and IgnoreCurseMask
 	cp CursedRing
 	jr c, _LABEL_3FD2_
 	cp ToyRing
@@ -8115,8 +8117,8 @@ _LABEL_408E_:
 ; 9th entry of Jump Table from 3E68 (indexed by unknown)
 FreezePotionAction:
 	call GetRandomNumber
-	and $03
-	inc a
+	and RangeParalysisTicks
+	inc a						 ; Min is one
 	ld (ParalysisTicksLeft), a
 	ld a, PlayerParalyzedMessage
 	ld (NextMessage), a
@@ -8543,7 +8545,7 @@ _LABEL_43D2_:
 ; 23rd entry of Jump Table from 3E68 (indexed by unknown)
 TravelRodAction:
 	ld a, (Floor)
-	cp $1E
+	cp LastFloor
 	jr c, _LABEL_43FD_
 	ld a, NoEffectMessage
 	ld (NextMessage), a
@@ -8713,8 +8715,8 @@ CompleteFogPotionAction:
 	ld ($C60E), a
 	ld ($C606), a
 	call GetRandomNumber
-	and $0F
-	add a, $10
+	and RangeBlindnessTicks
+	add a, MinimumBlindnessTicks
 	ld (BlindnessTicksLeft), a
 	ld a, PlayerFogMessage
 	ld (CurrentMessage), a
@@ -8731,8 +8733,8 @@ UnusedDizzinessItem:
 
 NotDizzyYet1:
 	call GetRandomNumber
-	and $0F
-	add a, $10
+	and RangeDizzinessTicks
+	add a, MinimumDizzinessTicks
 	ld (DizzinessTicksLeft), a
 	ld a, PlayerLightheadedMessage	; Uses same message as monster-attack-induced dizziness
 	ld (NextMessage), a
@@ -8923,7 +8925,7 @@ PowerPotionAction:
 	ld a, $3B
 _LABEL_46A2_:
 	ld (BasePW), a
-	ld a, $48
+	ld a, PlayerStrengthUpMessage2
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8936,7 +8938,7 @@ ReflexPotionAction:
 	ld a, $31
 _LABEL_46B7_:
 	ld (BaseAC), a
-	ld a, $49
+	ld a, PlayerDefenseUpMessage2
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -8947,15 +8949,15 @@ PotionScrollAction:
 	jp z, NothingHappenedAction
 	ld hl, $C920
 	ld b, $08
-_LABEL_46CE_:
+ChangeNextPotion:
 	ld a, (hl)
 	or a
-	jr z, _LABEL_46D7_
-	ld (hl), $41
+	jr z, NoMorePotions
+	ld (hl), MidhealPotion
 	inc hl
-	djnz _LABEL_46CE_
-_LABEL_46D7_:
-	ld a, $4A
+	djnz ChangeNextPotion
+NoMorePotions:
+	ld a, PotionTransformedMessage
 	ld (NextMessage), a
 	jp _LABEL_3ED8_
 
@@ -9035,8 +9037,8 @@ DazePotionAction:
 
 NotDizzyYet2:
 	call GetRandomNumber
-	and $0F
-	add a, $10
+	and RangeDizzinessTicks
+	add a, MinimumDizzinessTicks
 	ld (DizzinessTicksLeft), a
 	ld a, PlayerDizzinessMessage
 	ld (NextMessage), a
@@ -9458,7 +9460,7 @@ _LABEL_4A36_:
 	or a
 	jr nz, _LABEL_4A1E_
 	ld a, (EquippedRing)
-	and $7F
+	and IgnoreCurseMask
 	cp CursedRing
 	jr c, _LABEL_4A6F_
 	cp ToyRing
@@ -12176,8 +12178,8 @@ _LABEL_5DE5_:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
-	and $0F
-	ld b, $10
+	and RangePoisonTicks
+	ld b, MinimumPoisonTicks
 	add a, b
 	ld (PoisonTicksLeft), a
 	ld a, PlayerPoisonedMessage
