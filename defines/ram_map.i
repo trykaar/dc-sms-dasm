@@ -104,7 +104,8 @@
 .define TempoTimeout            $DD01
 .define TempoResetValue         $DD02
 .define PlaySoundSlot           $DD03    ; Indexes jump table
-.define SoundQueueSlots         $DD04
+.define MusicQueue              $DD04
+.define SFXQueue                $DD05
 
 .define CurrentSoundPriority    $DD0F
 

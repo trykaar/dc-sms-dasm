@@ -1758,7 +1758,7 @@ _LABEL_E34_:
 	cp $0B
 	ret c
 	ld a, MusicTrack81
-	ld (SoundQueueSlots), a
+	ld (MusicQueue), a
 	ld a, $40
 	ld (ix+21), a
 	ld (ix+0), $66
@@ -2067,7 +2067,7 @@ _LABEL_108F_:
 	inc d
 PlayFloorMusic:
 	ld a, d
-	ld (SoundQueueSlots), a
+	ld (MusicQueue), a
 	xor a
 	ld (CurrentMessage), a
 	ld ($CAC5), a
@@ -2469,7 +2469,7 @@ _LABEL_13BF_:
 	ld a, $02
 	ld ($C014), a
 	ld a, MusicTrack83			; Play Game Over music
-	ld (SoundQueueSlots), a
+	ld (MusicQueue), a
 	ei
 	ld a, $0C
 	ld (TableIndex1), a
@@ -2624,7 +2624,7 @@ JumpTable1_153B:
 	xor a
 	ld ($C0B7), a
 	ld a, MusicTrack82
-	ld (SoundQueueSlots), a
+	ld (MusicQueue), a
 	ld hl, $04A0
 	ld (TitleScreenCounterLow), hl
 	ld a, $17
@@ -6263,7 +6263,7 @@ _LABEL_31AA_:
 
 _LABEL_31BD_:
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_42C_
 	ld a, $0F
 	ld (TableIndex1), a
@@ -6271,7 +6271,7 @@ _LABEL_31BD_:
 
 _LABEL_31CB_:
 	ld a, SoundB1				; Seems to fadeout/silence music
-	ld (SoundQueueSlots), a
+	ld (MusicQueue), a
 	ld a, PlayerDeadMessage
 	ld (CurrentMessage), a
 	ld (ix+30), $01
@@ -6410,7 +6410,7 @@ _LABEL_327F_:
 	xor a
 	ld ($CAC5), a
 	ld a, SoundEffect98
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 _LABEL_32C4_:
@@ -6569,7 +6569,7 @@ _LABEL_343D_:
 	ld a, SecretPathFoundMessage
 	ld (CurrentMessage), a
 	ld a, SoundEffect93
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ret
 
 _LABEL_344F_:
@@ -6645,7 +6645,7 @@ _LABEL_34A4_:
 	ld a, $01
 	ld ($C606), a
 	ld a, SoundEffect93
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_33D8_
 
 _LABEL_34C7_:
@@ -6716,7 +6716,7 @@ _LABEL_3532_:
 	ld a, GoldFoundMessage
 	ld (CurrentMessage), a
 	ld a, SoundEffect93
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_33D8_
 
 _LABEL_3544_:
@@ -6749,7 +6749,7 @@ _LABEL_3567_:
 	ld a, FoodFoundMessage
 	ld (CurrentMessage), a
 	ld a, SoundEffect93
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_33D8_
 
 _LABEL_357C_:
@@ -6771,7 +6771,7 @@ _LABEL_357C_:
 	ld ($FFFF), a
 	call StopAllSound
 	ld a, SoundEffect95
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ret
 
 _LABEL_35B2_:
@@ -6945,7 +6945,7 @@ _LABEL_36C7_:
 	jr nz, _LABEL_36D7_
 	ld a, SoundEffect91
 _LABEL_36D7_:
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+20), $00
 	ld (ix+21), $00
 	ld (ix+24), $08
@@ -6969,7 +6969,7 @@ _LABEL_3712_:
 	ld (ix+0), $0A
 	ld (ix+1), $39
 	ld a, SoundEffect92
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_390A_
 
 _LABEL_372E_:
@@ -6979,7 +6979,7 @@ _LABEL_372E_:
 	ld (ix+0), $19
 	ld (ix+1), $39
 	ld a, SoundEffect92
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3919_
 
 _LABEL_374A_:
@@ -7298,7 +7298,7 @@ _LABEL_39B9_:
 	ld a, LevelUpMessage
 	ld (CurrentMessage), a
 	ld a, SoundEffectA9
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld a, (CharacterLevel)
 	inc a
 	cp MaximumCharacterLevel
@@ -7441,7 +7441,7 @@ _LABEL_3B16_:
 	jr nz, _LABEL_3B2E_
 	ld a, SoundEffect91
 _LABEL_3B2E_:
-	ld ($DD05), a
+	ld (SFXQueue), a
 	xor a
 	ld ($C932), a
 	jp _LABEL_393C_
@@ -7492,7 +7492,7 @@ _LABEL_3B68_:
 	xor a
 	ld ($C932), a
 	ld a, SoundEffectA9
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 ; 2nd entry of Jump Table from 3CC0 (indexed by unknown)
@@ -7521,7 +7521,7 @@ JumpTable6_3B7E:
 	xor a
 	ld ($C932), a
 	ld a, SoundEffect90
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 ; 3rd entry of Jump Table from 3CC0 (indexed by unknown)
@@ -7535,7 +7535,7 @@ JumpTable6_3BAB:
 	xor a
 	ld ($C932), a
 	ld a, SoundEffect90
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 ; 4th entry of Jump Table from 3CC0 (indexed by unknown)
@@ -7550,7 +7550,7 @@ JumpTable6_3BC5:
 	xor a
 	ld ($C932), a
 	ld a, SoundEffect90
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 ; 5th entry of Jump Table from 3CC0 (indexed by unknown)
@@ -7578,7 +7578,7 @@ _LABEL_3BFA_:
 	xor a
 	ld ($C932), a
 	ld a, SoundEffect90
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3F1A_
 
 ; 6th entry of Jump Table from 3CC0 (indexed by unknown)
@@ -7649,7 +7649,7 @@ JumpTable6_3C70:
 
 _LABEL_3C74_:
 	ld a, SoundEffect92
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld a, PlayerMissedMessage
 	ld (CurrentMessage), a
 	xor a
@@ -7848,7 +7848,7 @@ _LABEL_3E42_:
 
 _LABEL_3E51_:
 	ld a, SoundEffect92
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld a, PlayerMissedMessage
 	ld (CurrentMessage), a
 	xor a
@@ -7898,13 +7898,13 @@ _LABEL_3EF5_:
 	bit 7, (hl)
 	jr z, _LABEL_3F0B_
 	ld a, SoundEffectAA
-	ld ($DD05), a
+	ld (SFXQueue), a
 _LABEL_3F0B_:
 	ld a, (hl)
 	cp $23
 	jr nz, _LABEL_3F15_
 	ld a, SoundEffectAB
-	ld ($DD05), a
+	ld (SFXQueue), a
 _LABEL_3F15_:
 	ld (hl), $00
 	call _LABEL_4888_
@@ -8089,7 +8089,7 @@ CompleteShiftScrollAction:
 	ld (CurrentMessage), a
 	ld ($CAC5), a
 	ld a, SoundEffect98
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld hl, _LABEL_3142_
 	jp SetVBlankContinuation
 
@@ -8262,7 +8262,7 @@ FlameRodAction:
 	ld a, $03
 	ld (FlashColor), a
 	ld a, SoundEffect96
-	ld ($DD05), a
+	ld (SFXQueue), a
 
 DoRodDamage:
 	call _LABEL_489C_
@@ -8270,7 +8270,7 @@ DoRodDamage:
 	ld a, NoEffectMessage
 	ld (NextMessage), a
 	ld a, SoundEffect00
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp _LABEL_3EE5_
 
 _LABEL_41D8_:
@@ -8321,7 +8321,7 @@ FlashRodAction:
 	ld a, $3F
 	ld (FlashColor), a
 	ld a, SoundEffect97
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp DoRodDamage
 
 ; 18th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8336,7 +8336,7 @@ ThunderRodAction:
 	ld a, $0F
 	ld (FlashColor), a
 	ld a, SoundEffect95
-	ld ($DD05), a
+	ld (SFXQueue), a
 	jp DoRodDamage
 
 ; 19th entry of Jump Table from 3E68 (indexed by unknown)
@@ -8395,7 +8395,7 @@ _LABEL_42B8_:
 	ld a, $3F
 	ld (FlashColor), a
 	ld a, SoundEffect96
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $1E
 	ld hl, CompleteBerserkRodAction
 	jp SetVBlankContinuation
@@ -8821,7 +8821,7 @@ CompleteHealFoodRingEquipAction:
 	cp $06
 	jr c, _LABEL_45FF_
 	ld a, SoundEffectAA
-	ld ($DD05), a
+	ld (SFXQueue), a
 _LABEL_45FF_:
 	xor a
 	ld (CurrentItem), a
@@ -9392,7 +9392,7 @@ _LABEL_49B4_:
 	bit 5, a
 	ret z
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $01
 	ld (ix+0), $E0
 	ld (ix+1), $49
@@ -9400,7 +9400,7 @@ _LABEL_49B4_:
 
 _LABEL_49D0_:
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_42C_
 	ld a, $09
 	ld (TableIndex1), a
@@ -9413,7 +9413,7 @@ _LABEL_49E0_:
 	bit 4, a
 	jr z, _LABEL_49FC_
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $00
 	ld (ix+0), $B4
 	ld (ix+1), $49
@@ -9441,7 +9441,7 @@ _LABEL_49FC_:
 	jp c, _LABEL_4AAD_
 _LABEL_4A1E_:
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $02
 	ld (ix+0), $BC
 	ld (ix+1), $4A
@@ -9449,7 +9449,7 @@ _LABEL_4A1E_:
 
 _LABEL_4A30_:
 	ld a, SoundEffectA8
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ret
 
 _LABEL_4A36_:
@@ -9474,7 +9474,7 @@ _LABEL_4A58_:
 	add a, $4C					; ?
 	ld (CurrentMessage), a
 	ld a, SoundEffectA8
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $00
 	call _LABEL_42C_
 	ld a, $09
@@ -9489,7 +9489,7 @@ _LABEL_4A6F_:
 	call z, _LABEL_4AA2_
 	call _LABEL_4F51_
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	xor a
 	ld ($C930), a
 	ld (ix+24), $00
@@ -9519,7 +9519,7 @@ _LABEL_4AA2_:
 
 _LABEL_4AAD_:
 	ld a, SoundEffectA8
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld a, ($C458)
 	or a
 	jp nz, _LABEL_4A1E_
@@ -9532,7 +9532,7 @@ _LABEL_4ABC_:
 	bit 4, a
 	jr z, _LABEL_4AD8_
 	ld a, SoundEffect9B
-	ld ($DD05), a
+	ld (SFXQueue), a
 	ld (ix+24), $01
 	ld (ix+0), $E0
 	ld (ix+1), $49
@@ -11478,7 +11478,7 @@ _LABEL_57B9_:
 
 _LABEL_57D7_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $E7
 	ld (ix+1), $57
@@ -11620,7 +11620,7 @@ _LABEL_58FD_:
 
 _LABEL_591B_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $2B
 	ld (ix+1), $59
@@ -11671,7 +11671,7 @@ _LABEL_5989_:
 	call _LABEL_54C8_
 	jp c, _LABEL_58A0_
 	ld a, SoundEffectA2
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	jp _LABEL_58B9_
 
@@ -11804,7 +11804,7 @@ _LABEL_5A97_:
 
 _LABEL_5AB5_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $C5
 	ld (ix+1), $5A
@@ -11855,7 +11855,7 @@ _LABEL_5B23_:
 	call _LABEL_54C8_
 	jp c, _LABEL_5A08_
 	ld a, SoundEffectA2
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	jp _LABEL_5A2D_
 
@@ -11957,7 +11957,7 @@ _LABEL_5BFA_:
 
 _LABEL_5C18_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $28
 	ld (ix+1), $5C
@@ -12141,7 +12141,7 @@ _LABEL_5D9D_:
 
 _LABEL_5DBB_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $CB
 	ld (ix+1), $5D
@@ -12424,7 +12424,7 @@ _LABEL_602A_:
 	ld (ix+0), $4B
 	ld (ix+1), $60
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	dec (ix+24)
 	jr z, _LABEL_605D_
@@ -12672,7 +12672,7 @@ _LABEL_6242_:
 	ld (ix+0), $5A
 	ld (ix+1), $62
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -12875,7 +12875,7 @@ _LABEL_640B_:
 	ld (ix+0), $2C
 	ld (ix+1), $64
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	dec (ix+24)
 	jr z, _LABEL_643E_
@@ -13102,7 +13102,7 @@ _LABEL_65F8_:
 
 _LABEL_661F_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $2F
 	ld (ix+1), $66
@@ -13380,7 +13380,7 @@ _LABEL_6889_:
 	ld (ix+0), $AA
 	ld (ix+1), $68
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	dec (ix+24)
 	jr z, _LABEL_68BC_
@@ -13699,7 +13699,7 @@ _LABEL_6B31_:
 	ld (ix+0), $55
 	ld (ix+1), $6B
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -13888,7 +13888,7 @@ _LABEL_6CD2_:
 
 _LABEL_6CEC_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $FC
 	ld (ix+1), $6C
@@ -14058,7 +14058,7 @@ _LABEL_6E45_:
 
 _LABEL_6E61_:
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+0), $71
 	ld (ix+1), $6E
@@ -14240,7 +14240,7 @@ _LABEL_6FD9_:
 	ld (ix+0), $FD
 	ld (ix+1), $6F
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	call _LABEL_553A_
 ; 5th entry of Jump Table from 1C108 (indexed by PlaySoundSlot)
@@ -14525,7 +14525,7 @@ _LABEL_7249_:
 	ld (ix+0), $6A
 	ld (ix+1), $72
 	ld a, SoundEffectA4
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	dec (ix+24)
 	jr z, _LABEL_727C_
@@ -14734,7 +14734,7 @@ _LABEL_740C_:
 	ld (ix+0), $2D
 	ld (ix+1), $74
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	dec (ix+24)
 	jr z, _LABEL_743B_
@@ -14795,7 +14795,7 @@ _LABEL_7489_:
 	call _LABEL_496B_
 _LABEL_749E_:
 	ld a, SoundEffectA3
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+24), $10
 	ld (ix+0), $B2
@@ -15094,7 +15094,7 @@ _LABEL_772F_:
 	ld (ix+0), $53
 	ld (ix+1), $77
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -15348,7 +15348,7 @@ _LABEL_796A_:
 	ld (ix+0), $8E
 	ld (ix+1), $79
 	ld a, SoundEffectA0
-	ld ($DD05), a
+	ld (SFXQueue), a
 	call _LABEL_567B_
 	call _LABEL_553A_
 	dec (ix+24)

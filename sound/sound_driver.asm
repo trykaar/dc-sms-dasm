@@ -55,7 +55,7 @@ DoTempo:
 	ret
 
 DoSoundQueue:
-	ld de, SoundQueueSlots
+	ld de, MusicQueue
 	ld ix, CurrentSoundPriority
 	ld iy, PlaySoundSlot
 	call DoOneSoundQueue
@@ -522,7 +522,7 @@ StopAllSound:
 	push bc
 	push de
 	ld hl, PlaySoundSlot
-	ld de, SoundQueueSlots
+	ld de, MusicQueue
 	ld bc, $018C
 	ld (hl), $00
 	ldir
@@ -931,14 +931,14 @@ cfReturn:
 	jp _LABEL_1C327_
 
 cfPointerTable:
-	.dw cfE0_ADSR cfED_SetTempo cfE2_GGStereo cfED_SetTempo
-	.dw cfE4_ChgDrumVol VolumeEnvelopePointers cfE6_ChangeVolume cfE7_Hold
-	.dw cfF0_ModulationSetup cfE0_ADSR cfED_SetTempo cfE0_ADSR
-	.dw cfE0_ADSR cfED_SetTempo cfE0_ADSR VolumeEnvelopePointers
-	.dw cfF0_ModulationSetup VolumeEnvelopePointers cfF2_StopTrack cfF3_PSGNoise
-	.dw cfF6_GoTo cfF5_VolumeEnvelope cfF6_GoTo cfF7_Loop
-	.dw cfF8_GoSub cfF9_Return cfFA_TickMult cfFB_ChgTransp
-	.dw VolumeEnvelopePointers cfF2_StopTrack cfE0_ADSR cfE0_ADSR
+	.dw cfE0_ADSR              cfED_SetTempo          cfE2_GGStereo     cfED_SetTempo
+	.dw cfE4_ChgDrumVol        VolumeEnvelopePointers cfE6_ChangeVolume cfE7_Hold
+	.dw cfF0_ModulationSetup   cfE0_ADSR              cfED_SetTempo     cfE0_ADSR
+	.dw cfE0_ADSR              cfED_SetTempo          cfE0_ADSR         VolumeEnvelopePointers
+	.dw cfF0_ModulationSetup   VolumeEnvelopePointers cfF2_StopTrack    cfF3_PSGNoise
+	.dw cfF6_GoTo              cfF5_VolumeEnvelope    cfF6_GoTo         cfF7_Loop
+	.dw cfF8_GoSub             cfF9_Return            cfFA_TickMult     cfFB_ChgTransp
+	.dw VolumeEnvelopePointers cfF2_StopTrack         cfE0_ADSR         cfE0_ADSR
 
 ; 3rd entry of Jump Table from 1C6BB (indexed by unknown)
 cfE2_GGStereo:
@@ -1218,10 +1218,9 @@ cfE0_ADSR:
 	ret
 
 VolumeEnvelopePointers:
-;	.dw $88A6 $88A9 $88B2 $88BB $88C4 $88CF $88EE $88F0 $88FF $890B $8911 $891C $892D
-	.dw VolumeEnvelope1 VolumeEnvelope2 VolumeEnvelope3 VolumeEnvelope4
-	.dw VolumeEnvelope5 VolumeEnvelope6 VolumeEnvelope7 VolumeEnvelope8
-	.dw VolumeEnvelope9 VolumeEnvelope10 VolumeEnvelope11 VolumeEnvelope12
+	.dw VolumeEnvelope1  VolumeEnvelope2  VolumeEnvelope3  VolumeEnvelope4
+	.dw VolumeEnvelope5  VolumeEnvelope6  VolumeEnvelope7  VolumeEnvelope8
+	.dw VolumeEnvelope9  VolumeEnvelope10 VolumeEnvelope11 VolumeEnvelope12
 	.dw VolumeEnvelope13
 
 VolumeEnvelope1:
