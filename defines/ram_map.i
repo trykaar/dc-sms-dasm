@@ -81,6 +81,8 @@
 .define BlindnessTicksLeft      $C635
 .define DizzinessTicksLeft      $C636
 
+.define SecretPathTries         $C637
+
 .define DamageDealt             $C63A
 
 .define FoodTimer               $C63C

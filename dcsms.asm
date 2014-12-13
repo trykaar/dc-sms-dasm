@@ -6545,24 +6545,24 @@ _LABEL_3410_:
 	add hl, de
 	ld a, (hl)
 	cp $06
-	jr z, _LABEL_3424_
+	jr z, DoSecretPath
 	cp $07
 	jp nz, _LABEL_33D8_
-_LABEL_3424_:
+DoSecretPath:
 	ld a, ($C930)
 	or a
-	jr z, _LABEL_3431_
+	jr z, SearchForSecretPath
 	ld a, (EquippedRing)
 	cp SightRing
-	jr z, _LABEL_343D_
-_LABEL_3431_:
+	jr z, RevealSecretPath
+SearchForSecretPath:
 	call GetRandomNumber
-	and $07
+	and SecretPathTriesNeeded
 	ld d, a
-	ld a, ($C637)
+	ld a, (SecretPathTries)
 	cp d
-	jr c, _LABEL_344F_
-_LABEL_343D_:
+	jr c, SecretPathSearchFailed
+RevealSecretPath:
 	ld (hl), $05
 	ld a, $01
 	ld ($C606), a
@@ -6572,10 +6572,10 @@ _LABEL_343D_:
 	ld (SFXQueue), a
 	ret
 
-_LABEL_344F_:
-	ld a, ($C637)
+SecretPathSearchFailed:
+	ld a, (SecretPathTries)
 	inc a
-	ld ($C637), a
+	ld (SecretPathTries), a
 	jp _LABEL_33D8_
 
 ; Data from 3459 to 3460 (8 bytes)

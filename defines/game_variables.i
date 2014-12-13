@@ -22,3 +22,5 @@
 .define PlayerIdleTimeout     $5A
 
 .define MaximumCharacterLevel $10
+
+.define SecretPathTriesNeeded $07
