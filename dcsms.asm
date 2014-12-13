@@ -7,6 +7,7 @@
 .include "defines\ram_map.i"
 .include "defines\item_constants.i"
 .include "defines\game_variables.i"
+.include "defines\monster_constants.i"
 .include "defines\game_message_constants.i"
 .include "defines\mask_constants.i"
 .include "defines\music_constants.i"

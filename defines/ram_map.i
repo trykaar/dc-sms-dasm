@@ -38,6 +38,8 @@
 
 .define TableIndex3             $C0A0    ; Table at $4ED
 
+.define SavedColor              $C0A9
+
 .define FlashColor              $C0AB
 
 ; Control
@@ -82,6 +84,8 @@
 .define DizzinessTicksLeft      $C636
 
 .define SecretPathTries         $C637
+
+.define CurrentMonster          $C638
 
 .define DamageDealt             $C63A
 
