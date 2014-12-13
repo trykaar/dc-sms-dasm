@@ -6346,7 +6346,7 @@ _LABEL_3244_:
 	jr c, _LABEL_325E_
 _LABEL_3259_:
 	xor a
-	ld ($C637), a
+	ld (SecretPathTries), a
 	ret
 
 _LABEL_325E_:
@@ -6763,7 +6763,7 @@ _LABEL_357C_:
 	ld a, $3F
 	ld (FlashColor), a
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld (ix+24), $3C
 	ld (ix+0), $B2
 	ld (ix+1), $35
@@ -6791,7 +6791,7 @@ _LABEL_35C2_:
 	ret
 
 _LABEL_35CD_:
-	ld ($C638), hl
+	ld (CurrentMonster), hl
 	ld (ix+22), e
 	ld (ix+23), d
 	ld de, $001C
@@ -6816,7 +6816,7 @@ _LABEL_35FD_:
 	call GetRandomNumber
 	and $7F
 	ld b, a
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001F
 	add hl, de
 	ld e, (hl)
@@ -6834,20 +6834,20 @@ _LABEL_35FD_:
 	call _LABEL_4848_
 	ld e, a
 	ld d, $00
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld bc, $001F
 	add hl, bc
 	ld a, (EquippedWeapon)
 	and $7F
 	sub $09
-	jp c, _LABEL_36C7_
-	jr z, _LABEL_366F_
+	jp c, DoAttack
+	jr z, DoMagiMasherSword
 	dec a
-	jr z, _LABEL_367A_
+	jr z, DoBushidoBladeSword
 	dec a
-	jr z, _LABEL_3685_
+	jr z, DoGhostKillerSword
 	dec a
-	jr z, _LABEL_3694_
+	jr z, DoDragonslayerSword
 	dec a
 	jr z, _LABEL_369F_
 	dec a
@@ -6865,48 +6865,48 @@ _LABEL_3657_:
 	xor a
 	sbc hl, bc
 	ld (CurrentHPLow), hl
-	jr nc, _LABEL_36C7_
+	jr nc, DoAttack
 	ld hl, $0000
 	ld (CurrentHPLow), hl
 	ld a, $FE
 	ld ($C63F), a
-	jr _LABEL_36C7_
+	jr DoAttack
 
-_LABEL_366F_:
+DoMagiMasherSword:
 	ld a, (hl)
-	cp $0A
-	jr z, _LABEL_36C4_
-	cp $16
-	jr z, _LABEL_36C4_
-	jr _LABEL_36C7_
+	cp Witch
+	jr z, DoubleDamage
+	cp MadWitch
+	jr z, DoubleDamage
+	jr DoAttack
 
-_LABEL_367A_:
+DoBushidoBladeSword:
 	ld a, (hl)
-	cp $0B
-	jr z, _LABEL_36C4_
-	cp $17
-	jr z, _LABEL_36C4_
-	jr _LABEL_36C7_
+	cp Myst
+	jr z, DoubleDamage
+	cp DeathMyst
+	jr z, DoubleDamage
+	jr DoAttack
 
-_LABEL_3685_:
+DoGhostKillerSword:
 	ld a, (hl)
-	cp $06
-	jr z, _LABEL_36C4_
-	cp $12
-	jr z, _LABEL_36C4_
-	cp $1A
-	jr z, _LABEL_36C4_
-	jr _LABEL_36C7_
+	cp Phantom
+	jr z, DoubleDamage
+	cp Spectre
+	jr z, DoubleDamage
+	cp Wraith
+	jr z, DoubleDamage
+	jr DoAttack
 
-_LABEL_3694_:
+DoDragonslayerSword:
 	ld a, (hl)
-	cp $1E
-	jr nz, _LABEL_36C7_
+	cp Dragon
+	jr nz, DoAttack
 	ex de, hl
 	add hl, hl
 	add hl, hl
 	ex de, hl
-	jr _LABEL_36C7_
+	jr DoAttack
 
 _LABEL_369F_:
 	ld c, e
@@ -6924,18 +6924,18 @@ _LABEL_36AC_:
 	ld bc, (MaxHPLow)
 	xor a
 	sbc hl, bc
-	jr c, _LABEL_36C7_
+	jr c, DoAttack
 	ld (CurrentHPLow), bc
-	jr _LABEL_36C7_
+	jr DoAttack
 
 _LABEL_36C2_:
-	jr _LABEL_36C7_
+	jr DoAttack
 
-_LABEL_36C4_:
+DoubleDamage:
 	ex de, hl
 	add hl, hl
 	ex de, hl
-_LABEL_36C7_:
+DoAttack:
 	ld (DamageDealt), de
 	ex de, hl
 	call _LABEL_486E_
@@ -7220,7 +7220,7 @@ _LABEL_3919_:
 _LABEL_3928_:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -7232,11 +7232,11 @@ _LABEL_393C_:
 	ld (CurrentMessage), a
 	ld hl, (DamageDealt)
 	ld ($CAC6), hl
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001C
 	add hl, de
 	set 4, (hl)
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), $01
@@ -7249,7 +7249,7 @@ _LABEL_393C_:
 _LABEL_3962_:
 	ld a, VictoryMessage
 	ld (CurrentMessage), a
-	ld iy, ($C638)
+	ld iy, (CurrentMonster)
 	ld (iy+0), $0F
 	inc hl
 	ld (iy+1), $31
@@ -7379,7 +7379,7 @@ _LABEL_3AAC_:
 	ld a, ($C932)
 	or a
 	jp z, _LABEL_33D8_
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001C
 	add hl, de
 	res 1, (hl)
@@ -7388,7 +7388,7 @@ _LABEL_3AAC_:
 	ld a, ($C932)
 	cp $0E
 	jr nz, _LABEL_3AE9_
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001F
 	add hl, de
 	ld a, (hl)
@@ -7404,7 +7404,7 @@ _LABEL_3AE9_:
 	call GetRandomNumber
 	and $7F
 	ld b, a
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001F
 	add hl, de
 	ld e, (hl)
@@ -7468,7 +7468,7 @@ DoJumpTable6:
 
 ; 1st entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3B51:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001A
 	add hl, de
 	ld e, (hl)
@@ -7497,7 +7497,7 @@ _LABEL_3B68_:
 
 ; 2nd entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3B7E:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001A
 	add hl, de
 	ld e, (hl)
@@ -7526,7 +7526,7 @@ JumpTable6_3B7E:
 
 ; 3rd entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3BAB:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001C
 	add hl, de
 	set 0, (hl)
@@ -7540,7 +7540,7 @@ JumpTable6_3BAB:
 
 ; 4th entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3BC5:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001C
 	add hl, de
 	set 1, (hl)
@@ -7555,7 +7555,7 @@ JumpTable6_3BC5:
 
 ; 5th entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3BE1:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001A
 	add hl, de
 	ld e, (hl)
@@ -7602,7 +7602,7 @@ JumpTable6_3C1A:
 JumpTable6_3C2A:
 	call _LABEL_207D_
 	ex de, hl
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld bc, $0005
 	add hl, bc
 	ld (hl), e
@@ -7616,7 +7616,7 @@ JumpTable6_3C2A:
 
 ; 9th entry of Jump Table from 3CC0 (indexed by unknown)
 JumpTable6_3C44:
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001F
 	add hl, de
 	ld a, (hl)
@@ -7841,7 +7841,7 @@ _LABEL_3E39_:
 _LABEL_3E42_:
 	push iy
 	pop hl
-	ld ($C638), hl
+	ld (CurrentMonster), hl
 	ld (ix+0), $0F
 	ld (ix+1), $31
 	ret
@@ -7884,7 +7884,7 @@ _LABEL_3EDF_:
 	ld (FlashColor), a
 _LABEL_3EE5_:
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld (ix+24), $1E
 	ld hl, _LABEL_3EF5_
 	jp SetVBlankContinuation
@@ -7924,7 +7924,7 @@ _LABEL_3F2B_:
 	ld a, (FlashColor)
 	bit 0, (ix+24)
 	jr nz, _LABEL_3F3C_
-	ld a, ($C0A9)
+	ld a, (SavedColor)
 _LABEL_3F3C_:
 	ld (PaletteInRAM), a
 	ld hl, PaletteInRAMStatus
@@ -7933,7 +7933,7 @@ _LABEL_3F3C_:
 	ret
 
 _LABEL_3F46_:
-	ld a, ($C0A9)
+	ld a, (SavedColor)
 	ld (PaletteInRAM), a
 	ld hl, PaletteInRAMStatus
 	set 0, (hl)
@@ -8029,7 +8029,7 @@ MapScrollAction:
 	or a
 	jr nz, NothingHappenedAction
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8055,7 +8055,7 @@ CompleteMapScrollAction:
 ; 7th entry of Jump Table from 3E68 (indexed by unknown)
 ShiftScrollAction:
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8128,7 +8128,7 @@ FreezePotionAction:
 SummonScrollAction:
 	call _LABEL_1F3A_
 	jp c, NothingHappenedAction
-	ld ($C638), hl
+	ld (CurrentMonster), hl
 	push hl
 	pop iy
 	ld a, (ix+4)
@@ -8152,7 +8152,7 @@ _LABEL_40C9_:
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8166,7 +8166,7 @@ CompleteSummonScrollAction:
 	ld (CurrentItem), a
 	call _LABEL_4888_
 	call DoJumpTable4
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld (hl), e
 	inc hl
 	ld (hl), d
@@ -8274,11 +8274,11 @@ DoRodDamage:
 	jp _LABEL_3EE5_
 
 _LABEL_41D8_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld (ix+24), $1E
 	ld hl, CompleteRodDamage
 	jp SetVBlankContinuation
@@ -8286,7 +8286,7 @@ _LABEL_41D8_:
 CompleteRodDamage:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -8348,10 +8348,10 @@ WindRodAction:
 	jp _LABEL_3ED8_
 
 _LABEL_4266_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	set 4, (iy+28)
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8361,7 +8361,7 @@ _LABEL_4266_:
 CompleteWindRodAction:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -8370,7 +8370,7 @@ CompleteWindRodAction:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld (hl), $0F
 	inc hl
 	ld (hl), $31
@@ -8387,11 +8387,11 @@ BerserkRodAction:
 	jp _LABEL_3ED8_
 
 _LABEL_42B8_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld a, SoundEffect96
@@ -8403,7 +8403,7 @@ _LABEL_42B8_:
 CompleteBerserkRodAction:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -8432,7 +8432,7 @@ _LABEL_4306_:
 _LABEL_4313_:
 	ld c, l
 	ld b, h
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001A
 	add hl, de
 	ld e, (hl)
@@ -8464,10 +8464,10 @@ SilentRodAction:
 	jp _LABEL_3ED8_
 
 _LABEL_4346_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	set 4, (iy+28)
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8477,7 +8477,7 @@ _LABEL_4346_:
 CompleteSilentRodAction:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -8486,7 +8486,7 @@ CompleteSilentRodAction:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001C
 	add hl, de
 	set 3, (hl)
@@ -8503,11 +8503,11 @@ ReshapeRodAction:
 	jp _LABEL_3ED8_
 
 _LABEL_4399_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	set 4, (iy+28)
 	res 1, (iy+28)
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8517,7 +8517,7 @@ _LABEL_4399_:
 CompleteReshapeRodAction:
 	ld a, (ix+24)
 	and $01
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $0002
 	add hl, de
 	ld (hl), a
@@ -8528,13 +8528,13 @@ CompleteReshapeRodAction:
 	call _LABEL_4888_
 _LABEL_43D2_:
 	call DoJumpTable4
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld bc, $001F
 	add hl, bc
 	cp (hl)
 	jr z, _LABEL_43D2_
 	ld (hl), a
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld (hl), e
 	inc hl
 	ld (hl), d
@@ -8553,7 +8553,7 @@ TravelRodAction:
 
 _LABEL_43FD_:
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8594,7 +8594,7 @@ DrainRodAction:
 	jp _LABEL_3EDF_
 
 _LABEL_4453_:
-	ld ($C638), iy
+	ld (CurrentMonster), iy
 	res 1, (iy+28)
 	ld e, (iy+26)
 	ld d, (iy+27)
@@ -8697,7 +8697,7 @@ FogPotionAction:
 
 _LABEL_4508_:
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -8804,7 +8804,7 @@ _LABEL_45CE_:
 	ld (FlashColor), a
 _LABEL_45D3_:
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld (ix+24), $1E
 	ld hl, CompleteHealFoodRingEquipAction
 	jp SetVBlankContinuation
@@ -8965,7 +8965,7 @@ NoMorePotions:
 SpiritRodAction:
 	call _LABEL_1F3A_
 	jp c, NothingHappenedAction
-	ld ($C638), hl
+	ld (CurrentMonster), hl
 	push hl
 	pop iy
 	ld a, (ix+4)
@@ -8989,7 +8989,7 @@ _LABEL_46F8_:
 	ld (iy+5), l
 	ld (iy+6), h
 	ld a, (PaletteInRAM)
-	ld ($C0A9), a
+	ld (SavedColor), a
 	ld a, $3F
 	ld (FlashColor), a
 	ld (ix+24), $1E
@@ -9003,7 +9003,7 @@ CompleteSpiritRodAction:
 	ld (CurrentItem), a
 	call _LABEL_4888_
 	call DoJumpTable4
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld (hl), e
 	inc hl
 	ld (hl), d
@@ -9202,7 +9202,7 @@ _LABEL_4869_:
 _LABEL_486E_:
 	ld c, l
 	ld b, h
-	ld hl, ($C638)
+	ld hl, (CurrentMonster)
 	ld de, $001A
 	add hl, de
 	ld e, (hl)
