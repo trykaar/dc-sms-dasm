@@ -24,3 +24,8 @@
 .define MaximumCharacterLevel $10
 
 .define SecretPathTriesNeeded $07
+
+.define AutoplayMonstersPerFloor $02
+.define RangeMonstersPerFloor    $07
+.define MinimumMonstersPerFloor  $06
+.define MonsterTypesPerFloor     $0F

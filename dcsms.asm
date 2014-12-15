@@ -2016,13 +2016,13 @@ JumpTable1_1058:
 	call GetRandomNumber
 	and $03
 _LABEL_108F_:
-	ld ($C01D), a
+	ld (FloorType), a
 	call _LABEL_2A22_
 	call _LABEL_2941_
 	call _LABEL_2492_
 	call _LABEL_263B_
 	call _LABEL_1F8F_
-	call _LABEL_1FB8_
+	call SelectMonstersForFloor
 	call _LABEL_20BA_
 	ld hl, ($C105)
 	ld de, $2D00
@@ -2192,7 +2192,7 @@ DoGameOver:
 	ld hl, $99B4
 	ld de, $0000
 	call DecompressToVDP
-	ld a, ($C01D)
+	ld a, (FloorType)
 	add a, a
 	ld e, a
 	ld d, $00
@@ -2437,7 +2437,7 @@ _LABEL_13BF_:
 	call LoadPaletteToRAMMirror
 	ld a, $07
 	ld ($FFFF), a
-	ld a, ($C01D)
+	ld a, (FloorType)
 	and $07
 	rrca
 	rrca
@@ -2551,7 +2551,7 @@ _LABEL_14A7_:
 	call OUTI128
 	ld a, $06
 	ld ($FFFF), a
-	ld a, ($C01D)
+	ld a, (FloorType)
 	add a, a
 	ld e, a
 	ld d, $00
@@ -3048,7 +3048,7 @@ JumpTable1_1B20:
 	call GetRandomNumber
 	and $03
 _LABEL_1B80_:
-	ld ($C01D), a
+	ld (FloorType), a
 	call _LABEL_2A22_
 	call _LABEL_2941_
 	ld hl, $D700
@@ -3096,7 +3096,7 @@ _LABEL_1BD5_:
 	ld a, $02
 	ld ($FFFF), a
 	call _LABEL_1F8F_
-	call _LABEL_1FB8_
+	call SelectMonstersForFloor
 	call _LABEL_20BA_
 	ld hl, $0000
 	call _LABEL_2DFA_
@@ -3666,7 +3666,7 @@ _LABEL_1FB4_:
 	ld ($C125), hl
 	ret
 
-_LABEL_1FB8_:
+SelectMonstersForFloor:
 	ld iy, $C140
 	ld hl, (Floor)
 	ld h, $00
@@ -3675,24 +3675,24 @@ _LABEL_1FB8_:
 	add hl, hl
 	add hl, hl
 	add hl, hl
-	ld de, $9A70
+	ld de, MonsterEncounterTable
 	add hl, de
 	ld a, (Autoplay)
 	cp $02
-	jr nz, _LABEL_1FD5_
-	ld b, $02
-	jr _LABEL_1FDD_
+	jr nz, SetNumberOfMonsters
+	ld b, AutoplayMonstersPerFloor
+	jr GenerateMonsters
 
-_LABEL_1FD5_:
+SetNumberOfMonsters:
 	call GetRandomNumber
-	and $07
-	add a, $06
+	and RangeMonstersPerFloor
+	add a, MinimumMonstersPerFloor
 	ld b, a
-_LABEL_1FDD_:
+GenerateMonsters:
 	push bc
 	push hl
 	call GetRandomNumber
-	and $0F
+	and MonsterTypesPerFloor
 	ld e, a
 	ld d, $00
 	add hl, de
@@ -3702,7 +3702,7 @@ _LABEL_1FDD_:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld de, $2012
+	ld de, JumpTable4
 	add hl, de
 	ld a, (hl)
 	ld (iy+0), a
@@ -3717,7 +3717,7 @@ _LABEL_1FDD_:
 	add iy, de
 	pop hl
 	pop bc
-	djnz _LABEL_1FDD_
+	djnz GenerateMonsters
 	ret
 
 ; Jump Table from 2012 to 2053 (33 entries, indexed by unknown)
@@ -3743,7 +3743,7 @@ DoJumpTable4:
 	add hl, hl
 	add hl, hl
 	add hl, hl
-	ld de, $9A70
+	ld de, MonsterEncounterTable
 	add hl, de
 	call GetRandomNumber
 	and $0F
@@ -4755,7 +4755,7 @@ _LABEL_265E_:
 	and $1E
 	ld e, a
 	ld d, $00
-	ld hl, $9C50
+	ld hl, ItemOccurrencePointerTable
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -4903,7 +4903,7 @@ LoadMonsterPalette:
 	ld h, $00
 	ld de, MonsterPalettes
 	add hl, de
-	ld de, $C078
+	ld de, MonsterPaletteInRAM
 	jp LDI8
 
 ; Monster Palettes? from 276B to 27E2 (120 bytes)
@@ -4912,11 +4912,11 @@ LoadMonsterPalette:
 _LABEL_27E3_:
 	ld a, $02
 	ld ($FFFF), a
-	ld a, ($C01D)
+	ld a, (FloorType)
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, Data_27FA
+	ld hl, FloorTypePalettes
 	add hl, de
 	ld a, (hl)
 	inc hl
@@ -4925,8 +4925,8 @@ _LABEL_27E3_:
 	jp LoadPaletteToRAMMirror
 
 ; Data from 27FA to 2801 (8 bytes)
-Data_27FA:
-	.db $15 $87 $29 $8A $66 $8E $8A $92
+FloorTypePalettes:
+	.dw $8715 $8A29 $8E66 $928A
 
 _LABEL_2802_:
 	ld de, $0040
@@ -5104,7 +5104,7 @@ _LABEL_2A22_:
 	ld hl, $820A
 	ld de, $2020
 	call DecompressToVDP
-	ld a, ($C01D)
+	ld a, (FloorType)
 	add a, a
 	add a, a
 	ld e, a
@@ -15546,6 +15546,13 @@ _LABEL_7B1C_:
 
 ; Data from 8000 to BF5F (16224 bytes)
 .incbin "data\dcsms_8000.inc"
+
+.include "monsters\monster_encounter_table.asm"
+
+.include "items\behavior\item_occurrence_pointer_table.asm"
+.include "items\behavior\item_occurrence_table.asm"
+
+.incbin "data\dcsms_a02e.inc"
 
 ; Empty data at the end of the bank
 .ds 160, $FF

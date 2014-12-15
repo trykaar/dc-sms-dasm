@@ -28,6 +28,7 @@
 
 ; Game State
 .define Floor                   $C01C
+.define FloorType               $C01D
 
 ; Palette status
 .define PaletteInRAMStatus      $C01E
@@ -35,6 +36,7 @@
 ; Palette mirrors
 .define PaletteInRAM            $C020    ; C020-C05F
 .define PaletteInRAM2           $C060    ; C060-C09F
+.define MonsterPaletteInRAM     $C078
 
 .define TableIndex3             $C0A0    ; Table at $4ED
 
