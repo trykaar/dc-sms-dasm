@@ -612,7 +612,7 @@ _LABEL_3CD_:
 
 ; Data from 3DE to 3E5 (8 bytes)
 Data_3DE:
-.db $E0 $FF $20 $00 $FF $FF $01 $00
+	.dw $FFE0 $0020 $FFFF $0001
 
 _LABEL_3E6_:
 	ld ix, $C400
@@ -1627,10 +1627,10 @@ _LABEL_D0C_:
 	ld (ix+15), $3F
 	ld (ix+17), $80
 	ld (ix+21), $08
-	ld (ix+22), $E0
-	ld (ix+23), $0E
-	ld (ix+0), $3A
-	ld (ix+1), $0D
+	ld (ix+22), <Data_EE0
+	ld (ix+23), >Data_EE0
+	ld (ix+0), <_LABEL_D3A_
+	ld (ix+1), >_LABEL_D3A_
 	ret
 
 _LABEL_D3A_:
@@ -1658,8 +1658,8 @@ _LABEL_D45_:
 	cp $08
 	ret c
 	ld (ix+2), $00
-	ld (ix+0), $81
-	ld (ix+1), $0D
+	ld (ix+0), <_LABEL_D81_
+	ld (ix+1), >_LABEL_D81_
 	ret
 
 _LABEL_D75_:
@@ -1687,8 +1687,8 @@ _LABEL_D81_:
 	ld (ix+17), $80
 	ld (ix+28), $00
 	ld (ix+29), $02
-	ld (ix+0), $C1
-	ld (ix+1), $0D
+	ld (ix+0), <_LABEL_DC1_
+	ld (ix+1), >_LABEL_DC1_
 	ret
 
 _LABEL_DC1_:
@@ -1711,11 +1711,11 @@ _LABEL_DC1_:
 _LABEL_DE4_:
 	ld (ix+26), $00
 	ld (ix+15), $80
-	ld (ix+0), $01
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_E01_
+	ld (ix+1), >_LABEL_E01_
 	ld (ix+21), $20
-	ld (ix+0), $01
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_E01_
+	ld (ix+1), >_LABEL_E01_
 	ret
 
 _LABEL_E01_:
@@ -1730,10 +1730,10 @@ _LABEL_E0C_:
 	ld (ix+24), $00
 	ld (ix+3), $C1
 	ld (ix+21), $08
-	ld (ix+22), $E8
-	ld (ix+23), $0E
-	ld (ix+0), $29
-	ld (ix+1), $0E
+	ld (ix+22), <Data_EE8
+	ld (ix+23), >Data_EE8
+	ld (ix+0), <_LABEL_E29_
+	ld (ix+1), >_LABEL_E29_
 	ret
 
 _LABEL_E29_:
@@ -1762,8 +1762,8 @@ _LABEL_E34_:
 	ld (MusicQueue), a
 	ld a, $40
 	ld (ix+21), a
-	ld (ix+0), $66
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_E66_
+	ld (ix+1), >_LABEL_E66_
 	ret
 
 _LABEL_E66_:
@@ -1781,8 +1781,8 @@ _LABEL_E71_:
 	call _LABEL_475_
 	ld a, $40
 	ld (ix+21), a
-	ld (ix+0), $8A
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_E8A_
+	ld (ix+1), >_LABEL_E8A_
 	ret
 
 _LABEL_E8A_:
@@ -1798,8 +1798,8 @@ _LABEL_E95_:
 	ld ($FFFF), a
 	ld hl, $8020
 	call _LABEL_475_
-	ld (ix+0), $A9
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_EA9_
+	ld (ix+1), >_LABEL_EA9_
 	ret
 
 _LABEL_EA9_:
@@ -1812,8 +1812,8 @@ _LABEL_EA9_:
 	ld de, $3D52
 	ld bc, $0220
 	call VDPOut_64C
-	ld (ix+0), $C8
-	ld (ix+1), $0E
+	ld (ix+0), <_LABEL_EC8_
+	ld (ix+1), >_LABEL_EC8_
 	ret
 
 _LABEL_EC8_:
@@ -1831,6 +1831,8 @@ _LABEL_ED7_:
 ; Data from EE0 to EF2 (19 bytes)
 Data_EE0:
 	.db $B9 $BA $BB $BC $BB $BA $B9 $00
+
+Data_EE8:
 	.db $C1 $C0 $BF $BE $BF $C0 $C1 $C2
 	.db $C1 $C2 $C1
 
@@ -2028,9 +2030,9 @@ _LABEL_108F_:
 	ld de, $2D00
 	add hl, de
 	call _LABEL_2DFA_
-	ld hl, $311A
+	ld hl, _LABEL_311A_
 	ld ($C100), hl
-	ld hl, $3CE6
+	ld hl, _LABEL_3CE6_
 	ld ($C120), hl
 	ld hl, PreventArmorRust
 	ld de, ParalysisTicksLeft
@@ -2211,7 +2213,7 @@ DoGameOver:
 	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
-	ld hl, $19AA
+	ld hl, HUDGold
 	ld de, $0016
 -:
 	add hl, de
@@ -2221,7 +2223,7 @@ DoGameOver:
 	ld de, $3A24
 	rst $08	; Interrupt8
 	ld c, VDPData
-	ld hl, $1990
+	ld hl, HUDFL
 	call OUTI8
 	ld hl, (Floor)
 	ld h, $00
@@ -2426,10 +2428,10 @@ SelectGameOverGraphics:
 	jr _LABEL_13BF_
 
 UnableToContinue:
-	ld hl, $5010
+	ld hl, _LABEL_5010_
 	ld ($C100), hl
 _LABEL_13BF_:
-	ld hl, $5030
+	ld hl, _LABEL_5030_
 	ld ($C120), hl
 	ld a, $02
 	ld ($FFFF), a
@@ -2584,7 +2586,7 @@ _LABEL_14A7_:
 	ld de, $C077
 	ldi
 	call _LABEL_443_
-	ld hl, $505C
+	ld hl, _LABEL_505C_
 	ld ($C100), hl
 	ld a, $02
 	ld ($C014), a
@@ -2620,7 +2622,7 @@ JumpTable1_153B:
 	out (VDPControl), a
 	ld a, $80
 	out (VDPControl), a
-	ld hl, $160F
+	ld hl, EndingText
 	ld ($C0B8), hl
 	xor a
 	ld ($C0B7), a
@@ -2690,7 +2692,7 @@ _LABEL_15DF_:
 	rrca
 	ld e, a
 	ld d, $00
-	ld hl, $3D40
+	ld hl, $3D40 ; Hits middle of an instruction in _LABEL_3D34_?
 	add hl, de
 	ex de, hl
 	rst $08	; Interrupt8
@@ -2720,9 +2722,6 @@ _LABEL_160C_:
 	ret
 
 .include "ui\ending.asm"
-
-; Data at 16F3 (1 byte)
-.db $FF
 
 ; 16th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_16F4:
@@ -2798,7 +2797,7 @@ JumpTable1_16F4:
 	ld de, $3D08
 	rst $08	; Interrupt8
 	ld c, VDPData
-	ld hl, $1990
+	ld hl, HUDFL
 	call OUTI8
 	ld hl, (Floor)
 	ld h, $00
@@ -2817,7 +2816,7 @@ JumpTable1_16F4:
 	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
-	ld hl, $19AA
+	ld hl, HUDGold
 	ld de, $0016
 -:
 	add hl, de
@@ -2825,7 +2824,7 @@ JumpTable1_16F4:
 	call OUTI22
 	ld de, $3D48
 	rst $08	; Interrupt8
-	ld hl, $1998
+	ld hl, HUDHP
 	call OUTI6
 	ld hl, (CurrentHPLow)
 	call _LABEL_2C6D_
@@ -2865,7 +2864,7 @@ JumpTable1_16F4:
 	out (VDPData), a
 	ld de, $3D60
 	rst $08	; Interrupt8
-	ld hl, $199E
+	ld hl, HUDPW
 	call OUTI6
 	ld a, (WeaponPW)
 	ld hl, (BasePW)
@@ -2883,7 +2882,7 @@ JumpTable1_16F4:
 	out (VDPData), a
 	ld de, $3D6E
 	rst $08	; Interrupt8
-	ld hl, $19A4
+	ld hl, HUDAC
 	call OUTI6
 	ld a, (ArmorAC)
 	ld hl, (BaseAC)
@@ -2901,7 +2900,7 @@ JumpTable1_16F4:
 	out (VDPData), a
 	ld de, $3D8A
 	rst $08	; Interrupt8
-	ld hl, $19AA
+	ld hl, HUDGold
 	call OUTI10
 	ld hl, MoneyHigh
 	ld e, $00
@@ -2925,7 +2924,7 @@ _LABEL_18B2_:
 	out (VDPData), a
 	ld de, $3DA6
 	rst $08	; Interrupt8
-	ld hl, $19B6
+	ld hl, HUDFood
 	call OUTI10
 	ld e, $00
 	ld a, (Food)
@@ -2940,13 +2939,13 @@ _LABEL_18B2_:
 	out (VDPData), a
 	ld a, $01
 	out (VDPData), a
-	ld hl, $49A7
+	ld hl, _LABEL_49A7_
 	ld ($C400), hl
-	ld hl, $4C3E
+	ld hl, _LABEL_4C3E_
 	ld ($C420), hl
-	ld hl, $4CC0
+	ld hl, _LABEL_4CC0_
 	ld ($C440), hl
-	ld hl, $4D5D
+	ld hl, _LABEL_4D5D_
 	ld ($C460), hl
 	ld hl, $8064
 	call LoadPaletteToRAMMirror
@@ -2994,14 +2993,13 @@ _LABEL_194C_:
 
 ; Data from 1954 to 1B1F (460 bytes)
 ; Some kind of tile data- possibly the border
-.db $54 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01 $57 $01
-.db $57 $01 $56 $07 $56 $01 $57 $07 $57 $07 $57 $07 $57 $07 $57 $07
-.db $57 $07 $57 $07 $57 $07 $54 $07 $54 $01 $57 $01 $57 $01 $57 $01
-.db $56 $07 $56 $01 $57 $07 $57 $07 $57 $07 $54 $07
+.dw $0154 $0157 $0157 $0157 $0157 $0157 $0157 $0157 $0157 $0756
+.dw $0156 $0757 $0757 $0757 $0757 $0757 $0757 $0757 $0757 $0754
+.dw $0154 $0157 $0157 $0157 $0756 $0156 $0757 $0757 $0757 $0754
 
 .include "ui\hud.asm"
 
-.include "ui\character_classes.asm"
+.include "player\character_classes.asm"
 
 ; 18th entry of Jump Table from 17F (indexed by TableIndex1)
 JumpTable1_1B20:
@@ -3068,7 +3066,7 @@ _LABEL_1B80_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $1C84
+	ld hl, Data_1C84
 	add hl, de
 	ld a, (hl)
 	inc hl
@@ -3162,9 +3160,12 @@ _LABEL_1BD5_:
 ; Data from 1C78 to 1C8F (24 bytes)
 ; Looks like words? Pointer table?
 Data_1C78:
-	.db $49 $B2 $49 $B3 $49 $B4 $49 $B5
-	.db $49 $B6 $49 $B7 $09 $B0 $C9 $B0
-	.db $89 $B1 $09 $B0 $89 $B1 $C9 $B0
+	.dw $B249 $B349 $B449 $B549
+	.dw $B649 $B749
+
+Data_1C84:
+	.dw $B009 $B0C9 $B189 $B009
+	.dw $B189 $B0C9
 
 ; Data from 1C90-1CA8 (24 bytes)
 Data_1C90:
@@ -4430,7 +4431,7 @@ _LABEL_2461_:
 	ld hl, Data_2480
 	bit 7, d
 	jr z, _LABEL_246B_
-	ld hl, $2489
+	ld hl, Data_2489
 _LABEL_246B_:
 	ld a, $08
 	bit 7, e
@@ -4451,8 +4452,11 @@ _LABEL_2478_:
 ; Data from 2480 to 2491 (18 bytes)
 Data_2480:
 	.db $01 $05 $05 $05 $05 $05 $01 $01
-	.db $02 $03 $04 $04 $04 $04 $04 $03
-	.db $03 $00
+	.db $02
+
+Data_2489:
+	.db $03 $04 $04 $04 $04 $04 $03 $03
+	.db $00
 
 _LABEL_2492_:
 	ld hl, $D700
@@ -4488,7 +4492,7 @@ _LABEL_24C5_:
 	ld d, (hl)
 	inc hl
 	push hl
-	ld hl, $24E4
+	ld hl, _LABEL_24E4_
 	push hl
 	call GetRandomNumber
 	and $0F
@@ -4512,7 +4516,7 @@ _LABEL_24E4_:
 	inc hl
 	ld d, (hl)
 	inc hl
-	ld hl, $2505
+	ld hl, _LABEL_2505_
 	push hl
 	call GetRandomNumber
 	and $1F
@@ -4959,21 +4963,21 @@ _LABEL_2826_:
 
 ; Data from 283A to 28B1 (120 bytes) - Unused?
 Data_283A:
-	.db $0A $80 $8A $81 $0A $83 $8A $84
-	.db $0A $86 $8A $87 $0A $89 $8A $8A
-	.db $0A $8C $8A $8D $0A $8F $4A $90
-	.db $8A $91 $0A $93 $4A $94 $CA $95
-	.db $0A $97 $4A $98 $CA $99 $0A $9B
-	.db $8A $9C $0A $9E $8A $9F $0A $A1
-	.db $8A $A2 $0A $A4 $8A $A5 $0A $A7
-	.db $8A $A8 $0A $AA $8A $AB $CA $AC
-	.db $0A $AE $8A $AF $CA $B0 $4A $B2
-	.db $8A $B3 $CA $B4 $4A $B6 $8A $B7
-	.db $2E $A0 $AE $A1 $2E $A3 $AE $A4
-	.db $2E $A6 $AE $A7 $2E $A9 $AE $AA
-	.db $2E $AC $AE $AD $2E $AF $6E $B0
-	.db $AE $B1 $2E $B3 $6E $B4 $EE $B5
-	.db $2E $B7 $6E $B8 $EE $B9 $2E $BB
+	.dw $800A $818A $830A $848A
+	.dw $860A $878A $890A $8A8A
+	.dw $8C0A $8D8A $8F0A $904A
+	.dw $918A $930A $944A $95CA
+	.dw $970A $984A $99CA $9B0A
+	.dw $9C8A $9E0A $9F8A $A10A
+	.dw $A28A $A40A $A58A $A70A
+	.dw $A88A $AA0A $AB8A $ACCA
+	.dw $AE0A $AF8A $B0CA $B24A
+	.dw $B38A $B4CA $B64A $B78A
+	.dw $A02E $A1AE $A32E $A4AE
+	.dw $A62E $A7AE $A92E $AAAE
+	.dw $AC2E $ADAE $AF2E $B06E
+	.dw $B1AE $B32E $B46E $B5EE
+	.dw $B72E $B86E $B9EE $BB2E
 
 _LABEL_28B2_:
 	ld a, $07
@@ -5048,7 +5052,7 @@ _LABEL_2941_:
 	ld hl, (Floor)
 	ld h, $00
 	add hl, hl
-	ld de, $2975
+	ld de, Data_2977-2
 	add hl, de
 	ld a, (hl)
 	inc hl
@@ -5070,7 +5074,7 @@ _LABEL_295A_:
 	add a, a
 	ld e, a
 	ld d, $00
-	ld hl, $29E6
+	ld hl, Data_29EA-4
 	add hl, de
 	ld e, (hl)
 	inc hl
@@ -5086,17 +5090,55 @@ _LABEL_295A_:
 	jr _LABEL_294F_
 
 ; Data from 2977 to 2A21 (171 bytes)
-.db $B3 $29 $B3 $29 $B3 $29 $B3 $29 $B8 $29 $B8 $29 $B8 $29 $B8 $29
-.db $BD $29 $BD $29 $C2 $29 $C2 $29 $C7 $29 $C7 $29 $CC $29 $CC $29
-.db $D1 $29 $D1 $29 $D1 $29 $D1 $29 $D6 $29 $D6 $29 $D6 $29 $D6 $29
-.db $DB $29 $DB $29 $E0 $29 $E0 $29 $E5 $29 $E5 $29 $01 $02 $03 $04
-.db $00 $01 $02 $05 $06 $00 $01 $02 $07 $08 $00 $07 $08 $09 $0A $00
-.db $03 $04 $09 $0A $00 $03 $04 $0B $0C $00 $05 $06 $0B $0C $00 $07
-.db $08 $0B $0C $00 $05 $06 $0B $0C $00 $01 $05 $06 $0A $00 $01 $0A
-.db $0D $0E $00 $80 $03 $00 $80 $00 $05 $08 $81 $80 $0F $B1 $86 $80
-.db $19 $C7 $8D $80 $0F $EF $90 $C0 $18 $A0 $97 $40 $0F $BA $9B $C0
-.db $1C $3B $A5 $80 $03 $6B $A7 $00 $06 $B4 $A8 $80 $03 $AE $AC $80
-.db $07 $1E $AF $C0 $0C $73 $B2 $00 $1D $AE $BC
+; Palette data?
+Data_2977:
+	.dw Data_29B3 Data_29B3 Data_29B3 Data_29B3
+	.dw Data_29B8 Data_29B8 Data_29B8 Data_29B8
+	.dw Data_29BD Data_29BD Data_29C2 Data_29C2
+	.dw Data_29C7 Data_29C7 Data_29CC Data_29CC
+	.dw Data_29D1 Data_29D1 Data_29D1 Data_29D1
+	.dw Data_29D6 Data_29D6 Data_29D6 Data_29D6
+	.dw Data_29DB Data_29DB Data_29E0 Data_29E0
+	.dw Data_29E5 Data_29E5
+
+Data_29B3:
+	.db $01 $02 $03 $04 $00
+
+Data_29B8:
+	.db $01 $02 $05 $06 $00
+
+Data_29BD:
+	.db $01 $02 $07 $08 $00
+
+Data_29C2:
+	.db $07 $08 $09 $0A $00
+
+Data_29C7:
+	.db $03 $04 $09 $0A $00
+
+Data_29CC:
+	.db $03 $04 $0B $0C $00
+
+Data_29D1:
+	.db $05 $06 $0B $0C $00
+
+Data_29D6:
+	.db $07 $08 $0B $0C $00 
+
+Data_29DB:
+	.db $05 $06 $0B $0C $00
+
+Data_29E0:
+	.db $01 $05 $06 $0A $00
+
+Data_29E5:
+	.db $01 $0A $0D $0E $00
+
+Data_29EA:
+	.db $80 $03 $00 $80 $00 $05 $08 $81 $80 $0F $B1 $86 $80 $19 $C7 $8D
+	.db $80 $0F $EF $90 $C0 $18 $A0 $97 $40 $0F $BA $9B $C0 $1C $3B $A5
+	.db $80 $03 $6B $A7 $00 $06 $B4 $A8 $80 $03 $AE $AC $80 $07 $1E $AF
+	.db $C0 $0C $73 $B2 $00 $1D $AE $BC
 
 _LABEL_2A22_:
 	ld a, $02
@@ -6199,8 +6241,8 @@ _LABEL_311A_:
 	ld (ix+3), $01
 	ld (ix+4), $02
 	ld (ix+19), $02
-	ld (ix+0), $42
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_3142_
+	ld (ix+1), >_LABEL_3142_
 	ret
 
 _LABEL_3142_:
@@ -6277,8 +6319,8 @@ _LABEL_31CB_:
 	ld (CurrentMessage), a
 	ld (ix+30), $01
 	ld (ix+24), $3C
-	ld (ix+0), $E6
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_31E6_
+	ld (ix+1), >_LABEL_31E6_
 	ret
 
 _LABEL_31E6_:
@@ -6432,10 +6474,10 @@ _LABEL_32C4_:
 	add hl, de
 	ld (ix+7), l
 	ld (ix+8), h
-	ld (ix+22), $45
-	ld (ix+23), $38
-	ld (ix+0), $30
-	ld (ix+1), $38
+	ld (ix+22), <Data_3845
+	ld (ix+23), >Data_3845
+	ld (ix+0), <_LABEL_3830_
+	ld (ix+1), >_LABEL_3830_
 	jp _LABEL_3830_
 
 _LABEL_3309_:
@@ -6445,7 +6487,7 @@ _LABEL_3309_:
 	jp c, _LABEL_321C_
 	call _LABEL_327F_
 	call _LABEL_3260_
-	ld de, $3A3E
+	ld de, Data_3A3E
 	jp c, _LABEL_35CD_
 	ld a, $FF
 	ld (CurrentMessage), a
@@ -6456,10 +6498,10 @@ _LABEL_3309_:
 	add hl, de
 	ld (ix+7), l
 	ld (ix+8), h
-	ld (ix+22), $5C
-	ld (ix+23), $38
-	ld (ix+0), $49
-	ld (ix+1), $38
+	ld (ix+22), <Data_385C
+	ld (ix+23), >Data_385C
+	ld (ix+0), <_LABEL_3849_
+	ld (ix+1), >_LABEL_3849_
 	jp _LABEL_3849_
 
 _LABEL_334E_:
@@ -6469,7 +6511,7 @@ _LABEL_334E_:
 	jp c, _LABEL_321C_
 	call _LABEL_327F_
 	call _LABEL_3260_
-	ld de, $3A42
+	ld de, Data_3A42
 	jp c, _LABEL_35CD_
 	ld a, $FF
 	ld (CurrentMessage), a
@@ -6480,10 +6522,10 @@ _LABEL_334E_:
 	add hl, de
 	ld (ix+7), l
 	ld (ix+8), h
-	ld (ix+22), $75
-	ld (ix+23), $38
-	ld (ix+0), $60
-	ld (ix+1), $38
+	ld (ix+22), <Data_3875
+	ld (ix+23), >Data_3875
+	ld (ix+0), <_LABEL_3860_
+	ld (ix+1), >_LABEL_3860_
 	jp _LABEL_3860_
 
 _LABEL_3393_:
@@ -6493,7 +6535,7 @@ _LABEL_3393_:
 	jp c, _LABEL_321C_
 	call _LABEL_327F_
 	call _LABEL_3260_
-	ld de, $3A46
+	ld de, Data_3A46
 	jp c, _LABEL_35CD_
 	ld a, $FF
 	ld (CurrentMessage), a
@@ -6504,10 +6546,10 @@ _LABEL_3393_:
 	add hl, de
 	ld (ix+7), l
 	ld (ix+8), h
-	ld (ix+22), $8C
-	ld (ix+23), $38
-	ld (ix+0), $79
-	ld (ix+1), $38
+	ld (ix+22), <Data_388C
+	ld (ix+23), >Data_388C
+	ld (ix+0), <_LABEL_3879_
+	ld (ix+1), >_LABEL_3879_
 	jp _LABEL_3879_
 
 _LABEL_33D8_:
@@ -6518,8 +6560,8 @@ _LABEL_33D8_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $F5
-	ld (ix+1), $38
+	ld (ix+0), <_LABEL_38F5_
+	ld (ix+1), >_LABEL_38F5_
 	jp _LABEL_38F5_
 
 _LABEL_33F8_:
@@ -6581,7 +6623,7 @@ SecretPathSearchFailed:
 
 ; Data from 3459 to 3460 (8 bytes)
 Data_3459:
-	.db $E0 $FF $20 $00 $FF $FF $01 $00
+	.dw $FFE0 $0020 $FFFF $0001
 
 _LABEL_3461_:
 	cp $10
@@ -6766,8 +6808,8 @@ _LABEL_357C_:
 	ld a, (PaletteInRAM)
 	ld (SavedColor), a
 	ld (ix+24), $3C
-	ld (ix+0), $B2
-	ld (ix+1), $35
+	ld (ix+0), <_LABEL_35B2_
+	ld (ix+1), >_LABEL_35B2_
 	ld a, $07
 	ld ($FFFF), a
 	call StopAllSound
@@ -6779,8 +6821,8 @@ _LABEL_35B2_:
 	call _LABEL_3F2B_
 	ret nc
 	call _LABEL_461_
-	ld (ix+0), $C2
-	ld (ix+1), $35
+	ld (ix+0), <_LABEL_35C2_
+	ld (ix+1), >_LABEL_35C2_
 	ret
 
 _LABEL_35C2_:
@@ -6950,8 +6992,8 @@ _LABEL_36D7_:
 	ld (ix+20), $00
 	ld (ix+21), $00
 	ld (ix+24), $08
-	ld (ix+0), $28
-	ld (ix+1), $39
+	ld (ix+0), <_LABEL_3928_
+	ld (ix+1), >_LABEL_3928_
 	jp _LABEL_3928_
 
 ; Data from 36F1 to 3711 (33 bytes)
@@ -6967,8 +7009,8 @@ _LABEL_3712_:
 	ld (ix+20), $00
 	ld (ix+21), $00
 	ld (ix+24), $08
-	ld (ix+0), $0A
-	ld (ix+1), $39
+	ld (ix+0), <_LABEL_390A_
+	ld (ix+1), >_LABEL_390A_
 	ld a, SoundEffect92
 	ld (SFXQueue), a
 	jp _LABEL_390A_
@@ -6977,8 +7019,8 @@ _LABEL_372E_:
 	ld (ix+20), $00
 	ld (ix+21), $00
 	ld (ix+24), $08
-	ld (ix+0), $19
-	ld (ix+1), $39
+	ld (ix+0), <_LABEL_3919_
+	ld (ix+1), >_LABEL_3919_
 	ld a, SoundEffect92
 	ld (SFXQueue), a
 	jp _LABEL_3919_
@@ -7023,10 +7065,10 @@ _LABEL_3779_:
 _LABEL_3781_:
 	outi
 	jr nz, _LABEL_3781_
-	ld hl, $3DA6
+	ld hl, _LABEL_3DA6_
 	ld ($C3E0), hl
-	ld (ix+0), $AC
-	ld (ix+1), $3A
+	ld (ix+0), <_LABEL_3AAC_
+	ld (ix+1), >_LABEL_3AAC_
 	jp _LABEL_3AAC_
 
 _LABEL_3796_:
@@ -7099,6 +7141,7 @@ _LABEL_383F_:
 	jp _LABEL_3890_
 
 ; Data from 3845 to 3848 (4 bytes)
+Data_3845:
 .db $03 $02 $07 $06
 
 _LABEL_3849_:
@@ -7112,6 +7155,7 @@ _LABEL_3856_:
 	jp _LABEL_3890_
 
 ; Data from 385C to 385F (4 bytes)
+Data_385C:
 .db $03 $02 $02 $01
 
 _LABEL_3860_:
@@ -7127,6 +7171,7 @@ _LABEL_386F_:
 	jp _LABEL_3890_
 
 ; Data from 3875 to 3878 (4 bytes)
+Data_3875:
 .db $03 $02 $0C $0B
 
 _LABEL_3879_:
@@ -7140,6 +7185,7 @@ _LABEL_3886_:
 	jp _LABEL_3890_
 
 ; Data from 388C to 388F (4 bytes)
+Data_388C:
 .db $03 $02 $11 $10
 
 _LABEL_3890_:
@@ -7183,13 +7229,13 @@ _LABEL_38D2_:
 	ld a, (SluggishTicksLeft)
 	or a
 	jr nz, _LABEL_38EC_
-	ld (ix+0), $42
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_3142_
+	ld (ix+1), >_LABEL_3142_
 	jp HandleTimers
 
 _LABEL_38EC_:
-	ld (ix+0), $0C
-	ld (ix+1), $32
+	ld (ix+0), <_LABEL_320C_
+	ld (ix+1), >_LABEL_320C_
 	ret
 
 _LABEL_38F5_:
@@ -7198,8 +7244,8 @@ _LABEL_38F5_:
 	ld ($C601), a
 	cp $10
 	ret c
-	ld (ix+0), $42
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_3142_
+	ld (ix+1), >_LABEL_3142_
 	jp HandleTimers
 
 _LABEL_390A_:
@@ -7278,7 +7324,7 @@ _LABEL_3962_:
 _LABEL_39A0_:
 	ld e, (iy+31)
 	ld d, $00
-	ld hl, $3A4A
+	ld hl, MonsterExperienceTable
 	add hl, de
 	add hl, de
 	ld e, (hl)
@@ -7361,8 +7407,14 @@ _LABEL_3A37_:
 ; Data from 3A3A to 3A49 (16 bytes)
 Data_3A3A:
 	.db $04 $02 $08 $06
+	
+Data_3A3E:
 	.db $04 $02 $03 $01
+
+Data_3A42:
 	.db $04 $02 $0D $0B
+
+Data_3A46:
 	.db $04 $02 $12 $10
 
 ; Data from 3A50 to 3AAB (98 bytes)
@@ -7698,13 +7750,14 @@ _LABEL_3CE6_:
 	ld (ix+3), $15
 	ld (ix+4), $02
 	ld (ix+19), $02
-	ld (ix+22), $16
-	ld (ix+23), $3D
-	ld (ix+0), $1A
-	ld (ix+1), $3D
+	ld (ix+22), <Data_3D16
+	ld (ix+23), >Data_3D16
+	ld (ix+0), <_LABEL_3D1A_
+	ld (ix+1), >_LABEL_3D1A_
 	ret
 
 ; Data from 3D16 to 3D19 (4 bytes)
+Data_3D16:
 .db $07 $02 $15 $15
 
 _LABEL_3D1A_:
@@ -7735,26 +7788,26 @@ _LABEL_3D34_:
 	cp $02
 	jr nz, _LABEL_3D70_
 	ld (ix+4), $08
-	ld (ix+0), $8A
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3D8A_
+	ld (ix+1), >_LABEL_3D8A_
 	jr _LABEL_3D8A_
 
 _LABEL_3D62_:
 	ld (ix+4), $04
-	ld (ix+0), $8A
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3D8A_
+	ld (ix+1), >_LABEL_3D8A_
 	jr _LABEL_3D8A_
 
 _LABEL_3D70_:
 	ld (ix+4), $02
-	ld (ix+0), $8A
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3D8A_
+	ld (ix+1), >_LABEL_3D8A_
 	jr _LABEL_3D8A_
 
 _LABEL_3D7E_:
 	ld (ix+4), $01
-	ld (ix+0), $8A
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3D8A_
+	ld (ix+1), >_LABEL_3D8A_
 _LABEL_3D8A_:
 	call _LABEL_47B8_
 	dec (ix+24)
@@ -7763,8 +7816,8 @@ _LABEL_3D8A_:
 	ld h, (ix+8)
 	ld (ix+5), l
 	ld (ix+6), h
-	ld (ix+0), $1A
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3D1A_
+	ld (ix+1), >_LABEL_3D1A_
 	ret
 
 _LABEL_3DA6_:
@@ -7780,8 +7833,8 @@ _LABEL_3DA6_:
 	ld (ix+24), $04
 	ld a, ($C104)
 	ld (ix+4), a
-	ld (ix+0), $D7
-	ld (ix+1), $3D
+	ld (ix+0), <_LABEL_3DD7_
+	ld (ix+1), >_LABEL_3DD7_
 	ret
 
 _LABEL_3DD7_:
@@ -7843,8 +7896,8 @@ _LABEL_3E42_:
 	push iy
 	pop hl
 	ld (CurrentMonster), hl
-	ld (ix+0), $0F
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_310F_
+	ld (ix+1), >_LABEL_310F_
 	ret
 
 _LABEL_3E51_:
@@ -7854,8 +7907,8 @@ _LABEL_3E51_:
 	ld (CurrentMessage), a
 	xor a
 	ld ($C932), a
-	ld (ix+0), $0F
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_310F_
+	ld (ix+1), >_LABEL_310F_
 	ret
 
 ; Jump Table from 3E68 to 3ED7 (56 entries, indexed by CurrentItem)
@@ -9382,8 +9435,8 @@ _LABEL_498D_:
 
 _LABEL_49A7_:
 	ld (ix+24), $00
-	ld (ix+0), $B4
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49B4_
+	ld (ix+1), >_LABEL_49B4_
 	ret
 
 _LABEL_49B4_:
@@ -9395,8 +9448,8 @@ _LABEL_49B4_:
 	ld a, SoundEffect9B
 	ld (SFXQueue), a
 	ld (ix+24), $01
-	ld (ix+0), $E0
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49E0_
+	ld (ix+1), >_LABEL_49E0_
 	ret
 
 _LABEL_49D0_:
@@ -9416,8 +9469,8 @@ _LABEL_49E0_:
 	ld a, SoundEffect9B
 	ld (SFXQueue), a
 	ld (ix+24), $00
-	ld (ix+0), $B4
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49B4_
+	ld (ix+1), >_LABEL_49B4_
 	ret
 
 _LABEL_49FC_:
@@ -9444,8 +9497,8 @@ _LABEL_4A1E_:
 	ld a, SoundEffect9B
 	ld (SFXQueue), a
 	ld (ix+24), $02
-	ld (ix+0), $BC
-	ld (ix+1), $4A
+	ld (ix+0), <_LABEL_4ABC_
+	ld (ix+1), >_LABEL_4ABC_
 	ret
 
 _LABEL_4A30_:
@@ -9472,7 +9525,7 @@ _LABEL_4A4F_:
 	jr c, _LABEL_4A58_
 	ld a, $02
 _LABEL_4A58_:
-	add a, $4C					; ?
+	add a, CursedSwordEquippedMessage	; First of cursed messages, followed by armor and ring
 	ld (CurrentMessage), a
 	ld a, SoundEffectA8
 	ld (SFXQueue), a
@@ -9485,20 +9538,20 @@ _LABEL_4A58_:
 _LABEL_4A6F_:
 	ld a, (EquippedRing)
 	cp ShieldRing
-	call z, _LABEL_4A97_
+	call z, DequipShieldRing
 	cp OgreRing
-	call z, _LABEL_4AA2_
+	call z, DequipOgreRing
 	call _LABEL_4F51_
 	ld a, SoundEffect9B
 	ld (SFXQueue), a
 	xor a
 	ld ($C930), a
 	ld (ix+24), $00
-	ld (ix+0), $B4
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49B4_
+	ld (ix+1), >_LABEL_49B4_
 	jp CallJumpTable8
 
-_LABEL_4A97_:
+DequipShieldRing:
 	ld hl, BaseAC
 	dec (hl)
 	dec (hl)
@@ -9508,7 +9561,7 @@ _LABEL_4A97_:
 	ld (hl), $00
 	ret
 
-_LABEL_4AA2_:
+DequipOgreRing:
 	ld hl, BasePW
 	dec (hl)
 	dec (hl)
@@ -9535,8 +9588,8 @@ _LABEL_4ABC_:
 	ld a, SoundEffect9B
 	ld (SFXQueue), a
 	ld (ix+24), $01
-	ld (ix+0), $E0
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49E0_
+	ld (ix+1), >_LABEL_49E0_
 	ret
 
 _LABEL_4AD8_:
@@ -9595,9 +9648,9 @@ _LABEL_4B25_:
 	cp CursedRing
 	jp nc, _LABEL_4A4F_
 	cp ShieldRing
-	call z, _LABEL_4A97_
+	call z, DequipShieldRing
 	cp OgreRing
-	call z, _LABEL_4AA2_
+	call z, DequipOgreRing
 _LABEL_4B41_:
 	ld a, $01
 	ld ($C930), a
@@ -9656,8 +9709,8 @@ _LABEL_4B95_:
 _LABEL_4BA0_:
 	call _LABEL_4F51_
 	ld (ix+24), $00
-	ld (ix+0), $B4
-	ld (ix+1), $49
+	ld (ix+0), <_LABEL_49B4_
+	ld (ix+1), >_LABEL_49B4_
 	jp CallJumpTable8
 
 _LABEL_4BB2_:
@@ -9759,8 +9812,8 @@ _LABEL_4C3E_:
 	ld (ix+2), $01
 	ld (ix+3), $16
 	ld (ix+15), $17
-	ld (ix+0), $54
-	ld (ix+1), $4C
+	ld (ix+0), <_LABEL_4C54_
+	ld (ix+1), >_LABEL_4C54_
 	jr _LABEL_4C9E_
 
 _LABEL_4C54_:
@@ -9827,8 +9880,8 @@ _LABEL_4CC0_:
 	ld a, ($C418)
 	cp $01
 	ret nz
-	ld (ix+0), $D0
-	ld (ix+1), $4C
+	ld (ix+0), <_LABEL_4CD0_
+	ld (ix+1), >_LABEL_4CD0_
 	jr _LABEL_4D2D_
 
 _LABEL_4CD0_:
@@ -9843,12 +9896,12 @@ _LABEL_4CD0_:
 _LABEL_4CDF_:
 	call _LABEL_4D2D_
 _LABEL_4CE2_:
-	ld (ix+0), $C0
-	ld (ix+1), $4C
+	ld (ix+0), <_LABEL_4CC0_
+	ld (ix+1), >_LABEL_4CC0_
 	ret
 
 _LABEL_4CEB_:
-	ld hl, $4D00
+	ld hl, _LABEL_4D00_
 	push hl
 	inc (ix+21)
 	ld a, (ix+21)
@@ -9921,8 +9974,8 @@ _LABEL_4D5D_:
 	ld a, (TableIndex8)
 	inc a
 	call _LABEL_4E1B_
-	ld (ix+0), $73
-	ld (ix+1), $4D
+	ld (ix+0), <_LABEL_4D73_
+	ld (ix+1), >_LABEL_4D73_
 	ret
 
 _LABEL_4D73_:
@@ -9932,12 +9985,12 @@ _LABEL_4D73_:
 	xor a
 	call _LABEL_4E1B_
 	call _LABEL_4D45_
-	ld (ix+0), $5D
-	ld (ix+1), $4D
+	ld (ix+0), <_LABEL_4D5D_
+	ld (ix+1), >_LABEL_4D5D_
 	ret
 
 _LABEL_4D8A_:
-	ld hl, $4D9F
+	ld hl, _LABEL_4D9F_
 	push hl
 	inc (ix+21)
 	ld a, (ix+21)
@@ -10056,8 +10109,8 @@ _LABEL_4E1B_:
 
 ; Data from 4E35 to 4E42 (14 bytes)
 Data_4E35:
-	.db $75 $A9 $BB $A9 $BB $A9 $01 $AA
-	.db $01 $AA $01 $AA $BB $A9
+	.dw $A975 $A9BB $A9BB $AA01
+	.dw $AA01 $AA01 $A9BB
 
 ; 1st entry of Jump Table from 4CB4 (indexed by unknown)
 JumpTable8_4E43:
@@ -10294,8 +10347,8 @@ _LABEL_4F98_:
 	ld (ix+15), $A0
 	ld (ix+17), $90
 	ld (ix+24), $00
-	ld (ix+0), $B1
-	ld (ix+1), $4F
+	ld (ix+0), <_LABEL_4FB1_
+	ld (ix+1), >_LABEL_4FB1_
 	ret
 
 _LABEL_4FB1_:
@@ -10342,8 +10395,8 @@ _LABEL_4FE8_:
 	jp _LABEL_137_
 
 _LABEL_5010_:
-	ld (ix+0), $19
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_5019_
+	ld (ix+1), >_LABEL_5019_
 	ret
 
 _LABEL_5019_:
@@ -10375,8 +10428,8 @@ _LABEL_503F_:
 	ld (ix+15), $34
 	ld (ix+17), $48
 	ld (ix+24), $00
-	ld (ix+0), $5B
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_505B_
+	ld (ix+1), >_LABEL_505B_
 	ret
 
 _LABEL_505B_:
@@ -10389,8 +10442,8 @@ _LABEL_505C_:
 	ld (ix+15), $80
 	ld (ix+17), $80
 	ld (ix+24), $20
-	ld (ix+0), $7D
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_507D_
+	ld (ix+1), >_LABEL_507D_
 	ret
 
 _LABEL_507D_:
@@ -10402,8 +10455,8 @@ _LABEL_507D_:
 	ld ($C0A3), a
 	call _LABEL_4A9_
 	ld (ix+24), $30
-	ld (ix+0), $9C
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_509C_
+	ld (ix+1), >_LABEL_509C_
 	ret
 
 _LABEL_509C_:
@@ -10411,8 +10464,8 @@ _LABEL_509C_:
 	ret nz
 	ld (ix+24), $10
 	ld (ix+3), $C4
-	ld (ix+0), $B1
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_50B1_
+	ld (ix+1), >_LABEL_50B1_
 	ret
 
 _LABEL_50B1_:
@@ -10420,8 +10473,8 @@ _LABEL_50B1_:
 	ret nz
 	ld (ix+28), $00
 	ld (ix+29), $FA
-	ld (ix+0), $C6
-	ld (ix+1), $50
+	ld (ix+0), <_LABEL_50C6_
+	ld (ix+1), >_LABEL_50C6_
 	ret
 
 _LABEL_50C6_:
@@ -10444,19 +10497,19 @@ _LABEL_50C6_:
 	ret
 
 _LABEL_50EF_:
-	ld hl, $5176
+	ld hl, _LABEL_5176_
 	ld ($C120), hl
 	ld (ix+3), $00
 	ld (ix+15), $A1
 	ld (ix+17), $B8
 	ld (ix+21), $20
-	ld (ix+22), $16
-	ld (ix+23), $51
-	ld (ix+0), $1E
-	ld (ix+1), $51
+	ld (ix+22), <Data_5116
+	ld (ix+23), >Data_5116
+	ld (ix+0), <_LABEL_511E_
+	ld (ix+1), >_LABEL_511E_
 	ret
 
-; Data from 5116 to 511D (8 bytes) - Unused?
+; Data from 5116 to 511D (8 bytes)
 Data_5116:
 	.db $C5 $C6 $C7 $C8 $C7 $C6 $C5 $00
 
@@ -10485,8 +10538,8 @@ _LABEL_5129_:
 	cp $08
 	ret c
 	ld (ix+2), $00
-	ld (ix+0), $67
-	ld (ix+1), $51
+	ld (ix+0), <_LABEL_5167_
+	ld (ix+1), >_LABEL_5167_
 	ret
 
 _LABEL_5159_:
@@ -10499,7 +10552,7 @@ _LABEL_5159_:
 _LABEL_5167_:
 	ld a, $16
 	ld (TableIndex1), a
-	ld hl, $310F
+	ld hl, _LABEL_310F_
 	ld ($C100), hl
 	ld ($C120), hl
 	ret
@@ -10510,16 +10563,16 @@ _LABEL_5176_:
 	ld (ix+15), $A0
 	ld (ix+17), $C0
 	ld (ix+24), $08
-	ld (ix+0), $93
-	ld (ix+1), $51
+	ld (ix+0), <_LABEL_5193_
+	ld (ix+1), >_LABEL_5193_
 	ret
 
 _LABEL_5193_:
 	dec (ix+24)
 	ret nz
 	ld (ix+3), $C3
-	ld (ix+0), $A4
-	ld (ix+1), $51
+	ld (ix+0), <_LABEL_51A4_
+	ld (ix+1), >_LABEL_51A4_
 	ret
 
 _LABEL_51A4_:
@@ -11358,10 +11411,10 @@ JumpTable4_56C8:
 	ld (ix+26), $02
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $EF
-	ld (ix+1), $56
-	ld (ix+22), $25
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_56EF_
+	ld (ix+1), >_LABEL_56EF_
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
 	ret
 
 _LABEL_56EF_:
@@ -11386,14 +11439,16 @@ _LABEL_570C_:
 	ld (ix+25), $00
 	call _LABEL_5473_
 	jr nc, _LABEL_5740_
-	ld (ix+0), $15
-	ld (ix+1), $58
+	ld (ix+0), <_LABEL_5815_
+	ld (ix+1), >_LABEL_5815_
 	jp _LABEL_5815_
 
 _LABEL_572A_:
 	ld (ix+24), $08
-	ld (ix+0), $36
-	ld (ix+1), $57
+	ld (ix+0), <_LABEL_5736_
+	ld (ix+1), >_LABEL_5736_
+
+_LABEL_5736_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_5801_
@@ -11469,8 +11524,10 @@ _LABEL_57B9_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $CB
-	ld (ix+1), $57
+	ld (ix+0), <_LABEL_57CB_
+	ld (ix+1), >_LABEL_57CB_
+
+_LABEL_57CB_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -11481,8 +11538,10 @@ _LABEL_57D7_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $E7
-	ld (ix+1), $57
+	ld (ix+0), <_LABEL_57E7_
+	ld (ix+1), >_LABEL_57E7_
+
+_LABEL_57E7_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_5801_
@@ -11498,10 +11557,10 @@ _LABEL_57FE_:
 
 _LABEL_5801_:
 	call _LABEL_5655_
-	ld (ix+22), $25
-	ld (ix+23), $7B
-	ld (ix+0), $EF
-	ld (ix+1), $56
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
+	ld (ix+0), <_LABEL_56EF_
+	ld (ix+1), >_LABEL_56EF_
 	ret
 
 _LABEL_5815_:
@@ -11514,10 +11573,10 @@ _LABEL_5815_:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), $2E
-	ld (ix+23), $7B
-	ld (ix+0), $D7
-	ld (ix+1), $57
+	ld (ix+22), <Data_7B2E
+	ld (ix+23), >Data_7B2E
+	ld (ix+0), <_LABEL_57D7_
+	ld (ix+1), >_LABEL_57D7_
 	jp _LABEL_57D7_
 
 ; 5th entry of Jump Table from 2012 (indexed by unknown)
@@ -11528,10 +11587,10 @@ JumpTable4_583E:
 	ld (ix+26), $06
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $65
-	ld (ix+1), $58
-	ld (ix+22), $25
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_5865_
+	ld (ix+1), >_LABEL_5865_
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
 	ret
 
 _LABEL_5865_:
@@ -11556,14 +11615,16 @@ _LABEL_5882_:
 	ld (ix+25), $00
 	call _LABEL_5473_
 	jr nc, _LABEL_58B6_
-	ld (ix+0), $59
-	ld (ix+1), $59
+	ld (ix+0), <_LABEL_5959_
+	ld (ix+1), >_LABEL_5959_
 	jp _LABEL_5959_
 
 _LABEL_58A0_:
 	ld (ix+24), $08
-	ld (ix+0), $AC
-	ld (ix+1), $58
+	ld (ix+0), <_LABEL_58AC_
+	ld (ix+1), >_LABEL_58AC_
+
+_LABEL_58AC_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_5945_
@@ -11611,8 +11672,10 @@ _LABEL_58FD_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $0F
-	ld (ix+1), $59
+	ld (ix+0), <_LABEL_590F_
+	ld (ix+1), >_LABEL_590F_
+
+_LABEL_590F_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -11623,8 +11686,10 @@ _LABEL_591B_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $2B
-	ld (ix+1), $59
+	ld (ix+0), <_LABEL_592B_
+	ld (ix+1), >_LABEL_592B_
+
+_LABEL_592B_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_5945_
@@ -11640,10 +11705,10 @@ _LABEL_5942_:
 
 _LABEL_5945_:
 	call _LABEL_5655_
-	ld (ix+22), $25
-	ld (ix+23), $7B
-	ld (ix+0), $65
-	ld (ix+1), $58
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
+	ld (ix+0), <_LABEL_5865_
+	ld (ix+1), >_LABEL_5865_
 	ret
 
 _LABEL_5959_:
@@ -11659,16 +11724,16 @@ _LABEL_5959_:
 	jr nc, _LABEL_5989_
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), $2E
-	ld (ix+23), $7B
-	ld (ix+0), $1B
-	ld (ix+1), $59
+	ld (ix+22), <Data_7B2E
+	ld (ix+23), >Data_7B2E
+	ld (ix+0), <_LABEL_591B_
+	ld (ix+1), >_LABEL_591B_
 	jp _LABEL_591B_
 
 _LABEL_5989_:
 	ld (ix+24), $08
-	ld (ix+0), $A0
-	ld (ix+1), $58
+	ld (ix+0), <_LABEL_58A0_
+	ld (ix+1), >_LABEL_58A0_
 	call _LABEL_54C8_
 	jp c, _LABEL_58A0_
 	ld a, SoundEffectA2
@@ -11684,10 +11749,10 @@ JumpTable4_59A6:
 	ld (ix+26), $26
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $CD
-	ld (ix+1), $59
-	ld (ix+22), $25
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_59CD_
+	ld (ix+1), >_LABEL_59CD_
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
 	ret
 
 _LABEL_59CD_:
@@ -11712,14 +11777,16 @@ _LABEL_59EA_:
 	ld (ix+25), $00
 	call _LABEL_5473_
 	jr nc, _LABEL_5A1E_
-	ld (ix+0), $F3
-	ld (ix+1), $5A
+	ld (ix+0), <_LABEL_5AF3_
+	ld (ix+1), >_LABEL_5AF3_
 	jp _LABEL_5AF3_
 
 _LABEL_5A08_:
 	ld (ix+24), $08
-	ld (ix+0), $14
-	ld (ix+1), $5A
+	ld (ix+0), <_LABEL_5A14_
+	ld (ix+1), >_LABEL_5A14_
+
+_LABEL_5A14_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_5ADF_
@@ -11795,8 +11862,10 @@ _LABEL_5A97_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $A9
-	ld (ix+1), $5A
+	ld (ix+0), <_LABEL_5AA9_
+	ld (ix+1), >_LABEL_5AA9_
+
+_LABEL_5AA9_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -11807,8 +11876,10 @@ _LABEL_5AB5_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $C5
-	ld (ix+1), $5A
+	ld (ix+0), <_LABEL_5AC5_
+	ld (ix+1), >_LABEL_5AC5_
+
+_LABEL_5AC5_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_5ADF_
@@ -11824,10 +11895,10 @@ _LABEL_5ADC_:
 
 _LABEL_5ADF_:
 	call _LABEL_5655_
-	ld (ix+22), $25
-	ld (ix+23), $7B
-	ld (ix+0), $CD
-	ld (ix+1), $59
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
+	ld (ix+0), <_LABEL_59CD_
+	ld (ix+1), >_LABEL_59CD_
 	ret
 
 _LABEL_5AF3_:
@@ -11843,16 +11914,16 @@ _LABEL_5AF3_:
 	jr nc, _LABEL_5B23_
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), $2E
-	ld (ix+23), $7B
-	ld (ix+0), $B5
-	ld (ix+1), $5A
+	ld (ix+22), <Data_7B2E
+	ld (ix+23), >Data_7B2E
+	ld (ix+0), <_LABEL_5AB5_
+	ld (ix+1), >_LABEL_5AB5_
 	jp _LABEL_5AB5_
 
 _LABEL_5B23_:
 	ld (ix+24), $08
-	ld (ix+0), $08
-	ld (ix+1), $5A
+	ld (ix+0), <_LABEL_5A08_
+	ld (ix+1), >_LABEL_5A08_
 	call _LABEL_54C8_
 	jp c, _LABEL_5A08_
 	ld a, SoundEffectA2
@@ -11868,10 +11939,10 @@ JumpTable4_5B40:
 	ld (ix+26), $A0
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $67
-	ld (ix+1), $5B
-	ld (ix+22), $25
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_5B67_
+	ld (ix+1), >_LABEL_5B67_
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
 	ret
 
 _LABEL_5B67_:
@@ -11891,17 +11962,21 @@ _LABEL_5B67_:
 _LABEL_5B84_:
 	ld a, $02
 	ld (ix+25), a
+
+_LABEL_5B89_:
 	call _LABEL_5473_
 	jr nc, _LABEL_5BB3_
-	ld (ix+0), $70
-	ld (ix+1), $5C
+	ld (ix+0), <_LABEL_5C70_
+	ld (ix+1), >_LABEL_5C70_
 	jp _LABEL_5C70_
 
 _LABEL_5B99_:
 	ld (ix+25), $01
 	ld (ix+24), $08
-	ld (ix+0), $A9
-	ld (ix+1), $5B
+	ld (ix+0), <_LABEL_5BA9_
+	ld (ix+1), >_LABEL_5BA9_
+
+_LABEL_5BA9_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_5C42_
@@ -11948,8 +12023,10 @@ _LABEL_5BFA_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), $0C
-	ld (ix+1), $5C
+	ld (ix+0), <_LABEL_5C0C_
+	ld (ix+1), >_LABEL_5C0C_
+
+_LABEL_5C0C_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -11960,8 +12037,10 @@ _LABEL_5C18_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $28
-	ld (ix+1), $5C
+	ld (ix+0), <_LABEL_5C28_
+	ld (ix+1), >_LABEL_5C28_
+
+_LABEL_5C28_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_5C42_
@@ -11979,10 +12058,10 @@ _LABEL_5C42_:
 	dec (ix+25)
 	jr nz, _LABEL_5C5B_
 	call _LABEL_5655_
-	ld (ix+22), $25
-	ld (ix+23), $7B
-	ld (ix+0), $67
-	ld (ix+1), $5B
+	ld (ix+22), <Data_7B25
+	ld (ix+23), >Data_7B25
+	ld (ix+0), <_LABEL_5B67_
+	ld (ix+1), >_LABEL_5B67_
 	ret
 
 _LABEL_5C5B_:
@@ -11990,8 +12069,8 @@ _LABEL_5C5B_:
 	ld (ix+5), a
 	ld a, (ix+8)
 	ld (ix+6), a
-	ld (ix+0), $89
-	ld (ix+1), $5B
+	ld (ix+0), <_LABEL_5B89_
+	ld (ix+1), >_LABEL_5B89_
 	ret
 
 _LABEL_5C70_:
@@ -12005,10 +12084,10 @@ _LABEL_5C70_:
 	ld (ix+30), $01
 	ld (ix+24), $08
 	ld (ix+25), $01
-	ld (ix+22), $2E
-	ld (ix+23), $7B
-	ld (ix+0), $18
-	ld (ix+1), $5C
+	ld (ix+22), <Data_7B2E
+	ld (ix+23), >Data_7B2E
+	ld (ix+0), <_LABEL_5C18_
+	ld (ix+1), >_LABEL_5C18_
 	jp _LABEL_5C18_
 
 ; 2nd entry of Jump Table from 2012 (indexed by unknown)
@@ -12020,10 +12099,10 @@ JumpTable4_5C9D:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), $C8
-	ld (ix+1), $5C
-	ld (ix+22), $37
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_5CC8_
+	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+22), <Data_7B37
+	ld (ix+23), >Data_7B37
 	ret
 
 _LABEL_5CC8_:
@@ -12044,14 +12123,16 @@ _LABEL_5CC8_:
 _LABEL_5CE6_:
 	call _LABEL_5473_
 	jr nc, _LABEL_5D09_
-	ld (ix+0), $3E
-	ld (ix+1), $5E
+	ld (ix+0), <_LABEL_5E3E_
+	ld (ix+1), >_LABEL_5E3E_
 	jp _LABEL_5E3E_
 
 _LABEL_5CF6_:
 	ld (ix+24), $08
-	ld (ix+0), $02
-	ld (ix+1), $5D
+	ld (ix+0), <_LABEL_5D02_
+	ld (ix+1), >_LABEL_5D02_
+
+_LABEL_5D02_:
 	dec (ix+24)
 	jp z, _LABEL_5E32_
 	ret
@@ -12080,8 +12161,8 @@ _LABEL_5D26_:
 	call _LABEL_5420_
 	jr c, _LABEL_5D3C_
 	ld (ix+4), $01
-	ld (ix+22), $55
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B55
+	ld (ix+23), >Data_7B55
 	jr _LABEL_5D9D_
 
 _LABEL_5D3C_:
@@ -12095,8 +12176,8 @@ _LABEL_5D46_:
 	call _LABEL_5420_
 	jr c, _LABEL_5D5C_
 	ld (ix+4), $02
-	ld (ix+22), $4B
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B4B
+	ld (ix+23), >Data_7B4B
 	jr _LABEL_5D9D_
 
 _LABEL_5D5C_:
@@ -12110,8 +12191,8 @@ _LABEL_5D66_:
 	call _LABEL_5420_
 	jr c, _LABEL_5D7C_
 	ld (ix+4), $04
-	ld (ix+22), $37
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B37
+	ld (ix+23), >Data_7B37
 	jr _LABEL_5D9D_
 
 _LABEL_5D7C_:
@@ -12126,14 +12207,16 @@ _LABEL_5D88_:
 	call _LABEL_5420_
 	jp c, _LABEL_5CF6_
 	ld (ix+4), $08
-	ld (ix+22), $41
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B41
+	ld (ix+23), >Data_7B41
 _LABEL_5D9D_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $AF
-	ld (ix+1), $5D
+	ld (ix+0), <_LABEL_5DAF_
+	ld (ix+1), >_LABEL_5DAF_
+
+_LABEL_5DAF_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -12144,8 +12227,10 @@ _LABEL_5DBB_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $CB
-	ld (ix+1), $5D
+	ld (ix+0), <_LABEL_5DCB_
+	ld (ix+1), >_LABEL_5DCB_
+
+_LABEL_5DCB_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_5DE5_
@@ -12174,8 +12259,10 @@ _LABEL_5DE5_:
 	cp $40
 	jr nc, _LABEL_5E32_
 	ld (ix+24), $10
-	ld (ix+0), $0E
-	ld (ix+1), $5E
+	ld (ix+0), <_LABEL_5E0E_
+	ld (ix+1), >_LABEL_5E0E_
+
+_LABEL_5E0E_:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -12186,14 +12273,16 @@ _LABEL_5DE5_:
 	ld a, PlayerPoisonedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), $2E
-	ld (ix+1), $5E
+	ld (ix+0), <_LABEL_5E2E_
+	ld (ix+1), >_LABEL_5E2E_
+
+_LABEL_5E2E_:
 	dec (ix+24)
 	ret nz
 _LABEL_5E32_:
 	call _LABEL_5655_
-	ld (ix+0), $C8
-	ld (ix+1), $5C
+	ld (ix+0), <_LABEL_5CC8_
+	ld (ix+1), >_LABEL_5CC8_
 	ret
 
 _LABEL_5E3E_:
@@ -12214,27 +12303,27 @@ _LABEL_5E3E_:
 	jr _LABEL_5E79_
 
 _LABEL_5E5B_:
-	ld (ix+22), $5A
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B5A
+	ld (ix+23), >Data_7B5A
 	jr _LABEL_5E81_
 
 _LABEL_5E65_:
-	ld (ix+22), $50
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B50
+	ld (ix+23), >Data_7B50
 	jr _LABEL_5E81_
 
 _LABEL_5E6F_:
-	ld (ix+22), $3C
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B3C
+	ld (ix+23), >Data_7B3C
 	jr _LABEL_5E81_
 
 _LABEL_5E79_:
-	ld (ix+22), $46
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B46
+	ld (ix+23), >Data_7B46
 _LABEL_5E81_:
 	ld (ix+24), $0A
-	ld (ix+0), $BB
-	ld (ix+1), $5D
+	ld (ix+0), <_LABEL_5DBB_
+	ld (ix+1), >_LABEL_5DBB_
 	jp _LABEL_5DBB_
 
 ; 6th entry of Jump Table from 2012 (indexed by unknown)
@@ -12246,10 +12335,10 @@ JumpTable4_5E90:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), $C8
-	ld (ix+1), $5C
-	ld (ix+22), $37
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_5CC8_
+	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+22), <Data_7B37
+	ld (ix+23), >Data_7B37
 	ret
 
 ; 10th entry of Jump Table from 2012 (indexed by unknown)
@@ -12261,10 +12350,10 @@ JumpTable4_5EBB:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), $C8
-	ld (ix+1), $5C
-	ld (ix+22), $37
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_5CC8_
+	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+22), <Data_7B37
+	ld (ix+23), >Data_7B37
 	ret
 
 ; 3rd entry of Jump Table from 2012 (indexed by unknown)
@@ -12276,8 +12365,8 @@ JumpTable4_5EE6:
 	ld (ix+27), $00
 	ld (ix+3), $2F
 	call _LABEL_569C_
-	ld (ix+0), $09
-	ld (ix+1), $5F
+	ld (ix+0), <_LABEL_5F09_
+	ld (ix+1), >_LABEL_5F09_
 	ret
 
 _LABEL_5F09_:
@@ -12296,14 +12385,16 @@ _LABEL_5F09_:
 _LABEL_5F23_:
 	call _LABEL_5473_
 	jr nc, _LABEL_5F46_
-	ld (ix+0), $69
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_6069_
+	ld (ix+1), >_LABEL_6069_
 	jp _LABEL_6069_
 
 _LABEL_5F33_:
 	ld (ix+24), $08
-	ld (ix+0), $3F
-	ld (ix+1), $5F
+	ld (ix+0), <_LABEL_5F3F_
+	ld (ix+1), >_LABEL_5F3F_
+
+_LABEL_5F3F_:
 	dec (ix+24)
 	jp z, _LABEL_605D_
 	ret
@@ -12318,8 +12409,8 @@ _LABEL_5F46_:
 	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_5F67_
-	ld (ix+0), $69
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_6069_
+	ld (ix+1), >_LABEL_6069_
 	jp _LABEL_6069_
 
 _LABEL_5F67_:
@@ -12346,8 +12437,8 @@ _LABEL_5F84_:
 	call _LABEL_5420_
 	jr c, _LABEL_5F9A_
 	ld (ix+4), $01
-	ld (ix+22), $64
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B64
+	ld (ix+23), >Data_7B64
 	jr _LABEL_5FFB_
 
 _LABEL_5F9A_:
@@ -12361,8 +12452,8 @@ _LABEL_5FA4_:
 	call _LABEL_5420_
 	jr c, _LABEL_5FBA_
 	ld (ix+4), $02
-	ld (ix+22), $64
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B64
+	ld (ix+23), >Data_7B64
 	jr _LABEL_5FFB_
 
 _LABEL_5FBA_:
@@ -12376,8 +12467,8 @@ _LABEL_5FC4_:
 	call _LABEL_5420_
 	jr c, _LABEL_5FDA_
 	ld (ix+4), $04
-	ld (ix+22), $5F
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B5F
+	ld (ix+23), >Data_7B5F
 	jr _LABEL_5FFB_
 
 _LABEL_5FDA_:
@@ -12392,14 +12483,16 @@ _LABEL_5FE6_:
 	call _LABEL_5420_
 	jp c, _LABEL_5F33_
 	ld (ix+4), $08
-	ld (ix+22), $5F
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B5F
+	ld (ix+23), >Data_7B5F
 _LABEL_5FFB_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $0D
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_600D_
+	ld (ix+1), >_LABEL_600D_
+
+_LABEL_600D_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -12417,16 +12510,20 @@ _LABEL_6019_:
 
 _LABEL_602A_:
 	ld (ix+24), $10
-	ld (ix+0), $36
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_6036_
+	ld (ix+1), >_LABEL_6036_
+
+_LABEL_6036_:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $4B
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_604B_
+	ld (ix+1), >_LABEL_604B_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_604B_:
 	dec (ix+24)
 	jr z, _LABEL_605D_
 	ld a, (ix+24)
@@ -12438,8 +12535,8 @@ _LABEL_605A_:
 
 _LABEL_605D_:
 	call _LABEL_5655_
-	ld (ix+0), $09
-	ld (ix+1), $5F
+	ld (ix+0), <_LABEL_5F09_
+	ld (ix+1), >_LABEL_5F09_
 	ret
 
 _LABEL_6069_:
@@ -12460,31 +12557,31 @@ _LABEL_6069_:
 	jr _LABEL_60A4_
 
 _LABEL_6086_:
-	ld (ix+22), $69
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B69
+	ld (ix+23), >Data_7B69
 	jr _LABEL_60AC_
 
 _LABEL_6090_:
-	ld (ix+22), $72
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B72
+	ld (ix+23), >Data_7B72
 	jr _LABEL_60AC_
 
 _LABEL_609A_:
-	ld (ix+22), $84
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B84
+	ld (ix+23), >Data_7B84
 	jr _LABEL_60AC_
 
 _LABEL_60A4_:
-	ld (ix+22), $7B
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7B7B
+	ld (ix+23), >Data_7B7B
 _LABEL_60AC_:
 	ld (ix+24), $10
-	ld (ix+0), $19
-	ld (ix+1), $60
+	ld (ix+0), <_LABEL_6019_
+	ld (ix+1), >_LABEL_6019_
 	jp _LABEL_6019_
 
 _LABEL_60BB_:
-	ld hl, $7A1C
+	ld hl, _LABEL_7A1C_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -12497,8 +12594,8 @@ JumpTable4_60C4:
 	ld (ix+27), $00
 	ld (ix+3), $2F
 	call _LABEL_569C_
-	ld (ix+0), $09
-	ld (ix+1), $5F
+	ld (ix+0), <_LABEL_5F09_
+	ld (ix+1), >_LABEL_5F09_
 	ret
 
 ; 4th entry of Jump Table from 2012 (indexed by unknown)
@@ -12509,10 +12606,10 @@ JumpTable4_60E7:
 	ld (ix+26), $09
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $92
-	ld (ix+23), $7B
-	ld (ix+0), $0E
-	ld (ix+1), $61
+	ld (ix+22), <Data_7B92
+	ld (ix+23), >Data_7B92
+	ld (ix+0), <_LABEL_610E_
+	ld (ix+1), >_LABEL_610E_
 	ret
 
 _LABEL_610E_:
@@ -12531,12 +12628,13 @@ _LABEL_610E_:
 
 _LABEL_612B_:
 	ld (ix+25), $02
+_LABEL_612F_:
 	call _LABEL_1EB1_
 	jr c, _LABEL_6177_
 	call _LABEL_5473_
 	jr nc, _LABEL_6144_
-	ld (ix+0), $C9
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_62C9_
+	ld (ix+1), >_LABEL_62C9_
 	jp _LABEL_62C9_
 
 _LABEL_6144_:
@@ -12547,14 +12645,14 @@ _LABEL_6144_:
 	call GetRandomNumber
 	cp $80
 	jr nc, _LABEL_6160_
-	ld (ix+0), $C9
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_62C9_
+	ld (ix+1), >_LABEL_62C9_
 	jp _LABEL_62C9_
 
 _LABEL_6160_:
 	ld (ix+24), $08
-	ld (ix+0), $6D
-	ld (ix+1), $61
+	ld (ix+0), <_LABEL_616D_
+	ld (ix+1), >_LABEL_616D_
 	ret
 
 _LABEL_616D_:
@@ -12631,8 +12729,10 @@ _LABEL_61EB_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), $FD
-	ld (ix+1), $61
+	ld (ix+0), <_LABEL_61FD_
+	ld (ix+1), >_LABEL_61FD_
+
+_LABEL_61FD_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -12646,8 +12746,8 @@ _LABEL_6209_:
 	ld (ix+6), a
 	dec (ix+25)
 	jp z, _LABEL_62BD_
-	ld (ix+0), $2F
-	ld (ix+1), $61
+	ld (ix+0), <_LABEL_612F_
+	ld (ix+1), >_LABEL_612F_
 	ret
 
 _LABEL_6224_:
@@ -12661,8 +12761,8 @@ _LABEL_6224_:
 
 _LABEL_6235_:
 	ld (ix+24), $10
-	ld (ix+0), $42
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_6242_
+	ld (ix+1), >_LABEL_6242_
 	ret
 
 _LABEL_6242_:
@@ -12670,11 +12770,13 @@ _LABEL_6242_:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $5A
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_625A_
+	ld (ix+1), >_LABEL_625A_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_625A_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_626F_
@@ -12700,8 +12802,10 @@ _LABEL_626F_:
 	cp $18
 	jp nc, _LABEL_62BD_
 	ld (ix+24), $10
-	ld (ix+0), $99
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_6299_
+	ld (ix+1), >_LABEL_6299_
+
+_LABEL_6299_:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -12712,14 +12816,16 @@ _LABEL_626F_:
 	ld a, PlayerLightheadedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), $B9
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_62B9_
+	ld (ix+1), >_LABEL_62B9_
+
+_LABEL_62B9_:
 	dec (ix+24)
 	ret nz
 _LABEL_62BD_:
 	call _LABEL_5655_
-	ld (ix+0), $0E
-	ld (ix+1), $61
+	ld (ix+0), <_LABEL_610E_
+	ld (ix+1), >_LABEL_610E_
 	ret
 
 _LABEL_62C9_:
@@ -12732,12 +12838,12 @@ _LABEL_62C9_:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), $24
-	ld (ix+1), $62
+	ld (ix+0), <_LABEL_6224_
+	ld (ix+1), >_LABEL_6224_
 	jp _LABEL_6224_
 
 _LABEL_62EA_:
-	ld hl, $7A46
+	ld hl, _LABEL_7A46_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -12749,10 +12855,10 @@ JumpTable4_62F3:
 	ld (ix+26), $32
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $92
-	ld (ix+23), $7B
-	ld (ix+0), $0E
-	ld (ix+1), $61
+	ld (ix+22), <Data_7B92
+	ld (ix+23), >Data_7B92
+	ld (ix+0), <_LABEL_610E_
+	ld (ix+1), >_LABEL_610E_
 	ret
 
 ; 7th entry of Jump Table from 2012 (indexed by unknown)
@@ -12763,8 +12869,8 @@ JumpTable4_631A:
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), $39
-	ld (ix+1), $63
+	ld (ix+0), <_LABEL_6339_
+	ld (ix+1), >_LABEL_6339_
 	ret
 
 _LABEL_6339_:
@@ -12787,8 +12893,8 @@ _LABEL_6353_:
 	jr nc, _LABEL_636E_
 	call _LABEL_55BF_
 	jr c, _LABEL_636E_
-	ld (ix+0), $4E
-	ld (ix+1), $64
+	ld (ix+0), <_LABEL_644E_
+	ld (ix+1), >_LABEL_644E_
 	jp _LABEL_644E_
 
 _LABEL_636E_:
@@ -12838,10 +12944,12 @@ _LABEL_63C0_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+22), $9B
-	ld (ix+23), $7B
-	ld (ix+0), $DA
-	ld (ix+1), $63
+	ld (ix+22), <Data_7B9B
+	ld (ix+23), >Data_7B9B
+	ld (ix+0), <_LABEL_63DA_
+	ld (ix+1), >_LABEL_63DA_
+
+_LABEL_63DA_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_643E_
@@ -12868,16 +12976,20 @@ _LABEL_63FA_:
 
 _LABEL_640B_:
 	ld (ix+24), $10
-	ld (ix+0), $17
-	ld (ix+1), $64
+	ld (ix+0), <_LABEL_6417_
+	ld (ix+1), >_LABEL_6417_
+
+_LABEL_6417_:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $2C
-	ld (ix+1), $64
+	ld (ix+0), <_LABEL_642C_
+	ld (ix+1), >_LABEL_642C_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_642C_:
 	dec (ix+24)
 	jr z, _LABEL_643E_
 	ld a, (ix+24)
@@ -12890,8 +13002,8 @@ _LABEL_643B_:
 _LABEL_643E_:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), $39
-	ld (ix+1), $63
+	ld (ix+0), <_LABEL_6339_
+	ld (ix+1), >_LABEL_6339_
 	ret
 
 _LABEL_644E_:
@@ -12912,31 +13024,31 @@ _LABEL_644E_:
 	jr _LABEL_6489_
 
 _LABEL_646B_:
-	ld (ix+22), $C1
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BC1
+	ld (ix+23), >Data_7BC1
 	jr _LABEL_6491_
 
 _LABEL_6475_:
-	ld (ix+22), $AC
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BAC
+	ld (ix+23), >Data_7BAC
 	jr _LABEL_6491_
 
 _LABEL_647F_:
-	ld (ix+22), $B3
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BB3
+	ld (ix+23), >Data_7BB3
 	jr _LABEL_6491_
 
 _LABEL_6489_:
-	ld (ix+22), $BA
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BBA
+	ld (ix+23), >Data_7BBA
 _LABEL_6491_:
 	ld (ix+24), $0C
-	ld (ix+0), $FA
-	ld (ix+1), $63
+	ld (ix+0), <_LABEL_63FA_
+	ld (ix+1), >_LABEL_63FA_
 	jp _LABEL_63FA_
 
 _LABEL_64A0_:
-	ld hl, $7A5B
+	ld hl, _LABEL_7A5B_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -12948,8 +13060,8 @@ JumpTable4_64A9:
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), $39
-	ld (ix+1), $63
+	ld (ix+0), <_LABEL_6339_
+	ld (ix+1), >_LABEL_6339_
 	ret
 
 ; 27th entry of Jump Table from 2012 (indexed by unknown)
@@ -12960,8 +13072,8 @@ JumpTable4_64C8:
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), $39
-	ld (ix+1), $63
+	ld (ix+0), <_LABEL_6339_
+	ld (ix+1), >_LABEL_6339_
 	ret
 
 ; 8th entry of Jump Table from 2012 (indexed by unknown)
@@ -12972,10 +13084,10 @@ JumpTable4_64E7:
 	ld (ix+26), $28
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $0E
-	ld (ix+1), $65
-	ld (ix+22), $D2
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_650E_
+	ld (ix+1), >_LABEL_650E_
+	ld (ix+22), <Data_7BD2
+	ld (ix+23), >Data_7BD2
 	ret
 
 _LABEL_650E_:
@@ -13000,14 +13112,16 @@ _LABEL_652B_:
 	ld (ix+25), $00
 	call _LABEL_5473_
 	jr nc, _LABEL_655F_
-	ld (ix+0), $D3
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_66D3_
+	ld (ix+1), >_LABEL_66D3_
 	jp _LABEL_66D3_
 
 _LABEL_6549_:
 	ld (ix+24), $08
-	ld (ix+0), $55
-	ld (ix+1), $65
+	ld (ix+0), <_LABEL_6555_
+	ld (ix+1), >_LABEL_6555_
+
+_LABEL_6555_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_66C7_
@@ -13039,8 +13153,8 @@ _LABEL_6581_:
 	call _LABEL_5420_
 	jr c, _LABEL_6597_
 	ld (ix+4), $01
-	ld (ix+22), $C8
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BC8
+	ld (ix+23), >Data_7BC8
 	jr _LABEL_65F8_
 
 _LABEL_6597_:
@@ -13054,8 +13168,8 @@ _LABEL_65A1_:
 	call _LABEL_5420_
 	jr c, _LABEL_65B7_
 	ld (ix+4), $02
-	ld (ix+22), $CD
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BCD
+	ld (ix+23), >Data_7BCD
 	jr _LABEL_65F8_
 
 _LABEL_65B7_:
@@ -13069,8 +13183,8 @@ _LABEL_65C1_:
 	call _LABEL_5420_
 	jr c, _LABEL_65D7_
 	ld (ix+4), $04
-	ld (ix+22), $D2
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BD2
+	ld (ix+23), >Data_7BD2
 	jr _LABEL_65F8_
 
 _LABEL_65D7_:
@@ -13085,16 +13199,18 @@ _LABEL_65E3_:
 	call _LABEL_5420_
 	jp c, _LABEL_6549_
 	ld (ix+4), $08
-	ld (ix+22), $D7
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BD7
+	ld (ix+23), >Data_7BD7
 _LABEL_65F8_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $12
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_6612_
+	ld (ix+1), >_LABEL_6612_
+
+_LABEL_6612_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -13105,8 +13221,10 @@ _LABEL_661F_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $2F
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_662F_
+	ld (ix+1), >_LABEL_662F_
+
+_LABEL_662F_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_6649_
@@ -13143,8 +13261,10 @@ _LABEL_6661_:
 	ld a, RobeArmor
 	ld (EquippedArmor), a
 	ld (ix+24), $10
-	ld (ix+0), $7E
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_667E_
+	ld (ix+1), >_LABEL_667E_
+
+_LABEL_667E_:
 	dec (ix+24)
 	ret nz
 	call EquipArmor
@@ -13163,22 +13283,26 @@ _LABEL_668C_:
 	ld a, DaggerSword
 	ld (EquippedWeapon), a
 	ld (ix+24), $10
-	ld (ix+0), $AB
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_66AB_
+	ld (ix+1), >_LABEL_66AB_
+
+_LABEL_66AB_:
 	dec (ix+24)
 	ret nz
 	call EquipWeapon
 	ld a, WeaponRustMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), $C3
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_66C3_
+	ld (ix+1), >_LABEL_66C3_
+
+_LABEL_66C3_:
 	dec (ix+24)
 	ret nz
 _LABEL_66C7_:
 	call _LABEL_5655_
-	ld (ix+0), $0E
-	ld (ix+1), $65
+	ld (ix+0), <_LABEL_650E_
+	ld (ix+1), >_LABEL_650E_
 	ret
 
 _LABEL_66D3_:
@@ -13200,29 +13324,29 @@ _LABEL_66D3_:
 	jr _LABEL_6711_
 
 _LABEL_66F3_:
-	ld (ix+22), $C8
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BC8
+	ld (ix+23), >Data_7BC8
 	jr _LABEL_6719_
 
 _LABEL_66FD_:
-	ld (ix+22), $CD
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BCD
+	ld (ix+23), >Data_7BCD
 	jr _LABEL_6719_
 
 _LABEL_6707_:
-	ld (ix+22), $D2
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BD2
+	ld (ix+23), >Data_7BD2
 	jr _LABEL_6719_
 
 _LABEL_6711_:
-	ld (ix+22), $D7
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BD7
+	ld (ix+23), >Data_7BD7
 _LABEL_6719_:
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $1F
-	ld (ix+1), $66
+	ld (ix+0), <_LABEL_661F_
+	ld (ix+1), >_LABEL_661F_
 	jp _LABEL_661F_
 
 ; 20th entry of Jump Table from 2012 (indexed by unknown)
@@ -13233,10 +13357,10 @@ JumpTable4_6730:
 	ld (ix+26), $50
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $0E
-	ld (ix+1), $65
-	ld (ix+22), $D2
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_650E_
+	ld (ix+1), >_LABEL_650E_
+	ld (ix+22), <Data_7BD2
+	ld (ix+23), >Data_7BD2
 	ret
 
 ; 28th entry of Jump Table from 2012 (indexed by unknown)
@@ -13247,10 +13371,10 @@ JumpTable4_6757:
 	ld (ix+26), $E6
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), $0E
-	ld (ix+1), $65
-	ld (ix+22), $D2
-	ld (ix+23), $7B
+	ld (ix+0), <_LABEL_650E_
+	ld (ix+1), >_LABEL_650E_
+	ld (ix+22), <Data_7BD2
+	ld (ix+23), >Data_7BD2
 	ret
 
 ; 11th entry of Jump Table from 2012 (indexed by unknown)
@@ -13260,10 +13384,10 @@ JumpTable4_677E:
 	ld (ix+26), $3C
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $04
-	ld (ix+23), $7C
-	ld (ix+0), $A1
-	ld (ix+1), $67
+	ld (ix+22), <Data_7C04
+	ld (ix+23), >Data_7C04
+	ld (ix+0), <_LABEL_67A1_
+	ld (ix+1), >_LABEL_67A1_
 	ret
 
 _LABEL_67A1_:
@@ -13289,8 +13413,8 @@ _LABEL_67BE_:
 	jr c, _LABEL_67DF_
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $74
-	ld (ix+1), $69
+	ld (ix+0), <_LABEL_6974_
+	ld (ix+1), >_LABEL_6974_
 	jp _LABEL_6974_
 
 _LABEL_67DF_:
@@ -13340,10 +13464,12 @@ _LABEL_6831_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+22), $DC
-	ld (ix+23), $7B
-	ld (ix+0), $4B
-	ld (ix+1), $68
+	ld (ix+22), <Data_7BDC
+	ld (ix+23), >Data_7BDC
+	ld (ix+0), <_LABEL_684B_
+	ld (ix+1), >_LABEL_684B_
+
+_LABEL_684B_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_6931_
@@ -13354,8 +13480,8 @@ _LABEL_6831_:
 
 _LABEL_685D_:
 	ld (ix+4), $00
-	ld (ix+22), $04
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C04
+	ld (ix+23), >Data_7C04
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
@@ -13373,16 +13499,20 @@ _LABEL_6878_:
 
 _LABEL_6889_:
 	ld (ix+24), $10
-	ld (ix+0), $95
-	ld (ix+1), $68
+	ld (ix+0), <_LABEL_6895_
+	ld (ix+1), >_LABEL_6895_
+
+_LABEL_6895_:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $AA
-	ld (ix+1), $68
+	ld (ix+0), <_LABEL_68AA_
+	ld (ix+1), >_LABEL_68AA_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_68AA_:
 	dec (ix+24)
 	jr z, _LABEL_68BC_
 	ld a, (ix+24)
@@ -13410,8 +13540,10 @@ _LABEL_68BC_:
 	cp $40
 	jp nc, _LABEL_6931_
 	ld (ix+24), $10
-	ld (ix+0), $EC
-	ld (ix+1), $68
+	ld (ix+0), <_LABEL_68EC_
+	ld (ix+1), >_LABEL_68EC_
+
+_LABEL_68EC_:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -13440,15 +13572,17 @@ _LABEL_6918_:
 	ld (CurrentMessage), a
 _LABEL_6921_:
 	ld (ix+24), $10
-	ld (ix+0), $2D
-	ld (ix+1), $69
+	ld (ix+0), <_LABEL_692D_
+	ld (ix+1), >_LABEL_692D_
+
+_LABEL_692D_:
 	dec (ix+24)
 	ret nz
 _LABEL_6931_:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), $A1
-	ld (ix+1), $67
+	ld (ix+0), <_LABEL_67A1_
+	ld (ix+1), >_LABEL_67A1_
 	ld a, (ix+4)
 	rrca
 	jr c, _LABEL_6950_
@@ -13461,23 +13595,23 @@ _LABEL_6931_:
 	ret
 
 _LABEL_6950_:
-	ld (ix+22), $FF
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BFF
+	ld (ix+23), >Data_7BFF
 	ret
 
 _LABEL_6959_:
-	ld (ix+22), $04
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C04
+	ld (ix+23), >Data_7C04
 	ret
 
 _LABEL_6962_:
-	ld (ix+22), $09
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C09
+	ld (ix+23), >Data_7C09
 	ret
 
 _LABEL_696B_:
-	ld (ix+22), $0E
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C0E
+	ld (ix+23), >Data_7C0E
 	ret
 
 _LABEL_6974_:
@@ -13498,31 +13632,31 @@ _LABEL_6974_:
 	jr _LABEL_69AF_
 
 _LABEL_6991_:
-	ld (ix+22), $F8
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BF8
+	ld (ix+23), >Data_7BF8
 	jr _LABEL_69B7_
 
 _LABEL_699B_:
-	ld (ix+22), $E3
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BE3
+	ld (ix+23), >Data_7BE3
 	jr _LABEL_69B7_
 
 _LABEL_69A5_:
-	ld (ix+22), $EA
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BEA
+	ld (ix+23), >Data_7BEA
 	jr _LABEL_69B7_
 
 _LABEL_69AF_:
-	ld (ix+22), $F1
-	ld (ix+23), $7B
+	ld (ix+22), <Data_7BF1
+	ld (ix+23), >Data_7BF1
 _LABEL_69B7_:
 	ld (ix+24), $10
-	ld (ix+0), $78
-	ld (ix+1), $68
+	ld (ix+0), <_LABEL_6878_
+	ld (ix+1), >_LABEL_6878_
 	jp _LABEL_6878_
 
 _LABEL_69C6_:
-	ld hl, $7A70
+	ld hl, _LABEL_7A70_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -13533,10 +13667,10 @@ JumpTable4_69CF:
 	ld (ix+26), $A0
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $04
-	ld (ix+23), $7C
-	ld (ix+0), $A1
-	ld (ix+1), $67
+	ld (ix+22), <Data_7C04
+	ld (ix+23), >Data_7C04
+	ld (ix+0), <_LABEL_67A1_
+	ld (ix+1), >_LABEL_67A1_
 	ret
 
 ; 12th entry of Jump Table from 2012 (indexed by unknown)
@@ -13548,10 +13682,10 @@ JumpTable4_69F2:
 	ld (ix+27), $00
 	ld (ix+28), $02
 	call _LABEL_569C_
-	ld (ix+22), $13
-	ld (ix+23), $7C
-	ld (ix+0), $1D
-	ld (ix+1), $6A
+	ld (ix+22), <Data_7C13
+	ld (ix+23), >Data_7C13
+	ld (ix+0), <_LABEL_6A1D_
+	ld (ix+1), >_LABEL_6A1D_
 	ret
 
 _LABEL_6A1D_:
@@ -13568,8 +13702,10 @@ _LABEL_6A1D_:
 	and $10
 	ret z
 _LABEL_6A38_:
-	ld (ix+0), $40
-	ld (ix+1), $6A
+	ld (ix+0), <_LABEL_6A40_
+	ld (ix+1), >_LABEL_6A40_
+
+_LABEL_6A40_:
 	call _LABEL_553A_
 	ld a, (ix+28)
 	and $02
@@ -13591,14 +13727,16 @@ _LABEL_6A5A_:
 _LABEL_6A68_:
 	call _LABEL_5473_
 	jr nc, _LABEL_6A8E_
-	ld (ix+0), $76
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6B76_
+	ld (ix+1), >_LABEL_6B76_
 	jp _LABEL_6B76_
 
 _LABEL_6A78_:
 	ld (ix+24), $08
-	ld (ix+0), $84
-	ld (ix+1), $6A
+	ld (ix+0), <_LABEL_6A84_
+	ld (ix+1), >_LABEL_6A84_
+
+_LABEL_6A84_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_6B6A_
@@ -13672,8 +13810,10 @@ _LABEL_6B02_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $14
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6B14_
+	ld (ix+1), >_LABEL_6B14_
+
+_LABEL_6B14_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -13691,17 +13831,21 @@ _LABEL_6B20_:
 
 _LABEL_6B31_:
 	ld (ix+24), $10
-	ld (ix+0), $3D
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6B3D_
+	ld (ix+1), >_LABEL_6B3D_
+
+_LABEL_6B3D_:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $55
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6B55_
+	ld (ix+1), >_LABEL_6B55_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_6B55_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_6B6A_
@@ -13714,8 +13858,8 @@ _LABEL_6B67_:
 
 _LABEL_6B6A_:
 	call _LABEL_5655_
-	ld (ix+0), $40
-	ld (ix+1), $6A
+	ld (ix+0), <_LABEL_6A40_
+	ld (ix+1), >_LABEL_6A40_
 	ret
 
 _LABEL_6B76_:
@@ -13728,12 +13872,12 @@ _LABEL_6B76_:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), $20
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6B20_
+	ld (ix+1), >_LABEL_6B20_
 	jp _LABEL_6B20_
 
 _LABEL_6B97_:
-	ld hl, $7A8D
+	ld hl, _LABEL_7A8D_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -13746,10 +13890,10 @@ JumpTable4_6BA0:
 	ld (ix+27), $00
 	ld (ix+28), $02
 	call _LABEL_569C_
-	ld (ix+22), $13
-	ld (ix+23), $7C
-	ld (ix+0), $1D
-	ld (ix+1), $6A
+	ld (ix+22), <Data_7C13
+	ld (ix+23), >Data_7C13
+	ld (ix+0), <_LABEL_6A1D_
+	ld (ix+1), >_LABEL_6A1D_
 	ret
 
 ; 13th entry of Jump Table from 2012 (indexed by unknown)
@@ -13760,10 +13904,10 @@ JumpTable4_6BCB:
 	ld (ix+26), $14
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $18
-	ld (ix+23), $7C
-	ld (ix+0), $F2
-	ld (ix+1), $6B
+	ld (ix+22), <Data_7C18
+	ld (ix+23), >Data_7C18
+	ld (ix+0), <_LABEL_6BF2_
+	ld (ix+1), >_LABEL_6BF2_
 	ret
 
 _LABEL_6BF2_:
@@ -13782,16 +13926,19 @@ _LABEL_6BF2_:
 
 _LABEL_6C0F_:
 	ld (ix+25), $02
+_LABEL_6C13_:
 	call _LABEL_5473_
 	jr nc, _LABEL_6C39_
-	ld (ix+0), $26
-	ld (ix+1), $6D
+	ld (ix+0), <_LABEL_6D26_
+	ld (ix+1), >_LABEL_6D26_
 	jp _LABEL_6D26_
 
 _LABEL_6C23_:
 	ld (ix+24), $08
-	ld (ix+0), $2F
-	ld (ix+1), $6C
+	ld (ix+0), <_LABEL_6C2F_
+	ld (ix+1), >_LABEL_6C2F_
+
+_LABEL_6C2F_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_6D16_
@@ -13868,8 +14015,10 @@ _LABEL_6CB4_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), $C6
-	ld (ix+1), $6C
+	ld (ix+0), <_LABEL_6CC6_
+	ld (ix+1), >_LABEL_6CC6_
+
+_LABEL_6CC6_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -13883,16 +14032,18 @@ _LABEL_6CD2_:
 	ld (ix+6), a
 	dec (ix+25)
 	jr z, _LABEL_6D16_
-	ld (ix+0), $13
-	ld (ix+1), $6C
+	ld (ix+0), <_LABEL_6C13_
+	ld (ix+1), >_LABEL_6C13_
 	ret
 
 _LABEL_6CEC_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $FC
-	ld (ix+1), $6C
+	ld (ix+0), <_LABEL_6CFC_
+	ld (ix+1), >_LABEL_6CFC_
+
+_LABEL_6CFC_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_6D16_
@@ -13909,8 +14060,8 @@ _LABEL_6D13_:
 _LABEL_6D16_:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), $F2
-	ld (ix+1), $6B
+	ld (ix+0), <_LABEL_6BF2_
+	ld (ix+1), >_LABEL_6BF2_
 	ret
 
 _LABEL_6D26_:
@@ -13923,8 +14074,8 @@ _LABEL_6D26_:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), $EC
-	ld (ix+1), $6C
+	ld (ix+0), <_LABEL_6CEC_
+	ld (ix+1), >_LABEL_6CEC_
 	jp _LABEL_6CEC_
 
 ; 14th entry of Jump Table from 2012 (indexed by unknown)
@@ -13936,8 +14087,8 @@ JumpTable4_6D47:
 	ld (ix+27), $00
 	ld (ix+3), $6C
 	call _LABEL_569C_
-	ld (ix+0), $6A
-	ld (ix+1), $6D
+	ld (ix+0), <_LABEL_6D6A_
+	ld (ix+1), >_LABEL_6D6A_
 	ret
 
 _LABEL_6D6A_:
@@ -13956,14 +14107,16 @@ _LABEL_6D6A_:
 _LABEL_6D84_:
 	call _LABEL_5473_
 	jr nc, _LABEL_6DA7_
-	ld (ix+0), $F6
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6EF6_
+	ld (ix+1), >_LABEL_6EF6_
 	jp _LABEL_6EF6_
 
 _LABEL_6D94_:
 	ld (ix+24), $08
-	ld (ix+0), $A0
-	ld (ix+1), $6D
+	ld (ix+0), <_LABEL_6DA0_
+	ld (ix+1), >_LABEL_6DA0_
+
+_LABEL_6DA0_:
 	dec (ix+24)
 	jp z, _LABEL_6EE6_
 	ret
@@ -14050,8 +14203,10 @@ _LABEL_6E45_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $57
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6E57_
+	ld (ix+1), >_LABEL_6E57_
+
+_LABEL_6E57_:
 	call _LABEL_47BB_
 	dec (ix+24)
 	jp z, _LABEL_6EE6_
@@ -14061,8 +14216,10 @@ _LABEL_6E61_:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), $71
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6E71_
+	ld (ix+1), >_LABEL_6E71_
+
+_LABEL_6E71_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_6E8B_
@@ -14108,22 +14265,26 @@ _LABEL_6EBD_:
 _LABEL_6EBE_:
 	ld (Food), a
 	ld (ix+24), $10
-	ld (ix+0), $CD
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6ECD_
+	ld (ix+1), >_LABEL_6ECD_
+
+_LABEL_6ECD_:
 	dec (ix+24)
 	ret nz
 	ld a, FoodStolenMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), $E2
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6EE2_
+	ld (ix+1), >_LABEL_6EE2_
+
+_LABEL_6EE2_:
 	dec (ix+24)
 	ret nz
 _LABEL_6EE6_:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), $6A
-	ld (ix+1), $6D
+	ld (ix+0), <_LABEL_6D6A_
+	ld (ix+1), >_LABEL_6D6A_
 	ret
 
 _LABEL_6EF6_:
@@ -14144,27 +14305,27 @@ _LABEL_6EF6_:
 	jr _LABEL_6F31_
 
 _LABEL_6F13_:
-	ld (ix+22), $39
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C39
+	ld (ix+23), >Data_7C39
 	jr _LABEL_6F39_
 
 _LABEL_6F1D_:
-	ld (ix+22), $46
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C46
+	ld (ix+23), >Data_7C46
 	jr _LABEL_6F39_
 
 _LABEL_6F27_:
-	ld (ix+22), $1F
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C1F
+	ld (ix+23), >Data_7C1F
 	jr _LABEL_6F39_
 
 _LABEL_6F31_:
-	ld (ix+22), $2C
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C2C
+	ld (ix+23), >Data_7C2C
 _LABEL_6F39_:
 	ld (ix+24), $12
-	ld (ix+0), $61
-	ld (ix+1), $6E
+	ld (ix+0), <_LABEL_6E61_
+	ld (ix+1), >_LABEL_6E61_
 	jp _LABEL_6E61_
 
 ; 30th entry of Jump Table from 2012 (indexed by unknown)
@@ -14176,8 +14337,8 @@ JumpTable4_6F48:
 	ld (ix+27), $00
 	ld (ix+3), $6C
 	call _LABEL_569C_
-	ld (ix+0), $6A
-	ld (ix+1), $6D
+	ld (ix+0), <_LABEL_6D6A_
+	ld (ix+1), >_LABEL_6D6A_
 	ret
 
 ; 17th entry of Jump Table from 2012 (indexed by unknown)
@@ -14187,10 +14348,10 @@ JumpTable4_6F6B:
 	ld (ix+26), $5A
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $53
-	ld (ix+23), $7C
-	ld (ix+0), $8E
-	ld (ix+1), $6F
+	ld (ix+22), <Data_7C53
+	ld (ix+23), >Data_7C53
+	ld (ix+0), <_LABEL_6F8E_
+	ld (ix+1), >_LABEL_6F8E_
 	ret
 
 _LABEL_6F8E_:
@@ -14217,8 +14378,8 @@ _LABEL_6FAB_:
 	call GetRandomNumber
 	cp $40
 	ret c
-	ld (ix+0), $B4
-	ld (ix+1), $70
+	ld (ix+0), <_LABEL_70B4_
+	ld (ix+1), >_LABEL_70B4_
 	jp _LABEL_70B4_
 
 _LABEL_6FC8_:
@@ -14232,18 +14393,23 @@ _LABEL_6FC8_:
 
 _LABEL_6FD9_:
 	ld (ix+24), $10
-	ld (ix+0), $E5
-	ld (ix+1), $6F
+	ld (ix+0), <_LABEL_6FE5_
+	ld (ix+1), >_LABEL_6FE5_
+
+_LABEL_6FE5_:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $FD
-	ld (ix+1), $6F
+	ld (ix+0), <_LABEL_6FFD_
+	ld (ix+1), >_LABEL_6FFD_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_6FFD_:
 	call _LABEL_553A_
+
 ; 5th entry of Jump Table from 1C108 (indexed by PlaySoundSlot)
 _LABEL_7000_:
 	dec (ix+24)
@@ -14298,8 +14464,8 @@ _LABEL_702B_:
 	sbc hl, bc
 	call c, _LABEL_707B_
 	ld (ix+24), $10
-	ld (ix+0), $85
-	ld (ix+1), $70
+	ld (ix+0), <_LABEL_7085_
+	ld (ix+1), >_LABEL_7085_
 	jr _LABEL_7085_
 
 _LABEL_7077_:
@@ -14321,8 +14487,10 @@ _LABEL_7085_:
 	ld a, PlayerStrengthDownMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), $9A
-	ld (ix+1), $70
+	ld (ix+0), <_LABEL_709A_
+	ld (ix+1), >_LABEL_709A_
+
+_LABEL_709A_:
 	dec (ix+24)
 	ret nz
 _LABEL_709E_:
@@ -14330,8 +14498,8 @@ _LABEL_709E_:
 	ld ($C102), a
 	ld (ix+30), $00
 	ld (ix+24), $00
-	ld (ix+0), $8E
-	ld (ix+1), $6F
+	ld (ix+0), <_LABEL_6F8E_
+	ld (ix+1), >_LABEL_6F8E_
 	ret
 
 _LABEL_70B4_:
@@ -14344,12 +14512,12 @@ _LABEL_70B4_:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), $C8
-	ld (ix+1), $6F
+	ld (ix+0), <_LABEL_6FC8_
+	ld (ix+1), >_LABEL_6FC8_
 	jp _LABEL_6FC8_
 
 _LABEL_70D5_:
-	ld hl, $7AA2
+	ld hl, _LABEL_7AA2_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -14360,10 +14528,10 @@ JumpTable4_70DE:
 	ld (ix+26), $5F
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $53
-	ld (ix+23), $7C
-	ld (ix+0), $8E
-	ld (ix+1), $6F
+	ld (ix+22), <Data_7C53
+	ld (ix+23), >Data_7C53
+	ld (ix+0), <_LABEL_6F8E_
+	ld (ix+1), >_LABEL_6F8E_
 	ret
 
 ; 25th entry of Jump Table from 2012 (indexed by unknown)
@@ -14373,10 +14541,10 @@ JumpTable4_7101:
 	ld (ix+26), $64
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $53
-	ld (ix+23), $7C
-	ld (ix+0), $8E
-	ld (ix+1), $6F
+	ld (ix+22), <Data_7C53
+	ld (ix+23), >Data_7C53
+	ld (ix+0), <_LABEL_6F8E_
+	ld (ix+1), >_LABEL_6F8E_
 	ret
 
 ; 31st entry of Jump Table from 2012 (indexed by unknown)
@@ -14388,8 +14556,8 @@ JumpTable4_7124:
 	ld (ix+27), $01
 	ld (ix+3), $88
 	call _LABEL_569C_
-	ld (ix+0), $47
-	ld (ix+1), $71
+	ld (ix+0), <_LABEL_7147_
+	ld (ix+1), >_LABEL_7147_
 	ret
 
 _LABEL_7147_:
@@ -14415,14 +14583,14 @@ _LABEL_7159_:
 	cp $80
 	jr nc, _LABEL_7192_
 _LABEL_7173_:
-	ld (ix+0), $88
-	ld (ix+1), $72
+	ld (ix+0), <_LABEL_7288_
+	ld (ix+1), >_LABEL_7288_
 	jp _LABEL_7288_
 
 _LABEL_717E_:
 	ld (ix+24), $08
-	ld (ix+0), $8B
-	ld (ix+1), $71
+	ld (ix+0), <_LABEL_718B_
+	ld (ix+1), >_LABEL_718B_
 	ret
 
 _LABEL_718B_:
@@ -14447,8 +14615,8 @@ _LABEL_71A3_:
 	call _LABEL_5420_
 	jr c, _LABEL_71B9_
 	ld (ix+4), $01
-	ld (ix+22), $62
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C62
+	ld (ix+23), >Data_7C62
 	jr _LABEL_721A_
 
 _LABEL_71B9_:
@@ -14462,8 +14630,8 @@ _LABEL_71C3_:
 	call _LABEL_5420_
 	jr c, _LABEL_71D9_
 	ld (ix+4), $02
-	ld (ix+22), $67
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C67
+	ld (ix+23), >Data_7C67
 	jr _LABEL_721A_
 
 _LABEL_71D9_:
@@ -14477,8 +14645,8 @@ _LABEL_71E3_:
 	call _LABEL_5420_
 	jr c, _LABEL_71F9_
 	ld (ix+4), $04
-	ld (ix+22), $58
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C58
+	ld (ix+23), >Data_7C58
 	jr _LABEL_721A_
 
 _LABEL_71F9_:
@@ -14493,14 +14661,16 @@ _LABEL_7205_:
 	call _LABEL_5420_
 	jp c, _LABEL_717E_
 	ld (ix+4), $08
-	ld (ix+22), $5D
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C5D
+	ld (ix+23), >Data_7C5D
 _LABEL_721A_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $2C
-	ld (ix+1), $72
+	ld (ix+0), <_LABEL_722C_
+	ld (ix+1), >_LABEL_722C_
+
+_LABEL_722C_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -14518,16 +14688,20 @@ _LABEL_7238_:
 
 _LABEL_7249_:
 	ld (ix+24), $10
-	ld (ix+0), $55
-	ld (ix+1), $72
+	ld (ix+0), <_LABEL_7255_
+	ld (ix+1), >_LABEL_7255_
+
+_LABEL_7255_:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $6A
-	ld (ix+1), $72
+	ld (ix+0), <_LABEL_726A_
+	ld (ix+1), >_LABEL_726A_
 	ld a, SoundEffectA4
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_726A_:
 	dec (ix+24)
 	jr z, _LABEL_727C_
 	ld a, (ix+24)
@@ -14539,8 +14713,8 @@ _LABEL_7279_:
 
 _LABEL_727C_:
 	call _LABEL_5655_
-	ld (ix+0), $47
-	ld (ix+1), $71
+	ld (ix+0), <_LABEL_7147_
+	ld (ix+1), >_LABEL_7147_
 	ret
 
 _LABEL_7288_:
@@ -14561,31 +14735,31 @@ _LABEL_7288_:
 	jr _LABEL_72C3_
 
 _LABEL_72A5_:
-	ld (ix+22), $76
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C76
+	ld (ix+23), >Data_7C76
 	jr _LABEL_72CB_
 
 _LABEL_72AF_:
-	ld (ix+22), $7B
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C7B
+	ld (ix+23), >Data_7C7B
 	jr _LABEL_72CB_
 
 _LABEL_72B9_:
-	ld (ix+22), $6C
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C6C
+	ld (ix+23), >Data_7C6C
 	jr _LABEL_72CB_
 
 _LABEL_72C3_:
-	ld (ix+22), $71
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C71
+	ld (ix+23), >Data_7C71
 _LABEL_72CB_:
 	ld (ix+24), $0A
-	ld (ix+0), $38
-	ld (ix+1), $72
+	ld (ix+0), <_LABEL_7238_
+	ld (ix+1), >_LABEL_7238_
 	jp _LABEL_7238_
 
 _LABEL_72DA_:
-	ld hl, $7ABF
+	ld hl, _LABEL_7ABF_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
@@ -14598,8 +14772,8 @@ JumpTable4_72E3:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), $06
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_7306_
+	ld (ix+1), >_LABEL_7306_
 	ret
 
 _LABEL_7306_:
@@ -14620,14 +14794,16 @@ _LABEL_7320_:
 	jr c, _LABEL_7348_
 	call _LABEL_5473_
 	jr nc, _LABEL_7348_
-	ld (ix+0), $E5
-	ld (ix+1), $74
+	ld (ix+0), <_LABEL_74E5_
+	ld (ix+1), >_LABEL_74E5_
 	jp _LABEL_74E5_
 
 _LABEL_7335_:
 	ld (ix+24), $08
-	ld (ix+0), $41
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_7341_
+	ld (ix+1), >_LABEL_7341_
+
+_LABEL_7341_:
 	dec (ix+24)
 	jp z, _LABEL_74D9_
 	ret
@@ -14656,8 +14832,8 @@ _LABEL_7365_:
 	call _LABEL_5420_
 	jr c, _LABEL_737B_
 	ld (ix+4), $01
-	ld (ix+22), $8A
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C8A
+	ld (ix+23), >Data_7C8A
 	jr _LABEL_73DC_
 
 _LABEL_737B_:
@@ -14671,8 +14847,8 @@ _LABEL_7385_:
 	call _LABEL_5420_
 	jr c, _LABEL_739B_
 	ld (ix+4), $02
-	ld (ix+22), $8F
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C8F
+	ld (ix+23), >Data_7C8F
 	jr _LABEL_73DC_
 
 _LABEL_739B_:
@@ -14686,8 +14862,8 @@ _LABEL_73A5_:
 	call _LABEL_5420_
 	jr c, _LABEL_73BB_
 	ld (ix+4), $04
-	ld (ix+22), $80
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C80
+	ld (ix+23), >Data_7C80
 	jr _LABEL_73DC_
 
 _LABEL_73BB_:
@@ -14702,14 +14878,16 @@ _LABEL_73C7_:
 	call _LABEL_5420_
 	jp c, _LABEL_7335_
 	ld (ix+4), $08
-	ld (ix+22), $85
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C85
+	ld (ix+23), >Data_7C85
 _LABEL_73DC_:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), $EE
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_73EE_
+	ld (ix+1), >_LABEL_73EE_
+
+_LABEL_73EE_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -14726,17 +14904,21 @@ _LABEL_73FB_:
 	ret
 
 _LABEL_740C_:
-	ld (ix+0), $14
-	ld (ix+1), $74
+	ld (ix+0), <_LABEL_7414_
+	ld (ix+1), >_LABEL_7414_
+
+_LABEL_7414_:
 	ld a, ($C3C2)
 	or a
 	ret nz
 	ld (ix+24), $10
-	ld (ix+0), $2D
-	ld (ix+1), $74
+	ld (ix+0), <_LABEL_742D_
+	ld (ix+1), >_LABEL_742D_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_742D_:
 	dec (ix+24)
 	jr z, _LABEL_743B_
 	ld a, (ix+24)
@@ -14799,8 +14981,9 @@ _LABEL_749E_:
 	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+24), $10
-	ld (ix+0), $B2
-	ld (ix+1), $74
+	ld (ix+0), <_LABEL_74B2_
+	ld (ix+1), >_LABEL_74B2_
+_LABEL_74B2_:
 	dec (ix+24)
 	ret nz
 	ld a, (ix+31)
@@ -14815,14 +14998,15 @@ _LABEL_74C4_:
 	ld (CurrentMessage), a
 _LABEL_74C9_:
 	ld (ix+24), $10
-	ld (ix+0), $D5
-	ld (ix+1), $74
+	ld (ix+0), <_LABEL_74D5_
+	ld (ix+1), >_LABEL_74D5_
+_LABEL_74D5_:
 	dec (ix+24)
 	ret nz
 _LABEL_74D9_:
 	call _LABEL_5655_
-	ld (ix+0), $06
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_7306_
+	ld (ix+1), >_LABEL_7306_
 	ret
 
 _LABEL_74E5_:
@@ -14843,31 +15027,31 @@ _LABEL_74E5_:
 	jr _LABEL_7520_
 
 _LABEL_7502_:
-	ld (ix+22), $8A
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C8A
+	ld (ix+23), >Data_7C8A
 	jr _LABEL_7528_
 
 _LABEL_750C_:
-	ld (ix+22), $8F
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C8F
+	ld (ix+23), >Data_7C8F
 	jr _LABEL_7528_
 
 _LABEL_7516_:
-	ld (ix+22), $80
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C80
+	ld (ix+23), >Data_7C80
 	jr _LABEL_7528_
 
 _LABEL_7520_:
-	ld (ix+22), $85
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7C85
+	ld (ix+23), >Data_7C85
 _LABEL_7528_:
 	ld (ix+24), $10
-	ld (ix+0), $FB
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_73FB_
+	ld (ix+1), >_LABEL_73FB_
 	jp _LABEL_73FB_
 
 _LABEL_7537_:
-	ld hl, $7AD3
+	ld hl, _LABEL_7AD3_
 	ld ($C3C0), hl
 	ld hl, ($C10A)
 	ld ($C3CA), hl
@@ -14886,8 +15070,8 @@ JumpTable4_7550:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), $06
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_7306_
+	ld (ix+1), >_LABEL_7306_
 	ret
 
 ; 26th entry of Jump Table from 2012 (indexed by unknown)
@@ -14899,8 +15083,8 @@ JumpTable4_7573:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), $06
-	ld (ix+1), $73
+	ld (ix+0), <_LABEL_7306_
+	ld (ix+1), >_LABEL_7306_
 	ret
 
 ; 32nd entry of Jump Table from 2012 (indexed by unknown)
@@ -14911,10 +15095,10 @@ JumpTable4_7596:
 	ld (ix+26), $B4
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $BD
-	ld (ix+23), $7C
-	ld (ix+0), $BD
-	ld (ix+1), $75
+	ld (ix+22), <Data_7CBD
+	ld (ix+23), >Data_7CBD
+	ld (ix+0), <_LABEL_75BD_
+	ld (ix+1), >_LABEL_75BD_
 	ret
 
 _LABEL_75BD_:
@@ -14958,8 +15142,10 @@ _LABEL_75BD_:
 	add hl, bc
 	ld bc, $0204
 	call _LABEL_681_
-	ld (ix+0), $1E
-	ld (ix+1), $76
+	ld (ix+0), <_LABEL_761E_
+	ld (ix+1), >_LABEL_761E_
+	
+_LABEL_761E_:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -14978,14 +15164,16 @@ _LABEL_75BD_:
 _LABEL_7641_:
 	call _LABEL_5473_
 	jr nc, _LABEL_7667_
-	ld (ix+0), $74
-	ld (ix+1), $77
+	ld (ix+0), <_LABEL_7774_
+	ld (ix+1), >_LABEL_7774_
 	jp _LABEL_7774_
 
 _LABEL_7651_:
 	ld (ix+24), $08
-	ld (ix+0), $5D
-	ld (ix+1), $76
+	ld (ix+0), <_LABEL_765D_
+	ld (ix+1), >_LABEL_765D_
+
+_LABEL_765D_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_7768_
@@ -15015,8 +15203,8 @@ _LABEL_7685_:
 	call _LABEL_5420_
 	jr c, _LABEL_769B_
 	ld (ix+4), $01
-	ld (ix+22), $C6
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CC6
+	ld (ix+23), >Data_7CC6
 	jr _LABEL_76FD_
 
 _LABEL_769B_:
@@ -15030,8 +15218,8 @@ _LABEL_76A5_:
 	call _LABEL_5420_
 	jr c, _LABEL_76BB_
 	ld (ix+4), $02
-	ld (ix+22), $CF
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CCF
+	ld (ix+23), >Data_7CCF
 	jr _LABEL_76FD_
 
 _LABEL_76BB_:
@@ -15045,8 +15233,8 @@ _LABEL_76C5_:
 	call _LABEL_5420_
 	jr c, _LABEL_76DB_
 	ld (ix+4), $04
-	ld (ix+22), $B4
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CB4
+	ld (ix+23), >Data_7CB4
 	jr _LABEL_76FD_
 
 _LABEL_76DB_:
@@ -15060,8 +15248,8 @@ _LABEL_76E8_:
 	ld hl, $0001
 	call _LABEL_5420_
 	jp c, _LABEL_7651_
-	ld (ix+22), $BD
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CBD
+	ld (ix+23), >Data_7CBD
 	ld (ix+4), $08
 _LABEL_76FD_:
 	ld (ix+7), l
@@ -15069,8 +15257,10 @@ _LABEL_76FD_:
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $17
-	ld (ix+1), $77
+	ld (ix+0), <_LABEL_7717_
+	ld (ix+1), >_LABEL_7717_
+
+_LABEL_7717_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -15086,17 +15276,21 @@ _LABEL_7723_:
 
 _LABEL_772F_:
 	ld (ix+24), $10
-	ld (ix+0), $3B
-	ld (ix+1), $77
+	ld (ix+0), <_LABEL_773B_
+	ld (ix+1), >_LABEL_773B_
+
+_LABEL_773B_:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $53
-	ld (ix+1), $77
+	ld (ix+0), <_LABEL_7753_
+	ld (ix+1), >_LABEL_7753_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+
+_LABEL_7753_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_7768_
@@ -15109,8 +15303,8 @@ _LABEL_7765_:
 
 _LABEL_7768_:
 	call _LABEL_5655_
-	ld (ix+0), $1E
-	ld (ix+1), $76
+	ld (ix+0), <_LABEL_761E_
+	ld (ix+1), >_LABEL_761E_
 	ret
 
 _LABEL_7774_:
@@ -15131,30 +15325,30 @@ _LABEL_7774_:
 	jr _LABEL_77AE_
 
 _LABEL_7790_:
-	ld (ix+22), $C6
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CC6
+	ld (ix+23), >Data_7CC6
 	jr _LABEL_77B6_
 
 _LABEL_779A_:
-	ld (ix+22), $CF
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CCF
+	ld (ix+23), >Data_7CCF
 	jr _LABEL_77B6_
 
 _LABEL_77A4_:
-	ld (ix+22), $B4
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CB4
+	ld (ix+23), >Data_7CB4
 	jr _LABEL_77B6_
 
 _LABEL_77AE_:
-	ld (ix+22), $BD
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CBD
+	ld (ix+23), >Data_7CBD
 _LABEL_77B6_:
 	ld (ix+30), $01
 	ld (ix+24), $10
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $23
-	ld (ix+1), $77
+	ld (ix+0), <_LABEL_7723_
+	ld (ix+1), >_LABEL_7723_
 	jp _LABEL_7723_
 
 ; 33rd entry of Jump Table from 2012 (indexed by unknown)
@@ -15165,10 +15359,10 @@ JumpTable4_77D1:
 	ld (ix+26), $82
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), $E1
-	ld (ix+23), $7C
-	ld (ix+0), $F8
-	ld (ix+1), $77
+	ld (ix+22), <Data_7CE1
+	ld (ix+23), >Data_7CE1
+	ld (ix+0), <_LABEL_77F8_
+	ld (ix+1), >_LABEL_77F8_
 	ret
 
 _LABEL_77F8_:
@@ -15189,7 +15383,7 @@ _LABEL_77F8_:
 	ld d, (ix+17)
 	call _LABEL_1ECB_
 	ex de, hl
-	ld hl, $7A14
+	ld hl, Data_7A14
 	ld bc, $0204
 	call _LABEL_681_
 	call _LABEL_5473_
@@ -15212,8 +15406,10 @@ _LABEL_77F8_:
 	add hl, bc
 	ld bc, $0204
 	call _LABEL_681_
-	ld (ix+0), $59
-	ld (ix+1), $78
+	ld (ix+0), <_LABEL_7859_
+	ld (ix+1), >_LABEL_7859_
+
+_LABEL_7859_:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -15232,14 +15428,16 @@ _LABEL_77F8_:
 _LABEL_787C_:
 	call _LABEL_5473_
 	jr nc, _LABEL_78A2_
-	ld (ix+0), $AF
-	ld (ix+1), $79
+	ld (ix+0), <_LABEL_79AF_
+	ld (ix+1), >_LABEL_79AF_
 	jp _LABEL_79AF_
 
 _LABEL_788C_:
 	ld (ix+24), $08
-	ld (ix+0), $98
-	ld (ix+1), $78
+	ld (ix+0), <_LABEL_7898_
+	ld (ix+1), >_LABEL_7898_
+
+_LABEL_7898_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jp z, _LABEL_79A3_
@@ -15269,8 +15467,8 @@ _LABEL_78C0_:
 	call _LABEL_5420_
 	jr c, _LABEL_78D6_
 	ld (ix+4), $01
-	ld (ix+22), $EA
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CEA
+	ld (ix+23), >Data_7CEA
 	jr _LABEL_7938_
 
 _LABEL_78D6_:
@@ -15284,8 +15482,8 @@ _LABEL_78E0_:
 	call _LABEL_5420_
 	jr c, _LABEL_78F6_
 	ld (ix+4), $02
-	ld (ix+22), $F3
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CF3
+	ld (ix+23), >Data_7CF3
 	jr _LABEL_7938_
 
 _LABEL_78F6_:
@@ -15299,8 +15497,8 @@ _LABEL_7900_:
 	call _LABEL_5420_
 	jr c, _LABEL_7916_
 	ld (ix+4), $04
-	ld (ix+22), $D8
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CD8
+	ld (ix+23), >Data_7CD8
 	jr _LABEL_7938_
 
 _LABEL_7916_:
@@ -15314,8 +15512,8 @@ _LABEL_7923_:
 	ld hl, $0001
 	call _LABEL_5420_
 	jp c, _LABEL_788C_
-	ld (ix+22), $E1
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CE1
+	ld (ix+23), >Data_7CE1
 	ld (ix+4), $08
 _LABEL_7938_:
 	ld (ix+7), l
@@ -15323,8 +15521,10 @@ _LABEL_7938_:
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $52
-	ld (ix+1), $79
+	ld (ix+0), <_LABEL_7952_
+	ld (ix+1), >_LABEL_7952_
+
+_LABEL_7952_:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
@@ -15340,17 +15540,20 @@ _LABEL_795E_:
 
 _LABEL_796A_:
 	ld (ix+24), $10
-	ld (ix+0), $76
-	ld (ix+1), $79
+	ld (ix+0), <_LABEL_7976_
+	ld (ix+1), >_LABEL_7976_
+
+_LABEL_7976_:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), $8E
-	ld (ix+1), $79
+	ld (ix+0), <_LABEL_798E_
+	ld (ix+1), >_LABEL_798E_
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
+_LABEL_798E_:
 	call _LABEL_553A_
 	dec (ix+24)
 	jr z, _LABEL_79A3_
@@ -15363,8 +15566,8 @@ _LABEL_79A0_:
 
 _LABEL_79A3_:
 	call _LABEL_5655_
-	ld (ix+0), $59
-	ld (ix+1), $78
+	ld (ix+0), <_LABEL_7859_
+	ld (ix+1), >_LABEL_7859_
 	ret
 
 _LABEL_79AF_:
@@ -15385,107 +15588,110 @@ _LABEL_79AF_:
 	jr _LABEL_79E9_
 
 _LABEL_79CB_:
-	ld (ix+22), $EA
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CEA
+	ld (ix+23), >Data_7CEA
 	jr _LABEL_79F1_
 
 _LABEL_79D5_:
-	ld (ix+22), $F3
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CF3
+	ld (ix+23), >Data_7CF3
 	jr _LABEL_79F1_
 
 _LABEL_79DF_:
-	ld (ix+22), $D8
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CD8
+	ld (ix+23), >Data_7CD8
 	jr _LABEL_79F1_
 
 _LABEL_79E9_:
-	ld (ix+22), $E1
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CE1
+	ld (ix+23), >Data_7CE1
 _LABEL_79F1_:
 	ld (ix+30), $01
 	ld (ix+24), $10
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), $5E
-	ld (ix+1), $79
+	ld (ix+0), <_LABEL_795E_
+	ld (ix+1), >_LABEL_795E_
 	jp _LABEL_795E_
 
 ; Data from 7A0C to 7A1B (16 bytes)
 Data_7A0C:
 	.db $01 $01 $02 $01 $03 $01 $04 $01
+
+Data_7A14:
 	.db $0D $01 $0E $01 $0F $01 $10 $01
 
 _LABEL_7A1C_:
 	ld (ix+2), $01
 	ld (ix+3), $3B
 	ld (ix+19), $04
-	ld (ix+0), $34
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7A34_
+	ld (ix+1), >_LABEL_7A34_
 	ret
 
 _LABEL_7A31_:
 	call _LABEL_553A_
+_LABEL_7A34_:
 	call _LABEL_47BB_
 	call _LABEL_52C6_
 	jr c, _LABEL_7A3D_
 	ret
 
 _LABEL_7A3D_:
-	ld (ix+0), $0F
-	ld (ix+1), $31
+	ld (ix+0), <_LABEL_310F_
+	ld (ix+1), >_LABEL_310F_
 	ret
 
 _LABEL_7A46_:
 	ld (ix+2), $01
 	ld (ix+3), $41
 	ld (ix+19), $04
-	ld (ix+0), $34
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7A34_
+	ld (ix+1), >_LABEL_7A34_
 	ret
 
 _LABEL_7A5B_:
 	ld (ix+2), $01
 	ld (ix+3), $4D
 	ld (ix+19), $04
-	ld (ix+0), $34
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7A34_
+	ld (ix+1), >_LABEL_7A34_
 	ret
 
 _LABEL_7A70_:
 	ld (ix+2), $01
 	ld (ix+3), $63
 	ld (ix+19), $04
-	ld (ix+22), $94
-	ld (ix+23), $7C
-	ld (ix+0), $31
-	ld (ix+1), $7A
+	ld (ix+22), <Data_7C94
+	ld (ix+23), >Data_7C94
+	ld (ix+0), <_LABEL_7A31_
+	ld (ix+1), >_LABEL_7A31_
 	ret
 
 _LABEL_7A8D_:
 	ld (ix+2), $01
 	ld (ix+3), $68
 	ld (ix+19), $04
-	ld (ix+0), $34
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7A34_
+	ld (ix+1), >_LABEL_7A34_
 	ret
 
 _LABEL_7AA2_:
 	ld (ix+2), $01
 	ld (ix+3), $75
 	ld (ix+19), $04
-	ld (ix+22), $99
-	ld (ix+23), $7C
-	ld (ix+0), $31
-	ld (ix+1), $7A
+	ld (ix+22), <Data_7C99
+	ld (ix+23), >Data_7C99
+	ld (ix+0), <_LABEL_7A31_
+	ld (ix+1), >_LABEL_7A31_
 	ret
 
 _LABEL_7ABF_:
 	ld (ix+2), $01
 	ld (ix+19), $04
 	call _LABEL_7AF3_
-	ld (ix+0), $31
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7A31_
+	ld (ix+1), >_LABEL_7A31_
 	ret
 
 _LABEL_7AD3_:
@@ -15493,8 +15699,8 @@ _LABEL_7AD3_:
 	ld (ix+3), $80
 	ld (ix+19), $04
 	ld (ix+24), $10
-	ld (ix+0), $EC
-	ld (ix+1), $7A
+	ld (ix+0), <_LABEL_7AEC_
+	ld (ix+1), >_LABEL_7AEC_
 	ret
 
 _LABEL_7AEC_:
@@ -15513,27 +15719,27 @@ _LABEL_7AF3_:
 	jr _LABEL_7B1C_
 
 _LABEL_7B01_:
-	ld (ix+22), $A0
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CA0
+	ld (ix+23), >Data_7CA0
 	ret
 
 _LABEL_7B0A_:
-	ld (ix+22), $A5
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CA5
+	ld (ix+23), >Data_7CA5
 	ret
 
 _LABEL_7B13_:
-	ld (ix+22), $AA
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CAA
+	ld (ix+23), >Data_7CAA
 	ret
 
 _LABEL_7B1C_:
-	ld (ix+22), $AF
-	ld (ix+23), $7C
+	ld (ix+22), <Data_7CAF
+	ld (ix+23), >Data_7CAF
 	ret
 
 ; Data from 7B25 to 7D05 (480 bytes)
-.incbin "data\dcsms_7b25.inc"
+.include "data\dcsms_7b25.asm"
 
 ; Empty data at the end of the bank
 .ds 746, $FF
