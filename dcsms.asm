@@ -15776,8 +15776,8 @@ _LABEL_7B1C_:
 ; Item and equipment names
 .include "items\names\item_name_data_table.asm"
 
-; Menu for item usage
-.include "ui\equip_drop_throw.asm"
+; Menu for item usage	
+.include "ui\equip_throw_drop.asm"
 
 ; Pointer table for in-game messages
 .include "text\game_messages_pointer_table.asm"
