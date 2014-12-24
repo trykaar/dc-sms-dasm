@@ -19,4 +19,7 @@
 .dw WeaponRustMessagePtr          FoodStolenMessagePtr          PlayerStrengthDownMessage2Ptr LevelDownMessage2Ptr 
 .dw PlayerStrengthUpMessage2Ptr   PlayerDefenseUpMessage2Ptr    PotionTransformedMessagePtr   PlayerIdleMessagePtr 
 .dw CursedSwordEquippedMessagePtr CursedArmorEquippedMessagePtr CursedRingEquippedMessagePtr  MonsterSummonedMessagePtr 
-.dw WaterPotionMessagePtr         PlayerDizzinessMessagePtr
+.dw WaterPotionMessagePtr         PlayerDizzinessMessagePtr     EndOfMessageTablePtr          EndOfMessageTablePtr
+.dw EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr
+.dw EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr
+.dw EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr          EndOfMessageTablePtr 

@@ -3338,7 +3338,7 @@ _LABEL_1DD4_:
 	ld a, (ix+3)
 	ld e, a
 	ld d, $00
-	ld hl, $B129
+	ld hl, Table_F12B-2
 	add hl, de
 	add hl, de
 	ld a, (hl)
@@ -15758,6 +15758,7 @@ _LABEL_7B1C_:
 .include "items\behavior\item_occurrence_pointer_table.asm"
 .include "items\behavior\item_occurrence_table.asm"
 
+; Unknown data
 .incbin "data\dcsms_a02e.inc"
 
 ; Empty data at the end of the bank
@@ -15775,22 +15776,20 @@ _LABEL_7B1C_:
 ; Item and equipment names
 .include "items\names\item_name_data_table.asm"
 
-; Data from E976 to EB3E (456 bytes)
-.incbin "data\dcsms_e976.inc"
+; Menu for item usage
+.include "ui\equip_drop_throw.asm"
 
 ; Pointer table for in-game messages
 .include "text\game_messages_pointer_table.asm"
 
-; Does this continue the pointer table?
-; This points to data beyond the game message text
-.dw $B129 $B129 $B129 $B129 $B129 $B129 $B129 $B129 
-.dw $B129 $B129 $B129 $B129 $B129 $B129 
-
 ; In-game messages
 .include "text\game_messages.asm"
 
-; Data from F129 to FF5F (3638 bytes)
-.incbin "data\dcsms_f129.inc"
+; Unknown data structures and corresponding pointer table
+.include "data\dcsms_f12b.asm"
+
+; Unknown data
+.incbin "data\dcsms_fb5d.inc"
 
 ; Empty data at the end of the bank
 .ds 160, $FF

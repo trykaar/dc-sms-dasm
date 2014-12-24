@@ -298,3 +298,6 @@ WaterPotionMessagePtr:
 PlayerDizzinessMessagePtr:
 	.db $1d
 	.asc "YOUR HEAD SPINS IN CONFUSION!"
+
+EndOfMessageTablePtr:
+	.db $00 $00
