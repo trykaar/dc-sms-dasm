@@ -137,7 +137,7 @@ PlaySoundID:
 	jp (hl)
 
 ; Jump Table from 1C108 to 1C111 (5 entries, indexed by PlaySoundSlot)
-.dw FadeOutMusic StopAllSound StopSFX _LABEL_1C243_ _LABEL_7000_
+.dw FadeOutMusic StopAllSound StopSFX _LABEL_1C243_ UnusedSoundEngineCallback
 
 ; 1st entry of Jump Table from 1C108 (indexed by PlaySoundSlot)
 FadeOutMusic:

@@ -3703,7 +3703,7 @@ GenerateMonsters:
 	add a, a
 	ld l, a
 	ld h, $00
-	ld de, JumpTable4
+	ld de, MonsterActionTable
 	add hl, de
 	ld a, (hl)
 	ld (iy+0), a
@@ -3723,18 +3723,18 @@ GenerateMonsters:
 
 ; Jump Table from 2012 to 2053 (33 entries, indexed by unknown)
 ; Appears to be related to monster generation
-JumpTable4:
-	.dw JumpTable4_56C8 JumpTable4_5C9D JumpTable4_5EE6 JumpTable4_60E7
-	.dw JumpTable4_583E JumpTable4_5E90 JumpTable4_631A JumpTable4_64E7
-	.dw JumpTable4_59A6 JumpTable4_5EBB JumpTable4_677E JumpTable4_69F2
-	.dw JumpTable4_6BCB JumpTable4_6D47 JumpTable4_60C4 JumpTable4_62F3
-	.dw JumpTable4_6F6B JumpTable4_72E3 JumpTable4_64A9 JumpTable4_6730
-	.dw JumpTable4_70DE JumpTable4_7550 JumpTable4_69CF JumpTable4_6BA0
-	.dw JumpTable4_7101 JumpTable4_7573 JumpTable4_64C8 JumpTable4_6757
-	.dw JumpTable4_5B40 JumpTable4_6F48 JumpTable4_7124 JumpTable4_7596
-	.dw JumpTable4_77D1
+MonsterActionTable:
+	.dw OozeMonsterAction      SlimetoadMonsterAction ScorpionMonsterAction KragMonsterAction
+	.dw BlueOozeMonsterAction  LochtoadMonsterAction  PhantomMonsterAction  OrbMonsterAction
+	.dw RedOozeMonsterAction   BloodtoadMonsterAction WitchMonsterAction    MystMonsterAction
+	.dw DemijawMonsterAction   KrakenMonsterAction    ScorpiusMonsterAction KingKragMonsterAction
+	.dw RootMonsterAction      RedSnailMonsterAction  SpectreMonsterAction  BloodOrbMonsterAction
+	.dw BloodRootMonsterAction BlueSnailMonsterAction MadWitchMonsterAction DeathMystMonsterAction
+	.dw DeathRootMonsterAction KingSnailMonsterAction WraithMonsterAction   DeathOrbMonsterAction
+	.dw BlobMonsterAction      KrakosMonsterAction    DragonMonsterAction   Kameleon1MonsterAction
+	.dw Kameleon2MonsterAction
 
-DoJumpTable4:
+DoMonsterActionTable:
 	ld a, $02
 	ld ($FFFF), a
 	ld hl, (Floor)
@@ -3755,13 +3755,14 @@ DoJumpTable4:
 	ld l, a
 	ld h, $00
 	add hl, hl
-	ld de, JumpTable4
+	ld de, MonsterActionTable
 	add hl, de
 	ld e, (hl)
 	inc hl
 	ld d, (hl)
 	ret
 
+; Map generation?
 _LABEL_207D_:
 	call GetRandomNumber
 	ld l, a
@@ -6864,7 +6865,7 @@ _LABEL_35FD_:
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, Data_36F1
+	ld hl, MonsterEvasionTable
 	add hl, de
 	ld a, (WeaponHit)
 	sub (hl)
@@ -6996,14 +6997,8 @@ _LABEL_36D7_:
 	ld (ix+1), >_LABEL_3928_
 	jp _LABEL_3928_
 
-; Data from 36F1 to 3711 (33 bytes)
-; Monsters?
-Data_36F1:
-	.db $00 $04 $08 $0A $00 $05 $0E $18
-	.db $00 $08 $04 $32 $00 $14 $0C $0A
-	.db $00 $0A $14 $0A $00 $18 $00 $1E
-	.db $00 $0E $1E $14 $00 $0E $19 $0A
-	.db $0A
+; Monster evasion table
+.include "monsters\monster_evasion_table.asm"
 
 _LABEL_3712_:
 	ld (ix+20), $00
@@ -7462,7 +7457,7 @@ _LABEL_3AE9_:
 	add hl, de
 	ld e, (hl)
 	ld d, $00
-	ld hl, Data_36F1
+	ld hl, MonsterEvasionTable
 	add hl, de
 	ld a, $64
 	sub (hl)
@@ -8219,7 +8214,7 @@ CompleteSummonScrollAction:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	call DoJumpTable4
+	call DoMonsterActionTable
 	ld hl, (CurrentMonster)
 	ld (hl), e
 	inc hl
@@ -8581,7 +8576,7 @@ CompleteReshapeRodAction:
 	ld (CurrentItem), a
 	call _LABEL_4888_
 _LABEL_43D2_:
-	call DoJumpTable4
+	call DoMonsterActionTable
 	ld hl, (CurrentMonster)
 	ld bc, $001F
 	add hl, bc
@@ -9056,7 +9051,7 @@ CompleteSpiritRodAction:
 	xor a
 	ld (CurrentItem), a
 	call _LABEL_4888_
-	call DoJumpTable4
+	call DoMonsterActionTable
 	ld hl, (CurrentMonster)
 	ld (hl), e
 	inc hl
@@ -10813,7 +10808,7 @@ _LABEL_5302_:
 	ld a, (ix+31)
 	ld l, a
 	ld h, $00
-	ld de, Data_536D
+	ld de, MonsterAttackTable
 	add hl, de
 	ld a, (ArmorAC)
 	ld b, a
@@ -10863,13 +10858,7 @@ _LABEL_536A_:
 	ld a, $CC
 	ret
 
-; Data from 536D to 538D (33 bytes)
-Data_536D:
-	.db $01 $02 $04 $06 $08 $0A $0E $14
-	.db $08 $12 $0E $35 $3C $1E $20 $1C
-	.db $32 $23 $34 $46 $3C $30 $3C $AF
-	.db $50 $46 $8C $6E $10 $78 $B4 $64
-	.db $82
+.include "monsters\monster_attack_table.asm"
 
 _LABEL_538E_:
 	ld a, (ix+4)
@@ -11404,20 +11393,20 @@ _LABEL_56A9_:
 	ret
 
 ; 1st entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_56C8:
+OozeMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $02
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_56EF_
-	ld (ix+1), >_LABEL_56EF_
+	ld (ix+0), <OozeMonsterAction_56EF
+	ld (ix+1), >OozeMonsterAction_56EF
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
 	ret
 
-_LABEL_56EF_:
+OozeMonsterAction_56EF:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -11426,148 +11415,148 @@ _LABEL_56EF_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_570C_
+	jr z, OozeMonsterAction_570C
 	cp $09
-	jr z, _LABEL_570C_
+	jr z, OozeMonsterAction_570C
 	jp _LABEL_481B_
 
-_LABEL_570C_:
+OozeMonsterAction_570C:
 	inc (ix+25)
 	ld a, (ix+25)
 	cp $02
-	jr nz, _LABEL_572A_
+	jr nz, OozeMonsterAction_572A
 	ld (ix+25), $00
 	call _LABEL_5473_
-	jr nc, _LABEL_5740_
-	ld (ix+0), <_LABEL_5815_
-	ld (ix+1), >_LABEL_5815_
-	jp _LABEL_5815_
+	jr nc, OozeMonsterAction_5740
+	ld (ix+0), <OozeMonsterAction_5815
+	ld (ix+1), >OozeMonsterAction_5815
+	jp OozeMonsterAction_5815
 
-_LABEL_572A_:
+OozeMonsterAction_572A:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5736_
-	ld (ix+1), >_LABEL_5736_
+	ld (ix+0), <OozeMonsterAction_5736
+	ld (ix+1), >OozeMonsterAction_5736
 
-_LABEL_5736_:
+OozeMonsterAction_5736:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_5801_
+	jp z, OozeMonsterAction_5801
 	ret
 
-_LABEL_5740_:
+OozeMonsterAction_5740:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_575D_
+	jr nz, OozeMonsterAction_575D
 	call _LABEL_568C_
-	jr nc, _LABEL_575D_
+	jr nc, OozeMonsterAction_575D
 	call _LABEL_51DE_
-_LABEL_574F_:
+OozeMonsterAction_574F:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5762_
+	jr c, OozeMonsterAction_5762
 	rrca
-	jr c, _LABEL_577A_
+	jr c, OozeMonsterAction_577A
 	rrca
-	jr c, _LABEL_5792_
-	jr _LABEL_57AC_
+	jr c, OozeMonsterAction_5792
+	jr OozeMonsterAction_57AC
 
-_LABEL_575D_:
+OozeMonsterAction_575D:
 	call _LABEL_52A1_
-	jr _LABEL_574F_
+	jr OozeMonsterAction_574F
 
-_LABEL_5762_:
+OozeMonsterAction_5762:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_5770_
+	jr c, OozeMonsterAction_5770
 	ld (ix+4), $01
-	jr _LABEL_57B9_
+	jr OozeMonsterAction_57B9
 
-_LABEL_5770_:
+OozeMonsterAction_5770:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_574F_
+	jr OozeMonsterAction_574F
 
-_LABEL_577A_:
+OozeMonsterAction_577A:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_5788_
+	jr c, OozeMonsterAction_5788
 	ld (ix+4), $02
-	jr _LABEL_57B9_
+	jr OozeMonsterAction_57B9
 
-_LABEL_5788_:
+OozeMonsterAction_5788:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_574F_
+	jr OozeMonsterAction_574F
 
-_LABEL_5792_:
+OozeMonsterAction_5792:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_57A0_
+	jr c, OozeMonsterAction_57A0
 	ld (ix+4), $04
-	jr _LABEL_57B9_
+	jr OozeMonsterAction_57B9
 
-_LABEL_57A0_:
+OozeMonsterAction_57A0:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_574F_
+	jr OozeMonsterAction_574F
 
-_LABEL_57AC_:
+OozeMonsterAction_57AC:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_572A_
+	jp c, OozeMonsterAction_572A
 	ld (ix+4), $08
-_LABEL_57B9_:
+OozeMonsterAction_57B9:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_57CB_
-	ld (ix+1), >_LABEL_57CB_
+	ld (ix+0), <OozeMonsterAction_57CB
+	ld (ix+1), >OozeMonsterAction_57CB
 
-_LABEL_57CB_:
+OozeMonsterAction_57CB:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5801_
+	jr z, OozeMonsterAction_5801
 	ret
 
-_LABEL_57D7_:
+OozeMonsterAction_57D7:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_57E7_
-	ld (ix+1), >_LABEL_57E7_
+	ld (ix+0), <OozeMonsterAction_57E7
+	ld (ix+1), >OozeMonsterAction_57E7
 
-_LABEL_57E7_:
+OozeMonsterAction_57E7:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5801_
+	jr z, OozeMonsterAction_5801
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_57FE_
+	jr nz, OozeMonsterAction_57FE
 	call _LABEL_5302_
-_LABEL_57FE_:
+OozeMonsterAction_57FE:
 	jp _LABEL_5643_
 
-_LABEL_5801_:
+OozeMonsterAction_5801:
 	call _LABEL_5655_
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
-	ld (ix+0), <_LABEL_56EF_
-	ld (ix+1), >_LABEL_56EF_
+	ld (ix+0), <OozeMonsterAction_56EF
+	ld (ix+1), >OozeMonsterAction_56EF
 	ret
 
-_LABEL_5815_:
+OozeMonsterAction_5815:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_5801_
+	jr z, OozeMonsterAction_5801
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
@@ -11575,25 +11564,25 @@ _LABEL_5815_:
 	ld (ix+24), $08
 	ld (ix+22), <Data_7B2E
 	ld (ix+23), >Data_7B2E
-	ld (ix+0), <_LABEL_57D7_
-	ld (ix+1), >_LABEL_57D7_
-	jp _LABEL_57D7_
+	ld (ix+0), <OozeMonsterAction_57D7
+	ld (ix+1), >OozeMonsterAction_57D7
+	jp OozeMonsterAction_57D7
 
 ; 5th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_583E:
+BlueOozeMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $06
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5865_
-	ld (ix+1), >_LABEL_5865_
+	ld (ix+0), <BlueOozeMonsterAction_5865
+	ld (ix+1), >BlueOozeMonsterAction_5865
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
 	ret
 
-_LABEL_5865_:
+BlueOozeMonsterAction_5865:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -11602,160 +11591,160 @@ _LABEL_5865_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_5882_
+	jr z, BlueOozeMonsterAction_5882
 	cp $09
-	jr z, _LABEL_5882_
+	jr z, BlueOozeMonsterAction_5882
 	jp _LABEL_481B_
 
-_LABEL_5882_:
+BlueOozeMonsterAction_5882:
 	inc (ix+25)
 	ld a, (ix+25)
 	cp $02
-	jr nz, _LABEL_58A0_
+	jr nz, BlueOozeMonsterAction_58A0
 	ld (ix+25), $00
 	call _LABEL_5473_
-	jr nc, _LABEL_58B6_
-	ld (ix+0), <_LABEL_5959_
-	ld (ix+1), >_LABEL_5959_
-	jp _LABEL_5959_
+	jr nc, BlueOozeMonsterAction_58B6
+	ld (ix+0), <BlueOozeMonsterAction_5959
+	ld (ix+1), >BlueOozeMonsterAction_5959
+	jp BlueOozeMonsterAction_5959
 
-_LABEL_58A0_:
+BlueOozeMonsterAction_58A0:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_58AC_
-	ld (ix+1), >_LABEL_58AC_
+	ld (ix+0), <BlueOozeMonsterAction_58AC
+	ld (ix+1), >BlueOozeMonsterAction_58AC
 
-_LABEL_58AC_:
+BlueOozeMonsterAction_58AC:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_5945_
+	jp z, BlueOozeMonsterAction_5945
 	ret
 
-_LABEL_58B6_:
+BlueOozeMonsterAction_58B6:
 	call _LABEL_52A1_
-_LABEL_58B9_:
+BlueOozeMonsterAction_58B9:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_58C7_
+	jr c, BlueOozeMonsterAction_58C7
 	rrca
-	jr c, _LABEL_58D5_
+	jr c, BlueOozeMonsterAction_58D5
 	rrca
-	jr c, _LABEL_58E3_
-	jr _LABEL_58F1_
+	jr c, BlueOozeMonsterAction_58E3
+	jr BlueOozeMonsterAction_58F1
 
-_LABEL_58C7_:
+BlueOozeMonsterAction_58C7:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_58D5_
+	jr c, BlueOozeMonsterAction_58D5
 	ld (ix+4), $01
-	jr _LABEL_58FD_
+	jr BlueOozeMonsterAction_58FD
 
-_LABEL_58D5_:
+BlueOozeMonsterAction_58D5:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_58E3_
+	jr c, BlueOozeMonsterAction_58E3
 	ld (ix+4), $02
-	jr _LABEL_58FD_
+	jr BlueOozeMonsterAction_58FD
 
-_LABEL_58E3_:
+BlueOozeMonsterAction_58E3:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_58F1_
+	jr c, BlueOozeMonsterAction_58F1
 	ld (ix+4), $04
-	jr _LABEL_58FD_
+	jr BlueOozeMonsterAction_58FD
 
-_LABEL_58F1_:
+BlueOozeMonsterAction_58F1:
 	ld hl, $0001
 	call _LABEL_5420_
-	jr c, _LABEL_58A0_
+	jr c, BlueOozeMonsterAction_58A0
 	ld (ix+4), $08
-_LABEL_58FD_:
+BlueOozeMonsterAction_58FD:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_590F_
-	ld (ix+1), >_LABEL_590F_
+	ld (ix+0), <BlueOozeMonsterAction_590F
+	ld (ix+1), >BlueOozeMonsterAction_590F
 
-_LABEL_590F_:
+BlueOozeMonsterAction_590F:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5945_
+	jr z, BlueOozeMonsterAction_5945
 	ret
 
-_LABEL_591B_:
+BlueOozeMonsterAction_591B:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_592B_
-	ld (ix+1), >_LABEL_592B_
+	ld (ix+0), <BlueOozeMonsterAction_592B
+	ld (ix+1), >BlueOozeMonsterAction_592B
 
-_LABEL_592B_:
+BlueOozeMonsterAction_592B:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5945_
+	jr z, BlueOozeMonsterAction_5945
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_5942_
+	jr nz, BlueOozeMonsterAction_5942
 	call _LABEL_5302_
-_LABEL_5942_:
+BlueOozeMonsterAction_5942:
 	jp _LABEL_5643_
 
-_LABEL_5945_:
+BlueOozeMonsterAction_5945:
 	call _LABEL_5655_
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
-	ld (ix+0), <_LABEL_5865_
-	ld (ix+1), >_LABEL_5865_
+	ld (ix+0), <BlueOozeMonsterAction_5865
+	ld (ix+1), >BlueOozeMonsterAction_5865
 	ret
 
-_LABEL_5959_:
+BlueOozeMonsterAction_5959:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_5945_
+	jr z, BlueOozeMonsterAction_5945
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	call GetRandomNumber
 	cp $D8
-	jr nc, _LABEL_5989_
+	jr nc, BlueOozeMonsterAction_5989
 	ld (ix+30), $01
 	ld (ix+24), $08
 	ld (ix+22), <Data_7B2E
 	ld (ix+23), >Data_7B2E
-	ld (ix+0), <_LABEL_591B_
-	ld (ix+1), >_LABEL_591B_
-	jp _LABEL_591B_
+	ld (ix+0), <BlueOozeMonsterAction_591B
+	ld (ix+1), >BlueOozeMonsterAction_591B
+	jp BlueOozeMonsterAction_591B
 
-_LABEL_5989_:
+BlueOozeMonsterAction_5989:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_58A0_
-	ld (ix+1), >_LABEL_58A0_
+	ld (ix+0), <BlueOozeMonsterAction_58A0
+	ld (ix+1), >BlueOozeMonsterAction_58A0
 	call _LABEL_54C8_
-	jp c, _LABEL_58A0_
+	jp c, BlueOozeMonsterAction_58A0
 	ld a, SoundEffectA2
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	jp _LABEL_58B9_
+	jp BlueOozeMonsterAction_58B9
 
 ; 9th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_59A6:
+RedOozeMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $26
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_59CD_
-	ld (ix+1), >_LABEL_59CD_
+	ld (ix+0), <RedOozeMonsterAction_59CD
+	ld (ix+1), >RedOozeMonsterAction_59CD
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
 	ret
 
-_LABEL_59CD_:
+RedOozeMonsterAction_59CD:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -11764,188 +11753,188 @@ _LABEL_59CD_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_59EA_
+	jr z, RedOozeMonsterAction_59EA
 	cp $09
-	jr z, _LABEL_59EA_
+	jr z, RedOozeMonsterAction_59EA
 	jp _LABEL_481B_
 
-_LABEL_59EA_:
+RedOozeMonsterAction_59EA:
 	inc (ix+25)
 	ld a, (ix+25)
 	cp $02
-	jr nz, _LABEL_5A08_
+	jr nz, RedOozeMonsterAction_5A08
 	ld (ix+25), $00
 	call _LABEL_5473_
-	jr nc, _LABEL_5A1E_
-	ld (ix+0), <_LABEL_5AF3_
-	ld (ix+1), >_LABEL_5AF3_
-	jp _LABEL_5AF3_
+	jr nc, RedOozeMonsterAction_5A1E
+	ld (ix+0), <RedOozeMonsterAction_5AF3
+	ld (ix+1), >RedOozeMonsterAction_5AF3
+	jp RedOozeMonsterAction_5AF3
 
-_LABEL_5A08_:
+RedOozeMonsterAction_5A08:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5A14_
-	ld (ix+1), >_LABEL_5A14_
+	ld (ix+0), <RedOozeMonsterAction_5A14
+	ld (ix+1), >RedOozeMonsterAction_5A14
 
-_LABEL_5A14_:
+RedOozeMonsterAction_5A14:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_5ADF_
+	jp z, RedOozeMonsterAction_5ADF
 	ret
 
-_LABEL_5A1E_:
+RedOozeMonsterAction_5A1E:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_5A3B_
+	jr nz, RedOozeMonsterAction_5A3B
 	call _LABEL_568C_
-	jr nc, _LABEL_5A3B_
+	jr nc, RedOozeMonsterAction_5A3B
 	call _LABEL_51DE_
-_LABEL_5A2D_:
+RedOozeMonsterAction_5A2D:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5A40_
+	jr c, RedOozeMonsterAction_5A40
 	rrca
-	jr c, _LABEL_5A58_
+	jr c, RedOozeMonsterAction_5A58
 	rrca
-	jr c, _LABEL_5A70_
-	jr _LABEL_5A8A_
+	jr c, RedOozeMonsterAction_5A70
+	jr RedOozeMonsterAction_5A8A
 
-_LABEL_5A3B_:
+RedOozeMonsterAction_5A3B:
 	call _LABEL_52A1_
-	jr _LABEL_5A2D_
+	jr RedOozeMonsterAction_5A2D
 
-_LABEL_5A40_:
+RedOozeMonsterAction_5A40:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_5A4E_
+	jr c, RedOozeMonsterAction_5A4E
 	ld (ix+4), $01
-	jr _LABEL_5A97_
+	jr RedOozeMonsterAction_5A97
 
-_LABEL_5A4E_:
+RedOozeMonsterAction_5A4E:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_5A2D_
+	jr RedOozeMonsterAction_5A2D
 
-_LABEL_5A58_:
+RedOozeMonsterAction_5A58:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_5A66_
+	jr c, RedOozeMonsterAction_5A66
 	ld (ix+4), $02
-	jr _LABEL_5A97_
+	jr RedOozeMonsterAction_5A97
 
-_LABEL_5A66_:
+RedOozeMonsterAction_5A66:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_5A2D_
+	jr RedOozeMonsterAction_5A2D
 
-_LABEL_5A70_:
+RedOozeMonsterAction_5A70:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_5A7E_
+	jr c, RedOozeMonsterAction_5A7E
 	ld (ix+4), $04
-	jr _LABEL_5A97_
+	jr RedOozeMonsterAction_5A97
 
-_LABEL_5A7E_:
+RedOozeMonsterAction_5A7E:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_5A2D_
+	jr RedOozeMonsterAction_5A2D
 
-_LABEL_5A8A_:
+RedOozeMonsterAction_5A8A:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_5A08_
+	jp c, RedOozeMonsterAction_5A08
 	ld (ix+4), $08
-_LABEL_5A97_:
+RedOozeMonsterAction_5A97:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5AA9_
-	ld (ix+1), >_LABEL_5AA9_
+	ld (ix+0), <RedOozeMonsterAction_5AA9
+	ld (ix+1), >RedOozeMonsterAction_5AA9
 
-_LABEL_5AA9_:
+RedOozeMonsterAction_5AA9:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5ADF_
+	jr z, RedOozeMonsterAction_5ADF
 	ret
 
-_LABEL_5AB5_:
+RedOozeMonsterAction_5AB5:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_5AC5_
-	ld (ix+1), >_LABEL_5AC5_
+	ld (ix+0), <RedOozeMonsterAction_5AC5
+	ld (ix+1), >RedOozeMonsterAction_5AC5
 
-_LABEL_5AC5_:
+RedOozeMonsterAction_5AC5:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5ADF_
+	jr z, RedOozeMonsterAction_5ADF
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_5ADC_
+	jr nz, RedOozeMonsterAction_5ADC
 	call _LABEL_5302_
-_LABEL_5ADC_:
+RedOozeMonsterAction_5ADC:
 	jp _LABEL_5643_
 
-_LABEL_5ADF_:
+RedOozeMonsterAction_5ADF:
 	call _LABEL_5655_
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
-	ld (ix+0), <_LABEL_59CD_
-	ld (ix+1), >_LABEL_59CD_
+	ld (ix+0), <RedOozeMonsterAction_59CD
+	ld (ix+1), >RedOozeMonsterAction_59CD
 	ret
 
-_LABEL_5AF3_:
+RedOozeMonsterAction_5AF3:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_5ADF_
+	jr z, RedOozeMonsterAction_5ADF
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	call GetRandomNumber
 	cp $A0
-	jr nc, _LABEL_5B23_
+	jr nc, RedOozeMonsterAction_5B23
 	ld (ix+30), $01
 	ld (ix+24), $08
 	ld (ix+22), <Data_7B2E
 	ld (ix+23), >Data_7B2E
-	ld (ix+0), <_LABEL_5AB5_
-	ld (ix+1), >_LABEL_5AB5_
-	jp _LABEL_5AB5_
+	ld (ix+0), <RedOozeMonsterAction_5AB5
+	ld (ix+1), >RedOozeMonsterAction_5AB5
+	jp RedOozeMonsterAction_5AB5
 
-_LABEL_5B23_:
+RedOozeMonsterAction_5B23:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5A08_
-	ld (ix+1), >_LABEL_5A08_
+	ld (ix+0), <RedOozeMonsterAction_5A08
+	ld (ix+1), >RedOozeMonsterAction_5A08
 	call _LABEL_54C8_
-	jp c, _LABEL_5A08_
+	jp c, RedOozeMonsterAction_5A08
 	ld a, SoundEffectA2
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	jp _LABEL_5A2D_
+	jp RedOozeMonsterAction_5A2D
 
 ; 29th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_5B40:
+BlobMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
 	ld (ix+26), $A0
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5B67_
-	ld (ix+1), >_LABEL_5B67_
+	ld (ix+0), <BlobMonsterAction_5B67
+	ld (ix+1), >BlobMonsterAction_5B67
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
 	ret
 
-_LABEL_5B67_:
+BlobMonsterAction_5B67:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -11954,130 +11943,130 @@ _LABEL_5B67_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_5B84_
+	jr z, BlobMonsterAction_5B84
 	cp $09
-	jr z, _LABEL_5B84_
+	jr z, BlobMonsterAction_5B84
 	jp _LABEL_481B_
 
-_LABEL_5B84_:
+BlobMonsterAction_5B84:
 	ld a, $02
 	ld (ix+25), a
 
-_LABEL_5B89_:
+BlobMonsterAction_5B89:
 	call _LABEL_5473_
-	jr nc, _LABEL_5BB3_
-	ld (ix+0), <_LABEL_5C70_
-	ld (ix+1), >_LABEL_5C70_
-	jp _LABEL_5C70_
+	jr nc, BlobMonsterAction_5BB3
+	ld (ix+0), <BlobMonsterAction_5C70
+	ld (ix+1), >BlobMonsterAction_5C70
+	jp BlobMonsterAction_5C70
 
-_LABEL_5B99_:
+BlobMonsterAction_5B99:
 	ld (ix+25), $01
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5BA9_
-	ld (ix+1), >_LABEL_5BA9_
+	ld (ix+0), <BlobMonsterAction_5BA9
+	ld (ix+1), >BlobMonsterAction_5BA9
 
-_LABEL_5BA9_:
+BlobMonsterAction_5BA9:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_5C42_
+	jp z, BlobMonsterAction_5C42
 	ret
 
-_LABEL_5BB3_:
+BlobMonsterAction_5BB3:
 	call _LABEL_52A1_
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5BC4_
+	jr c, BlobMonsterAction_5BC4
 	rrca
-	jr c, _LABEL_5BD2_
+	jr c, BlobMonsterAction_5BD2
 	rrca
-	jr c, _LABEL_5BE0_
-	jr _LABEL_5BEE_
+	jr c, BlobMonsterAction_5BE0
+	jr BlobMonsterAction_5BEE
 
-_LABEL_5BC4_:
+BlobMonsterAction_5BC4:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_5BD2_
+	jr c, BlobMonsterAction_5BD2
 	ld (ix+4), $01
-	jr _LABEL_5BFA_
+	jr BlobMonsterAction_5BFA
 
-_LABEL_5BD2_:
+BlobMonsterAction_5BD2:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_5BE0_
+	jr c, BlobMonsterAction_5BE0
 	ld (ix+4), $02
-	jr _LABEL_5BFA_
+	jr BlobMonsterAction_5BFA
 
-_LABEL_5BE0_:
+BlobMonsterAction_5BE0:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_5BEE_
+	jr c, BlobMonsterAction_5BEE
 	ld (ix+4), $04
-	jr _LABEL_5BFA_
+	jr BlobMonsterAction_5BFA
 
-_LABEL_5BEE_:
+BlobMonsterAction_5BEE:
 	ld hl, $0001
 	call _LABEL_5420_
-	jr c, _LABEL_5B99_
+	jr c, BlobMonsterAction_5B99
 	ld (ix+4), $08
-_LABEL_5BFA_:
+BlobMonsterAction_5BFA:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), <_LABEL_5C0C_
-	ld (ix+1), >_LABEL_5C0C_
+	ld (ix+0), <BlobMonsterAction_5C0C
+	ld (ix+1), >BlobMonsterAction_5C0C
 
-_LABEL_5C0C_:
+BlobMonsterAction_5C0C:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5C42_
+	jr z, BlobMonsterAction_5C42
 	ret
 
-_LABEL_5C18_:
+BlobMonsterAction_5C18:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_5C28_
-	ld (ix+1), >_LABEL_5C28_
+	ld (ix+0), <BlobMonsterAction_5C28
+	ld (ix+1), >BlobMonsterAction_5C28
 
-_LABEL_5C28_:
+BlobMonsterAction_5C28:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5C42_
+	jr z, BlobMonsterAction_5C42
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_5C3F_
+	jr nz, BlobMonsterAction_5C3F
 	call _LABEL_5302_
-_LABEL_5C3F_:
+BlobMonsterAction_5C3F:
 	jp _LABEL_5643_
 
-_LABEL_5C42_:
+BlobMonsterAction_5C42:
 	dec (ix+25)
-	jr nz, _LABEL_5C5B_
+	jr nz, BlobMonsterAction_5C5B
 	call _LABEL_5655_
 	ld (ix+22), <Data_7B25
 	ld (ix+23), >Data_7B25
-	ld (ix+0), <_LABEL_5B67_
-	ld (ix+1), >_LABEL_5B67_
+	ld (ix+0), <BlobMonsterAction_5B67
+	ld (ix+1), >BlobMonsterAction_5B67
 	ret
 
-_LABEL_5C5B_:
+BlobMonsterAction_5C5B:
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
 	ld (ix+6), a
-	ld (ix+0), <_LABEL_5B89_
-	ld (ix+1), >_LABEL_5B89_
+	ld (ix+0), <BlobMonsterAction_5B89
+	ld (ix+1), >BlobMonsterAction_5B89
 	ret
 
-_LABEL_5C70_:
+BlobMonsterAction_5C70:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_5C42_
+	jr z, BlobMonsterAction_5C42
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
@@ -12086,12 +12075,12 @@ _LABEL_5C70_:
 	ld (ix+25), $01
 	ld (ix+22), <Data_7B2E
 	ld (ix+23), >Data_7B2E
-	ld (ix+0), <_LABEL_5C18_
-	ld (ix+1), >_LABEL_5C18_
-	jp _LABEL_5C18_
+	ld (ix+0), <BlobMonsterAction_5C18
+	ld (ix+1), >BlobMonsterAction_5C18
+	jp BlobMonsterAction_5C18
 
 ; 2nd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_5C9D:
+SlimetoadMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12099,13 +12088,13 @@ JumpTable4_5C9D:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5CC8_
-	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+0), <ToadTypeMonsterAction_5CC8
+	ld (ix+1), >ToadTypeMonsterAction_5CC8
 	ld (ix+22), <Data_7B37
 	ld (ix+23), >Data_7B37
 	ret
 
-_LABEL_5CC8_:
+ToadTypeMonsterAction_5CC8:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_1EB1_
@@ -12115,154 +12104,154 @@ _LABEL_5CC8_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_5CE6_
+	jr z, ToadTypeMonsterAction_5CE6
 	cp $09
-	jr z, _LABEL_5CE6_
+	jr z, ToadTypeMonsterAction_5CE6
 	jp _LABEL_481B_
 
-_LABEL_5CE6_:
+ToadTypeMonsterAction_5CE6:
 	call _LABEL_5473_
-	jr nc, _LABEL_5D09_
-	ld (ix+0), <_LABEL_5E3E_
-	ld (ix+1), >_LABEL_5E3E_
-	jp _LABEL_5E3E_
+	jr nc, ToadTypeMonsterAction_5D09
+	ld (ix+0), <ToadTypeMonsterAction_5E3E
+	ld (ix+1), >ToadTypeMonsterAction_5E3E
+	jp ToadTypeMonsterAction_5E3E
 
-_LABEL_5CF6_:
+ToadTypeMonsterAction_5CF6:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5D02_
-	ld (ix+1), >_LABEL_5D02_
+	ld (ix+0), <ToadTypeMonsterAction_5D02
+	ld (ix+1), >ToadTypeMonsterAction_5D02
 
-_LABEL_5D02_:
+ToadTypeMonsterAction_5D02:
 	dec (ix+24)
-	jp z, _LABEL_5E32_
+	jp z, ToadTypeMonsterAction_5E32
 	ret
 
-_LABEL_5D09_:
+ToadTypeMonsterAction_5D09:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_5D21_
+	jr nz, ToadTypeMonsterAction_5D21
 	call _LABEL_51DE_
-_LABEL_5D13_:
+ToadTypeMonsterAction_5D13:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5D26_
+	jr c, ToadTypeMonsterAction_5D26
 	rrca
-	jr c, _LABEL_5D46_
+	jr c, ToadTypeMonsterAction_5D46
 	rrca
-	jr c, _LABEL_5D66_
-	jr _LABEL_5D88_
+	jr c, ToadTypeMonsterAction_5D66
+	jr ToadTypeMonsterAction_5D88
 
-_LABEL_5D21_:
+ToadTypeMonsterAction_5D21:
 	call _LABEL_52A1_
-	jr _LABEL_5D13_
+	jr ToadTypeMonsterAction_5D13
 
-_LABEL_5D26_:
+ToadTypeMonsterAction_5D26:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_5D3C_
+	jr c, ToadTypeMonsterAction_5D3C
 	ld (ix+4), $01
 	ld (ix+22), <Data_7B55
 	ld (ix+23), >Data_7B55
-	jr _LABEL_5D9D_
+	jr ToadTypeMonsterAction_5D9D
 
-_LABEL_5D3C_:
+ToadTypeMonsterAction_5D3C:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_5D13_
+	jr ToadTypeMonsterAction_5D13
 
-_LABEL_5D46_:
+ToadTypeMonsterAction_5D46:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_5D5C_
+	jr c, ToadTypeMonsterAction_5D5C
 	ld (ix+4), $02
 	ld (ix+22), <Data_7B4B
 	ld (ix+23), >Data_7B4B
-	jr _LABEL_5D9D_
+	jr ToadTypeMonsterAction_5D9D
 
-_LABEL_5D5C_:
+ToadTypeMonsterAction_5D5C:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_5D13_
+	jr ToadTypeMonsterAction_5D13
 
-_LABEL_5D66_:
+ToadTypeMonsterAction_5D66:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_5D7C_
+	jr c, ToadTypeMonsterAction_5D7C
 	ld (ix+4), $04
 	ld (ix+22), <Data_7B37
 	ld (ix+23), >Data_7B37
-	jr _LABEL_5D9D_
+	jr ToadTypeMonsterAction_5D9D
 
-_LABEL_5D7C_:
+ToadTypeMonsterAction_5D7C:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_5D13_
+	jr ToadTypeMonsterAction_5D13
 
-_LABEL_5D88_:
+ToadTypeMonsterAction_5D88:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_5CF6_
+	jp c, ToadTypeMonsterAction_5CF6
 	ld (ix+4), $08
 	ld (ix+22), <Data_7B41
 	ld (ix+23), >Data_7B41
-_LABEL_5D9D_:
+ToadTypeMonsterAction_5D9D:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5DAF_
-	ld (ix+1), >_LABEL_5DAF_
+	ld (ix+0), <ToadTypeMonsterAction_5DAF
+	ld (ix+1), >ToadTypeMonsterAction_5DAF
 
-_LABEL_5DAF_:
+ToadTypeMonsterAction_5DAF:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5E32_
+	jr z, ToadTypeMonsterAction_5E32
 	ret
 
-_LABEL_5DBB_:
+ToadTypeMonsterAction_5DBB:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_5DCB_
-	ld (ix+1), >_LABEL_5DCB_
+	ld (ix+0), <ToadTypeMonsterAction_5DCB
+	ld (ix+1), >ToadTypeMonsterAction_5DCB
 
-_LABEL_5DCB_:
+ToadTypeMonsterAction_5DCB:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_5DE5_
+	jr z, ToadTypeMonsterAction_5DE5
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_5DE2_
+	jr nz, ToadTypeMonsterAction_5DE2
 	call _LABEL_5302_
-_LABEL_5DE2_:
+ToadTypeMonsterAction_5DE2:
 	jp _LABEL_5643_
 
-_LABEL_5DE5_:
+ToadTypeMonsterAction_5DE5:
 	ld a, (ix+29)
 	or a
-	jr nz, _LABEL_5E32_
+	jr nz, ToadTypeMonsterAction_5E32
 	ld a, $01
 	ld ($C102), a
 	call _LABEL_51A5_
-	jr c, _LABEL_5E32_
+	jr c, ToadTypeMonsterAction_5E32
 	ld a, (PoisonTicksLeft)
 	or a
-	jr nz, _LABEL_5E32_
+	jr nz, ToadTypeMonsterAction_5E32
 	call GetRandomNumber
 	cp $40
-	jr nc, _LABEL_5E32_
+	jr nc, ToadTypeMonsterAction_5E32
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_5E0E_
-	ld (ix+1), >_LABEL_5E0E_
+	ld (ix+0), <ToadTypeMonsterAction_5E0E
+	ld (ix+1), >ToadTypeMonsterAction_5E0E
 
-_LABEL_5E0E_:
+ToadTypeMonsterAction_5E0E:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -12273,61 +12262,61 @@ _LABEL_5E0E_:
 	ld a, PlayerPoisonedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_5E2E_
-	ld (ix+1), >_LABEL_5E2E_
+	ld (ix+0), <ToadTypeMonsterAction_5E2E
+	ld (ix+1), >ToadTypeMonsterAction_5E2E
 
-_LABEL_5E2E_:
+ToadTypeMonsterAction_5E2E:
 	dec (ix+24)
 	ret nz
-_LABEL_5E32_:
+ToadTypeMonsterAction_5E32:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_5CC8_
-	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+0), <ToadTypeMonsterAction_5CC8
+	ld (ix+1), >ToadTypeMonsterAction_5CC8
 	ret
 
-_LABEL_5E3E_:
+ToadTypeMonsterAction_5E3E:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_5E32_
+	jr z, ToadTypeMonsterAction_5E32
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5E5B_
+	jr c, ToadTypeMonsterAction_5E5B
 	rrca
-	jr c, _LABEL_5E65_
+	jr c, ToadTypeMonsterAction_5E65
 	rrca
-	jr c, _LABEL_5E6F_
-	jr _LABEL_5E79_
+	jr c, ToadTypeMonsterAction_5E6F
+	jr ToadTypeMonsterAction_5E79
 
-_LABEL_5E5B_:
+ToadTypeMonsterAction_5E5B:
 	ld (ix+22), <Data_7B5A
 	ld (ix+23), >Data_7B5A
-	jr _LABEL_5E81_
+	jr ToadTypeMonsterAction_5E81
 
-_LABEL_5E65_:
+ToadTypeMonsterAction_5E65:
 	ld (ix+22), <Data_7B50
 	ld (ix+23), >Data_7B50
-	jr _LABEL_5E81_
+	jr ToadTypeMonsterAction_5E81
 
-_LABEL_5E6F_:
+ToadTypeMonsterAction_5E6F:
 	ld (ix+22), <Data_7B3C
 	ld (ix+23), >Data_7B3C
-	jr _LABEL_5E81_
+	jr ToadTypeMonsterAction_5E81
 
-_LABEL_5E79_:
+ToadTypeMonsterAction_5E79:
 	ld (ix+22), <Data_7B46
 	ld (ix+23), >Data_7B46
-_LABEL_5E81_:
+ToadTypeMonsterAction_5E81:
 	ld (ix+24), $0A
-	ld (ix+0), <_LABEL_5DBB_
-	ld (ix+1), >_LABEL_5DBB_
-	jp _LABEL_5DBB_
+	ld (ix+0), <ToadTypeMonsterAction_5DBB
+	ld (ix+1), >ToadTypeMonsterAction_5DBB
+	jp ToadTypeMonsterAction_5DBB
 
 ; 6th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_5E90:
+LochtoadMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12335,14 +12324,14 @@ JumpTable4_5E90:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5CC8_
-	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+0), <ToadTypeMonsterAction_5CC8
+	ld (ix+1), >ToadTypeMonsterAction_5CC8
 	ld (ix+22), <Data_7B37
 	ld (ix+23), >Data_7B37
 	ret
 
 ; 10th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_5EBB:
+BloodtoadMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12350,14 +12339,14 @@ JumpTable4_5EBB:
 	ld (ix+27), $00
 	ld (ix+3), $23
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5CC8_
-	ld (ix+1), >_LABEL_5CC8_
+	ld (ix+0), <ToadTypeMonsterAction_5CC8
+	ld (ix+1), >ToadTypeMonsterAction_5CC8
 	ld (ix+22), <Data_7B37
 	ld (ix+23), >Data_7B37
 	ret
 
 ; 3rd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_5EE6:
+ScorpionMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12365,11 +12354,11 @@ JumpTable4_5EE6:
 	ld (ix+27), $00
 	ld (ix+3), $2F
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5F09_
-	ld (ix+1), >_LABEL_5F09_
+	ld (ix+0), <ScorpionTypeMonsterAction_5F09
+	ld (ix+1), >ScorpionTypeMonsterAction_5F09
 	ret
 
-_LABEL_5F09_:
+ScorpionTypeMonsterAction_5F09:
 	call _LABEL_5567_
 	ret c
 	ld a, (ix+28)
@@ -12377,216 +12366,216 @@ _LABEL_5F09_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_5F23_
+	jr z, ScorpionTypeMonsterAction_5F23
 	cp $09
-	jr z, _LABEL_5F23_
+	jr z, ScorpionTypeMonsterAction_5F23
 	jp _LABEL_481B_
 
-_LABEL_5F23_:
+ScorpionTypeMonsterAction_5F23:
 	call _LABEL_5473_
-	jr nc, _LABEL_5F46_
-	ld (ix+0), <_LABEL_6069_
-	ld (ix+1), >_LABEL_6069_
-	jp _LABEL_6069_
+	jr nc, ScorpionTypeMonsterAction_5F46
+	ld (ix+0), <ScorpionTypeMonsterAction_6069
+	ld (ix+1), >ScorpionTypeMonsterAction_6069
+	jp ScorpionTypeMonsterAction_6069
 
-_LABEL_5F33_:
+ScorpionTypeMonsterAction_5F33:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_5F3F_
-	ld (ix+1), >_LABEL_5F3F_
+	ld (ix+0), <ScorpionTypeMonsterAction_5F3F
+	ld (ix+1), >ScorpionTypeMonsterAction_5F3F
 
-_LABEL_5F3F_:
+ScorpionTypeMonsterAction_5F3F:
 	dec (ix+24)
-	jp z, _LABEL_605D_
+	jp z, ScorpionTypeMonsterAction_605D
 	ret
 
-_LABEL_5F46_:
+ScorpionTypeMonsterAction_5F46:
 	call _LABEL_1EB1_
-	jr c, _LABEL_5F67_
+	jr c, ScorpionTypeMonsterAction_5F67
 	call _LABEL_557D_
-	jr nc, _LABEL_5F67_
+	jr nc, ScorpionTypeMonsterAction_5F67
 	call _LABEL_55BF_
-	jr c, _LABEL_5F67_
+	jr c, ScorpionTypeMonsterAction_5F67
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_5F67_
-	ld (ix+0), <_LABEL_6069_
-	ld (ix+1), >_LABEL_6069_
-	jp _LABEL_6069_
+	jr nc, ScorpionTypeMonsterAction_5F67
+	ld (ix+0), <ScorpionTypeMonsterAction_6069
+	ld (ix+1), >ScorpionTypeMonsterAction_6069
+	jp ScorpionTypeMonsterAction_6069
 
-_LABEL_5F67_:
+ScorpionTypeMonsterAction_5F67:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_5F7F_
+	jr nz, ScorpionTypeMonsterAction_5F7F
 	call _LABEL_51DE_
-_LABEL_5F71_:
+ScorpionTypeMonsterAction_5F71:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_5F84_
+	jr c, ScorpionTypeMonsterAction_5F84
 	rrca
-	jr c, _LABEL_5FA4_
+	jr c, ScorpionTypeMonsterAction_5FA4
 	rrca
-	jr c, _LABEL_5FC4_
-	jr _LABEL_5FE6_
+	jr c, ScorpionTypeMonsterAction_5FC4
+	jr ScorpionTypeMonsterAction_5FE6
 
-_LABEL_5F7F_:
+ScorpionTypeMonsterAction_5F7F:
 	call _LABEL_52A1_
-	jr _LABEL_5F71_
+	jr ScorpionTypeMonsterAction_5F71
 
-_LABEL_5F84_:
+ScorpionTypeMonsterAction_5F84:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_5F9A_
+	jr c, ScorpionTypeMonsterAction_5F9A
 	ld (ix+4), $01
 	ld (ix+22), <Data_7B64
 	ld (ix+23), >Data_7B64
-	jr _LABEL_5FFB_
+	jr ScorpionTypeMonsterAction_5FFB
 
-_LABEL_5F9A_:
+ScorpionTypeMonsterAction_5F9A:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_5F71_
+	jr ScorpionTypeMonsterAction_5F71
 
-_LABEL_5FA4_:
+ScorpionTypeMonsterAction_5FA4:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_5FBA_
+	jr c, ScorpionTypeMonsterAction_5FBA
 	ld (ix+4), $02
 	ld (ix+22), <Data_7B64
 	ld (ix+23), >Data_7B64
-	jr _LABEL_5FFB_
+	jr ScorpionTypeMonsterAction_5FFB
 
-_LABEL_5FBA_:
+ScorpionTypeMonsterAction_5FBA:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_5F71_
+	jr ScorpionTypeMonsterAction_5F71
 
-_LABEL_5FC4_:
+ScorpionTypeMonsterAction_5FC4:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_5FDA_
+	jr c, ScorpionTypeMonsterAction_5FDA
 	ld (ix+4), $04
 	ld (ix+22), <Data_7B5F
 	ld (ix+23), >Data_7B5F
-	jr _LABEL_5FFB_
+	jr ScorpionTypeMonsterAction_5FFB
 
-_LABEL_5FDA_:
+ScorpionTypeMonsterAction_5FDA:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_5F71_
+	jr ScorpionTypeMonsterAction_5F71
 
-_LABEL_5FE6_:
+ScorpionTypeMonsterAction_5FE6:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_5F33_
+	jp c, ScorpionTypeMonsterAction_5F33
 	ld (ix+4), $08
 	ld (ix+22), <Data_7B5F
 	ld (ix+23), >Data_7B5F
-_LABEL_5FFB_:
+ScorpionTypeMonsterAction_5FFB:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_600D_
-	ld (ix+1), >_LABEL_600D_
+	ld (ix+0), <ScorpionTypeMonsterAction_600D
+	ld (ix+1), >ScorpionTypeMonsterAction_600D
 
-_LABEL_600D_:
+ScorpionTypeMonsterAction_600D:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_605D_
+	jr z, ScorpionTypeMonsterAction_605D
 	ret
 
-_LABEL_6019_:
+ScorpionTypeMonsterAction_6019:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_602A_
+	jr z, ScorpionTypeMonsterAction_602A
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_60BB_
+	call z, ScorpionTypeMonsterAction_60BB
 	ret
 
-_LABEL_602A_:
+ScorpionTypeMonsterAction_602A:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6036_
-	ld (ix+1), >_LABEL_6036_
+	ld (ix+0), <ScorpionTypeMonsterAction_6036
+	ld (ix+1), >ScorpionTypeMonsterAction_6036
 
-_LABEL_6036_:
+ScorpionTypeMonsterAction_6036:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_604B_
-	ld (ix+1), >_LABEL_604B_
+	ld (ix+0), <ScorpionTypeMonsterAction_604B
+	ld (ix+1), >ScorpionTypeMonsterAction_604B
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_604B_:
+ScorpionTypeMonsterAction_604B:
 	dec (ix+24)
-	jr z, _LABEL_605D_
+	jr z, ScorpionTypeMonsterAction_605D
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_605A_
+	jr nz, ScorpionTypeMonsterAction_605A
 	call _LABEL_5302_
-_LABEL_605A_:
+ScorpionTypeMonsterAction_605A:
 	jp _LABEL_5643_
 
-_LABEL_605D_:
+ScorpionTypeMonsterAction_605D:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_5F09_
-	ld (ix+1), >_LABEL_5F09_
+	ld (ix+0), <ScorpionTypeMonsterAction_5F09
+	ld (ix+1), >ScorpionTypeMonsterAction_5F09
 	ret
 
-_LABEL_6069_:
+ScorpionTypeMonsterAction_6069:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_605D_
+	jr z, ScorpionTypeMonsterAction_605D
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6086_
+	jr c, ScorpionTypeMonsterAction_6086
 	rrca
-	jr c, _LABEL_6090_
+	jr c, ScorpionTypeMonsterAction_6090
 	rrca
-	jr c, _LABEL_609A_
-	jr _LABEL_60A4_
+	jr c, ScorpionTypeMonsterAction_609A
+	jr ScorpionTypeMonsterAction_60A4
 
-_LABEL_6086_:
+ScorpionTypeMonsterAction_6086:
 	ld (ix+22), <Data_7B69
 	ld (ix+23), >Data_7B69
-	jr _LABEL_60AC_
+	jr ScorpionTypeMonsterAction_60AC
 
-_LABEL_6090_:
+ScorpionTypeMonsterAction_6090:
 	ld (ix+22), <Data_7B72
 	ld (ix+23), >Data_7B72
-	jr _LABEL_60AC_
+	jr ScorpionTypeMonsterAction_60AC
 
-_LABEL_609A_:
+ScorpionTypeMonsterAction_609A:
 	ld (ix+22), <Data_7B84
 	ld (ix+23), >Data_7B84
-	jr _LABEL_60AC_
+	jr ScorpionTypeMonsterAction_60AC
 
-_LABEL_60A4_:
+ScorpionTypeMonsterAction_60A4:
 	ld (ix+22), <Data_7B7B
 	ld (ix+23), >Data_7B7B
-_LABEL_60AC_:
+ScorpionTypeMonsterAction_60AC:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6019_
-	ld (ix+1), >_LABEL_6019_
-	jp _LABEL_6019_
+	ld (ix+0), <ScorpionTypeMonsterAction_6019
+	ld (ix+1), >ScorpionTypeMonsterAction_6019
+	jp ScorpionTypeMonsterAction_6019
 
-_LABEL_60BB_:
+ScorpionTypeMonsterAction_60BB:
 	ld hl, _LABEL_7A1C_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 15th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_60C4:
+ScorpiusMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -12594,12 +12583,12 @@ JumpTable4_60C4:
 	ld (ix+27), $00
 	ld (ix+3), $2F
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_5F09_
-	ld (ix+1), >_LABEL_5F09_
+	ld (ix+0), <ScorpionTypeMonsterAction_5F09
+	ld (ix+1), >ScorpionTypeMonsterAction_5F09
 	ret
 
 ; 4th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_60E7:
+KragMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -12608,11 +12597,11 @@ JumpTable4_60E7:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7B92
 	ld (ix+23), >Data_7B92
-	ld (ix+0), <_LABEL_610E_
-	ld (ix+1), >_LABEL_610E_
+	ld (ix+0), <KragTypeMonsterAction_610E
+	ld (ix+1), >KragTypeMonsterAction_610E
 	ret
 
-_LABEL_610E_:
+KragTypeMonsterAction_610E:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -12621,191 +12610,191 @@ _LABEL_610E_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_612B_
+	jr z, KragTypeMonsterAction_612B
 	cp $09
-	jr z, _LABEL_612B_
+	jr z, KragTypeMonsterAction_612B
 	jp _LABEL_481B_
 
-_LABEL_612B_:
+KragTypeMonsterAction_612B:
 	ld (ix+25), $02
-_LABEL_612F_:
+KragTypeMonsterAction_612F:
 	call _LABEL_1EB1_
-	jr c, _LABEL_6177_
+	jr c, KragTypeMonsterAction_6177
 	call _LABEL_5473_
-	jr nc, _LABEL_6144_
-	ld (ix+0), <_LABEL_62C9_
-	ld (ix+1), >_LABEL_62C9_
-	jp _LABEL_62C9_
+	jr nc, KragTypeMonsterAction_6144
+	ld (ix+0), <KragTypeMonsterAction_62C9
+	ld (ix+1), >KragTypeMonsterAction_62C9
+	jp KragTypeMonsterAction_62C9
 
-_LABEL_6144_:
+KragTypeMonsterAction_6144:
 	call _LABEL_557D_
-	jr nc, _LABEL_6177_
+	jr nc, KragTypeMonsterAction_6177
 	call _LABEL_55BF_
-	jr c, _LABEL_6177_
+	jr c, KragTypeMonsterAction_6177
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_6160_
-	ld (ix+0), <_LABEL_62C9_
-	ld (ix+1), >_LABEL_62C9_
-	jp _LABEL_62C9_
+	jr nc, KragTypeMonsterAction_6160
+	ld (ix+0), <KragTypeMonsterAction_62C9
+	ld (ix+1), >KragTypeMonsterAction_62C9
+	jp KragTypeMonsterAction_62C9
 
-_LABEL_6160_:
+KragTypeMonsterAction_6160:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_616D_
-	ld (ix+1), >_LABEL_616D_
+	ld (ix+0), <KragTypeMonsterAction_616D
+	ld (ix+1), >KragTypeMonsterAction_616D
 	ret
 
-_LABEL_616D_:
+KragTypeMonsterAction_616D:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_62BD_
+	jp z, KragTypeMonsterAction_62BD
 	ret
 
-_LABEL_6177_:
+KragTypeMonsterAction_6177:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_618F_
+	jr nz, KragTypeMonsterAction_618F
 	call _LABEL_51DE_
-_LABEL_6181_:
+KragTypeMonsterAction_6181:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6194_
+	jr c, KragTypeMonsterAction_6194
 	rrca
-	jr c, _LABEL_61AC_
+	jr c, KragTypeMonsterAction_61AC
 	rrca
-	jr c, _LABEL_61C4_
-	jr _LABEL_61DE_
+	jr c, KragTypeMonsterAction_61C4
+	jr KragTypeMonsterAction_61DE
 
-_LABEL_618F_:
+KragTypeMonsterAction_618F:
 	call _LABEL_52A1_
-	jr _LABEL_6181_
+	jr KragTypeMonsterAction_6181
 
-_LABEL_6194_:
+KragTypeMonsterAction_6194:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_61A2_
+	jr c, KragTypeMonsterAction_61A2
 	ld (ix+4), $01
-	jr _LABEL_61EB_
+	jr KragTypeMonsterAction_61EB
 
-_LABEL_61A2_:
+KragTypeMonsterAction_61A2:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_6181_
+	jr KragTypeMonsterAction_6181
 
-_LABEL_61AC_:
+KragTypeMonsterAction_61AC:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_61BA_
+	jr c, KragTypeMonsterAction_61BA
 	ld (ix+4), $02
-	jr _LABEL_61EB_
+	jr KragTypeMonsterAction_61EB
 
-_LABEL_61BA_:
+KragTypeMonsterAction_61BA:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_6181_
+	jr KragTypeMonsterAction_6181
 
-_LABEL_61C4_:
+KragTypeMonsterAction_61C4:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_61D2_
+	jr c, KragTypeMonsterAction_61D2
 	ld (ix+4), $04
-	jr _LABEL_61EB_
+	jr KragTypeMonsterAction_61EB
 
-_LABEL_61D2_:
+KragTypeMonsterAction_61D2:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_6181_
+	jr KragTypeMonsterAction_6181
 
-_LABEL_61DE_:
+KragTypeMonsterAction_61DE:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_6160_
+	jp c, KragTypeMonsterAction_6160
 	ld (ix+4), $08
-_LABEL_61EB_:
+KragTypeMonsterAction_61EB:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), <_LABEL_61FD_
-	ld (ix+1), >_LABEL_61FD_
+	ld (ix+0), <KragTypeMonsterAction_61FD
+	ld (ix+1), >KragTypeMonsterAction_61FD
 
-_LABEL_61FD_:
+KragTypeMonsterAction_61FD:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6209_
+	jr z, KragTypeMonsterAction_6209
 	ret
 
-_LABEL_6209_:
+KragTypeMonsterAction_6209:
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
 	ld (ix+6), a
 	dec (ix+25)
-	jp z, _LABEL_62BD_
-	ld (ix+0), <_LABEL_612F_
-	ld (ix+1), >_LABEL_612F_
+	jp z, KragTypeMonsterAction_62BD
+	ld (ix+0), <KragTypeMonsterAction_612F
+	ld (ix+1), >KragTypeMonsterAction_612F
 	ret
 
-_LABEL_6224_:
+KragTypeMonsterAction_6224:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6235_
+	jr z, KragTypeMonsterAction_6235
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_62EA_
+	call z, KragTypeMonsterAction_62EA
 	ret
 
-_LABEL_6235_:
+KragTypeMonsterAction_6235:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6242_
-	ld (ix+1), >_LABEL_6242_
+	ld (ix+0), <KragTypeMonsterAction_6242
+	ld (ix+1), >KragTypeMonsterAction_6242
 	ret
 
-_LABEL_6242_:
+KragTypeMonsterAction_6242:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_625A_
-	ld (ix+1), >_LABEL_625A_
+	ld (ix+0), <KragTypeMonsterAction_625A
+	ld (ix+1), >KragTypeMonsterAction_625A
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_625A_:
+KragTypeMonsterAction_625A:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_626F_
+	jr z, KragTypeMonsterAction_626F
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_626C_
+	jr nz, KragTypeMonsterAction_626C
 	call _LABEL_5302_
-_LABEL_626C_:
+KragTypeMonsterAction_626C:
 	jp _LABEL_5643_
 
-_LABEL_626F_:
+KragTypeMonsterAction_626F:
 	ld a, (ix+29)
 	or a
-	jr nz, _LABEL_62BD_
+	jr nz, KragTypeMonsterAction_62BD
 	ld a, $01
 	ld ($C102), a
 	call _LABEL_51A5_
-	jr c, _LABEL_62BD_
+	jr c, KragTypeMonsterAction_62BD
 	ld a, (DizzinessTicksLeft)
 	or a
-	jr nz, _LABEL_62BD_
+	jr nz, KragTypeMonsterAction_62BD
 	call GetRandomNumber
 	cp $18
-	jp nc, _LABEL_62BD_
+	jp nc, KragTypeMonsterAction_62BD
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6299_
-	ld (ix+1), >_LABEL_6299_
+	ld (ix+0), <KragTypeMonsterAction_6299
+	ld (ix+1), >KragTypeMonsterAction_6299
 
-_LABEL_6299_:
+KragTypeMonsterAction_6299:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -12816,39 +12805,39 @@ _LABEL_6299_:
 	ld a, PlayerLightheadedMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_62B9_
-	ld (ix+1), >_LABEL_62B9_
+	ld (ix+0), <KragTypeMonsterAction_62B9
+	ld (ix+1), >KragTypeMonsterAction_62B9
 
-_LABEL_62B9_:
+KragTypeMonsterAction_62B9:
 	dec (ix+24)
 	ret nz
-_LABEL_62BD_:
+KragTypeMonsterAction_62BD:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_610E_
-	ld (ix+1), >_LABEL_610E_
+	ld (ix+0), <KragTypeMonsterAction_610E
+	ld (ix+1), >KragTypeMonsterAction_610E
 	ret
 
-_LABEL_62C9_:
+KragTypeMonsterAction_62C9:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_62BD_
+	jr z, KragTypeMonsterAction_62BD
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6224_
-	ld (ix+1), >_LABEL_6224_
-	jp _LABEL_6224_
+	ld (ix+0), <KragTypeMonsterAction_6224
+	ld (ix+1), >KragTypeMonsterAction_6224
+	jp KragTypeMonsterAction_6224
 
-_LABEL_62EA_:
+KragTypeMonsterAction_62EA:
 	ld hl, _LABEL_7A46_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 16th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_62F3:
+KingKragMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -12857,23 +12846,23 @@ JumpTable4_62F3:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7B92
 	ld (ix+23), >Data_7B92
-	ld (ix+0), <_LABEL_610E_
-	ld (ix+1), >_LABEL_610E_
+	ld (ix+0), <KragTypeMonsterAction_610E
+	ld (ix+1), >KragTypeMonsterAction_610E
 	ret
 
 ; 7th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_631A:
+PhantomMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $1E
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_6339_
-	ld (ix+1), >_LABEL_6339_
+	ld (ix+0), <PhantomTypeMonsterAction_6339
+	ld (ix+1), >PhantomTypeMonsterAction_6339
 	ret
 
-_LABEL_6339_:
+PhantomTypeMonsterAction_6339:
 	call _LABEL_5567_
 	ret c
 	ld a, (ix+28)
@@ -12881,216 +12870,216 @@ _LABEL_6339_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_6353_
+	jr z, PhantomTypeMonsterAction_6353
 	cp $09
-	jr z, _LABEL_6353_
+	jr z, PhantomTypeMonsterAction_6353
 	jp _LABEL_481B_
 
-_LABEL_6353_:
+PhantomTypeMonsterAction_6353:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_557D_
-	jr nc, _LABEL_636E_
+	jr nc, PhantomTypeMonsterAction_636E
 	call _LABEL_55BF_
-	jr c, _LABEL_636E_
-	ld (ix+0), <_LABEL_644E_
-	ld (ix+1), >_LABEL_644E_
-	jp _LABEL_644E_
+	jr c, PhantomTypeMonsterAction_636E
+	ld (ix+0), <PhantomTypeMonsterAction_644E
+	ld (ix+1), >PhantomTypeMonsterAction_644E
+	jp PhantomTypeMonsterAction_644E
 
-_LABEL_636E_:
+PhantomTypeMonsterAction_636E:
 	call GetRandomNumber
 	and $03
-	jr nz, _LABEL_6377_
+	jr nz, PhantomTypeMonsterAction_6377
 	ld a, $04
-_LABEL_6377_:
+PhantomTypeMonsterAction_6377:
 	ld (ix+25), a
 	call _LABEL_52A1_
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_638B_
+	jr c, PhantomTypeMonsterAction_638B
 	rrca
-	jr c, _LABEL_6399_
+	jr c, PhantomTypeMonsterAction_6399
 	rrca
-	jr c, _LABEL_63A7_
-	jr _LABEL_63B5_
+	jr c, PhantomTypeMonsterAction_63A7
+	jr PhantomTypeMonsterAction_63B5
 
-_LABEL_638B_:
+PhantomTypeMonsterAction_638B:
 	ld (ix+4), $01
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_6399_
-	jr _LABEL_63C0_
+	jr c, PhantomTypeMonsterAction_6399
+	jr PhantomTypeMonsterAction_63C0
 
-_LABEL_6399_:
+PhantomTypeMonsterAction_6399:
 	ld (ix+4), $02
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_63A7_
-	jr _LABEL_63C0_
+	jr c, PhantomTypeMonsterAction_63A7
+	jr PhantomTypeMonsterAction_63C0
 
-_LABEL_63A7_:
+PhantomTypeMonsterAction_63A7:
 	ld (ix+4), $04
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_63B5_
-	jr _LABEL_63C0_
+	jr c, PhantomTypeMonsterAction_63B5
+	jr PhantomTypeMonsterAction_63C0
 
-_LABEL_63B5_:
+PhantomTypeMonsterAction_63B5:
 	ld (ix+4), $08
 	call _LABEL_538E_
 	call _LABEL_5420_
 	ret c
-_LABEL_63C0_:
+PhantomTypeMonsterAction_63C0:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+22), <Data_7B9B
 	ld (ix+23), >Data_7B9B
-	ld (ix+0), <_LABEL_63DA_
-	ld (ix+1), >_LABEL_63DA_
+	ld (ix+0), <PhantomTypeMonsterAction_63DA
+	ld (ix+1), >PhantomTypeMonsterAction_63DA
 
-_LABEL_63DA_:
+PhantomTypeMonsterAction_63DA:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_643E_
+	jr z, PhantomTypeMonsterAction_643E
 	ld a, (ix+24)
 	cp $04
-	call z, _LABEL_63EB_
+	call z, PhantomTypeMonsterAction_63EB
 	ret
 
-_LABEL_63EB_:
+PhantomTypeMonsterAction_63EB:
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
 	ld (ix+6), a
 	jp _LABEL_550D_
 
-_LABEL_63FA_:
+PhantomTypeMonsterAction_63FA:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_640B_
+	jr z, PhantomTypeMonsterAction_640B
 	ld a, (ix+24)
 	cp $06
-	call z, _LABEL_64A0_
+	call z, PhantomTypeMonsterAction_64A0
 	ret
 
-_LABEL_640B_:
+PhantomTypeMonsterAction_640B:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6417_
-	ld (ix+1), >_LABEL_6417_
+	ld (ix+0), <PhantomTypeMonsterAction_6417
+	ld (ix+1), >PhantomTypeMonsterAction_6417
 
-_LABEL_6417_:
+PhantomTypeMonsterAction_6417:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_642C_
-	ld (ix+1), >_LABEL_642C_
+	ld (ix+0), <PhantomTypeMonsterAction_642C
+	ld (ix+1), >PhantomTypeMonsterAction_642C
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_642C_:
+PhantomTypeMonsterAction_642C:
 	dec (ix+24)
-	jr z, _LABEL_643E_
+	jr z, PhantomTypeMonsterAction_643E
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_643B_
+	jr nz, PhantomTypeMonsterAction_643B
 	call _LABEL_5302_
-_LABEL_643B_:
+PhantomTypeMonsterAction_643B:
 	jp _LABEL_5643_
 
-_LABEL_643E_:
+PhantomTypeMonsterAction_643E:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), <_LABEL_6339_
-	ld (ix+1), >_LABEL_6339_
+	ld (ix+0), <PhantomTypeMonsterAction_6339
+	ld (ix+1), >PhantomTypeMonsterAction_6339
 	ret
 
-_LABEL_644E_:
+PhantomTypeMonsterAction_644E:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_643E_
+	jr z, PhantomTypeMonsterAction_643E
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_646B_
+	jr c, PhantomTypeMonsterAction_646B
 	rrca
-	jr c, _LABEL_6475_
+	jr c, PhantomTypeMonsterAction_6475
 	rrca
-	jr c, _LABEL_647F_
-	jr _LABEL_6489_
+	jr c, PhantomTypeMonsterAction_647F
+	jr PhantomTypeMonsterAction_6489
 
-_LABEL_646B_:
+PhantomTypeMonsterAction_646B:
 	ld (ix+22), <Data_7BC1
 	ld (ix+23), >Data_7BC1
-	jr _LABEL_6491_
+	jr PhantomTypeMonsterAction_6491
 
-_LABEL_6475_:
+PhantomTypeMonsterAction_6475:
 	ld (ix+22), <Data_7BAC
 	ld (ix+23), >Data_7BAC
-	jr _LABEL_6491_
+	jr PhantomTypeMonsterAction_6491
 
-_LABEL_647F_:
+PhantomTypeMonsterAction_647F:
 	ld (ix+22), <Data_7BB3
 	ld (ix+23), >Data_7BB3
-	jr _LABEL_6491_
+	jr PhantomTypeMonsterAction_6491
 
-_LABEL_6489_:
+PhantomTypeMonsterAction_6489:
 	ld (ix+22), <Data_7BBA
 	ld (ix+23), >Data_7BBA
-_LABEL_6491_:
+PhantomTypeMonsterAction_6491:
 	ld (ix+24), $0C
-	ld (ix+0), <_LABEL_63FA_
-	ld (ix+1), >_LABEL_63FA_
-	jp _LABEL_63FA_
+	ld (ix+0), <PhantomTypeMonsterAction_63FA
+	ld (ix+1), >PhantomTypeMonsterAction_63FA
+	jp PhantomTypeMonsterAction_63FA
 
-_LABEL_64A0_:
+PhantomTypeMonsterAction_64A0:
 	ld hl, _LABEL_7A5B_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 19th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_64A9:
+SpectreMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $50
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_6339_
-	ld (ix+1), >_LABEL_6339_
+	ld (ix+0), <PhantomTypeMonsterAction_6339
+	ld (ix+1), >PhantomTypeMonsterAction_6339
 	ret
 
 ; 27th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_64C8:
+WraithMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $B4
 	ld (ix+27), $00
 	ld (ix+3), $45
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_6339_
-	ld (ix+1), >_LABEL_6339_
+	ld (ix+0), <PhantomTypeMonsterAction_6339
+	ld (ix+1), >PhantomTypeMonsterAction_6339
 	ret
 
 ; 8th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_64E7:
+OrbMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $28
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_650E_
-	ld (ix+1), >_LABEL_650E_
+	ld (ix+0), <OrbTypeMonsterAction_650E
+	ld (ix+1), >OrbTypeMonsterAction_650E
 	ld (ix+22), <Data_7BD2
 	ld (ix+23), >Data_7BD2
 	ret
 
-_LABEL_650E_:
+OrbTypeMonsterAction_650E:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -13099,286 +13088,286 @@ _LABEL_650E_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_652B_
+	jr z, OrbTypeMonsterAction_652B
 	cp $09
-	jr z, _LABEL_652B_
+	jr z, OrbTypeMonsterAction_652B
 	jp _LABEL_481B_
 
-_LABEL_652B_:
+OrbTypeMonsterAction_652B:
 	inc (ix+25)
 	ld a, (ix+25)
 	cp $02
-	jr nz, _LABEL_6549_
+	jr nz, OrbTypeMonsterAction_6549
 	ld (ix+25), $00
 	call _LABEL_5473_
-	jr nc, _LABEL_655F_
-	ld (ix+0), <_LABEL_66D3_
-	ld (ix+1), >_LABEL_66D3_
-	jp _LABEL_66D3_
+	jr nc, OrbTypeMonsterAction_655F
+	ld (ix+0), <OrbTypeMonsterAction_66D3
+	ld (ix+1), >OrbTypeMonsterAction_66D3
+	jp OrbTypeMonsterAction_66D3
 
-_LABEL_6549_:
+OrbTypeMonsterAction_6549:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6555_
-	ld (ix+1), >_LABEL_6555_
+	ld (ix+0), <OrbTypeMonsterAction_6555
+	ld (ix+1), >OrbTypeMonsterAction_6555
 
-_LABEL_6555_:
+OrbTypeMonsterAction_6555:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_66C7_
+	jp z, OrbTypeMonsterAction_66C7
 	ret
 
-_LABEL_655F_:
+OrbTypeMonsterAction_655F:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_657C_
+	jr nz, OrbTypeMonsterAction_657C
 	call _LABEL_568C_
-	jr nc, _LABEL_657C_
+	jr nc, OrbTypeMonsterAction_657C
 	call _LABEL_51DE_
-_LABEL_656E_:
+OrbTypeMonsterAction_656E:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6581_
+	jr c, OrbTypeMonsterAction_6581
 	rrca
-	jr c, _LABEL_65A1_
+	jr c, OrbTypeMonsterAction_65A1
 	rrca
-	jr c, _LABEL_65C1_
-	jr _LABEL_65E3_
+	jr c, OrbTypeMonsterAction_65C1
+	jr OrbTypeMonsterAction_65E3
 
-_LABEL_657C_:
+OrbTypeMonsterAction_657C:
 	call _LABEL_52A1_
-	jr _LABEL_656E_
+	jr OrbTypeMonsterAction_656E
 
-_LABEL_6581_:
+OrbTypeMonsterAction_6581:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_6597_
+	jr c, OrbTypeMonsterAction_6597
 	ld (ix+4), $01
 	ld (ix+22), <Data_7BC8
 	ld (ix+23), >Data_7BC8
-	jr _LABEL_65F8_
+	jr OrbTypeMonsterAction_65F8
 
-_LABEL_6597_:
+OrbTypeMonsterAction_6597:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_656E_
+	jr OrbTypeMonsterAction_656E
 
-_LABEL_65A1_:
+OrbTypeMonsterAction_65A1:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_65B7_
+	jr c, OrbTypeMonsterAction_65B7
 	ld (ix+4), $02
 	ld (ix+22), <Data_7BCD
 	ld (ix+23), >Data_7BCD
-	jr _LABEL_65F8_
+	jr OrbTypeMonsterAction_65F8
 
-_LABEL_65B7_:
+OrbTypeMonsterAction_65B7:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_656E_
+	jr OrbTypeMonsterAction_656E
 
-_LABEL_65C1_:
+OrbTypeMonsterAction_65C1:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_65D7_
+	jr c, OrbTypeMonsterAction_65D7
 	ld (ix+4), $04
 	ld (ix+22), <Data_7BD2
 	ld (ix+23), >Data_7BD2
-	jr _LABEL_65F8_
+	jr OrbTypeMonsterAction_65F8
 
-_LABEL_65D7_:
+OrbTypeMonsterAction_65D7:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_656E_
+	jr OrbTypeMonsterAction_656E
 
-_LABEL_65E3_:
+OrbTypeMonsterAction_65E3:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_6549_
+	jp c, OrbTypeMonsterAction_6549
 	ld (ix+4), $08
 	ld (ix+22), <Data_7BD7
 	ld (ix+23), >Data_7BD7
-_LABEL_65F8_:
+OrbTypeMonsterAction_65F8:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_6612_
-	ld (ix+1), >_LABEL_6612_
+	ld (ix+0), <OrbTypeMonsterAction_6612
+	ld (ix+1), >OrbTypeMonsterAction_6612
 
-_LABEL_6612_:
+OrbTypeMonsterAction_6612:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_66C7_
+	jp z, OrbTypeMonsterAction_66C7
 	ret
 
-_LABEL_661F_:
+OrbTypeMonsterAction_661F:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_662F_
-	ld (ix+1), >_LABEL_662F_
+	ld (ix+0), <OrbTypeMonsterAction_662F
+	ld (ix+1), >OrbTypeMonsterAction_662F
 
-_LABEL_662F_:
+OrbTypeMonsterAction_662F:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6649_
+	jr z, OrbTypeMonsterAction_6649
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_6646_
+	jr nz, OrbTypeMonsterAction_6646
 	call _LABEL_5302_
-_LABEL_6646_:
+OrbTypeMonsterAction_6646:
 	jp _LABEL_5643_
 
-_LABEL_6649_:
+OrbTypeMonsterAction_6649:
 	ld a, (ix+29)
 	or a
-	jr nz, _LABEL_66C7_
+	jr nz, OrbTypeMonsterAction_66C7
 	ld a, $01
 	ld ($C102), a
 	ld a, (ix+31)
 	cp $13
-	jr z, _LABEL_6661_
+	jr z, OrbTypeMonsterAction_6661
 	cp $1B
-	jr z, _LABEL_668C_
-	jr _LABEL_66C7_
+	jr z, OrbTypeMonsterAction_668C
+	jr OrbTypeMonsterAction_66C7
 
 ; Rust armor
-_LABEL_6661_:
+OrbTypeMonsterAction_6661:
 	call RustArmor
-	jr c, _LABEL_66C7_
+	jr c, OrbTypeMonsterAction_66C7
 	ld a, (EquippedArmor)
 	cp RobeArmor
-	jr z, _LABEL_66C7_
+	jr z, OrbTypeMonsterAction_66C7
 	ld a, RobeArmor
 	ld (EquippedArmor), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_667E_
-	ld (ix+1), >_LABEL_667E_
+	ld (ix+0), <OrbTypeMonsterAction_667E
+	ld (ix+1), >OrbTypeMonsterAction_667E
 
-_LABEL_667E_:
+OrbTypeMonsterAction_667E:
 	dec (ix+24)
 	ret nz
 	call EquipArmor
 	ld a, ArmorRustMessage
 	ld (CurrentMessage), a
-	jr _LABEL_66C7_
+	jr OrbTypeMonsterAction_66C7
 
 ; Rust weapon
-_LABEL_668C_:
+OrbTypeMonsterAction_668C:
 	ld a, (ix+28)
 	and $08
-	jr nz, _LABEL_66C7_
+	jr nz, OrbTypeMonsterAction_66C7
 	ld a, (EquippedWeapon)
 	cp DaggerSword
-	jr z, _LABEL_66C7_
+	jr z, OrbTypeMonsterAction_66C7
 	ld a, DaggerSword
 	ld (EquippedWeapon), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_66AB_
-	ld (ix+1), >_LABEL_66AB_
+	ld (ix+0), <OrbTypeMonsterAction_66AB
+	ld (ix+1), >OrbTypeMonsterAction_66AB
 
-_LABEL_66AB_:
+OrbTypeMonsterAction_66AB:
 	dec (ix+24)
 	ret nz
 	call EquipWeapon
 	ld a, WeaponRustMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_66C3_
-	ld (ix+1), >_LABEL_66C3_
+	ld (ix+0), <OrbTypeMonsterAction_66C3
+	ld (ix+1), >OrbTypeMonsterAction_66C3
 
-_LABEL_66C3_:
+OrbTypeMonsterAction_66C3:
 	dec (ix+24)
 	ret nz
-_LABEL_66C7_:
+OrbTypeMonsterAction_66C7:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_650E_
-	ld (ix+1), >_LABEL_650E_
+	ld (ix+0), <OrbTypeMonsterAction_650E
+	ld (ix+1), >OrbTypeMonsterAction_650E
 	ret
 
-_LABEL_66D3_:
+OrbTypeMonsterAction_66D3:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_66C7_
+	jr z, OrbTypeMonsterAction_66C7
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_66F3_
+	jr c, OrbTypeMonsterAction_66F3
 	rrca
-	jr c, _LABEL_66FD_
+	jr c, OrbTypeMonsterAction_66FD
 	rrca
-	jr c, _LABEL_6707_
-	jr _LABEL_6711_
+	jr c, OrbTypeMonsterAction_6707
+	jr OrbTypeMonsterAction_6711
 
-_LABEL_66F3_:
+OrbTypeMonsterAction_66F3:
 	ld (ix+22), <Data_7BC8
 	ld (ix+23), >Data_7BC8
-	jr _LABEL_6719_
+	jr OrbTypeMonsterAction_6719
 
-_LABEL_66FD_:
+OrbTypeMonsterAction_66FD:
 	ld (ix+22), <Data_7BCD
 	ld (ix+23), >Data_7BCD
-	jr _LABEL_6719_
+	jr OrbTypeMonsterAction_6719
 
-_LABEL_6707_:
+OrbTypeMonsterAction_6707:
 	ld (ix+22), <Data_7BD2
 	ld (ix+23), >Data_7BD2
-	jr _LABEL_6719_
+	jr OrbTypeMonsterAction_6719
 
-_LABEL_6711_:
+OrbTypeMonsterAction_6711:
 	ld (ix+22), <Data_7BD7
 	ld (ix+23), >Data_7BD7
-_LABEL_6719_:
+OrbTypeMonsterAction_6719:
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_661F_
-	ld (ix+1), >_LABEL_661F_
-	jp _LABEL_661F_
+	ld (ix+0), <OrbTypeMonsterAction_661F
+	ld (ix+1), >OrbTypeMonsterAction_661F
+	jp OrbTypeMonsterAction_661F
 
 ; 20th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6730:
+BloodOrbMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $50
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_650E_
-	ld (ix+1), >_LABEL_650E_
+	ld (ix+0), <OrbTypeMonsterAction_650E
+	ld (ix+1), >OrbTypeMonsterAction_650E
 	ld (ix+22), <Data_7BD2
 	ld (ix+23), >Data_7BD2
 	ret
 
 ; 28th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6757:
+DeathOrbMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
 	ld (ix+26), $E6
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_650E_
-	ld (ix+1), >_LABEL_650E_
+	ld (ix+0), <OrbTypeMonsterAction_650E
+	ld (ix+1), >OrbTypeMonsterAction_650E
 	ld (ix+22), <Data_7BD2
 	ld (ix+23), >Data_7BD2
 	ret
 
 ; 11th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_677E:
+WitchMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $3C
@@ -13386,11 +13375,11 @@ JumpTable4_677E:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C04
 	ld (ix+23), >Data_7C04
-	ld (ix+0), <_LABEL_67A1_
-	ld (ix+1), >_LABEL_67A1_
+	ld (ix+0), <WitchTypeMonsterAction_67A1
+	ld (ix+1), >WitchTypeMonsterAction_67A1
 	ret
 
-_LABEL_67A1_:
+WitchTypeMonsterAction_67A1:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -13399,86 +13388,86 @@ _LABEL_67A1_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_67BE_
+	jr z, WitchTypeMonsterAction_67BE
 	cp $09
-	jr z, _LABEL_67BE_
+	jr z, WitchTypeMonsterAction_67BE
 	jp _LABEL_481B_
 
-_LABEL_67BE_:
+WitchTypeMonsterAction_67BE:
 	call _LABEL_1EB1_
 	ret c
 	call _LABEL_557D_
-	jr nc, _LABEL_67DF_
+	jr nc, WitchTypeMonsterAction_67DF
 	call _LABEL_55BF_
-	jr c, _LABEL_67DF_
+	jr c, WitchTypeMonsterAction_67DF
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_6974_
-	ld (ix+1), >_LABEL_6974_
-	jp _LABEL_6974_
+	ld (ix+0), <WitchTypeMonsterAction_6974
+	ld (ix+1), >WitchTypeMonsterAction_6974
+	jp WitchTypeMonsterAction_6974
 
-_LABEL_67DF_:
+WitchTypeMonsterAction_67DF:
 	call GetRandomNumber
 	and $03
-	jr nz, _LABEL_67E8_
+	jr nz, WitchTypeMonsterAction_67E8
 	ld a, $02
-_LABEL_67E8_:
+WitchTypeMonsterAction_67E8:
 	ld (ix+25), a
 	call _LABEL_52A1_
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_67FC_
+	jr c, WitchTypeMonsterAction_67FC
 	rrca
-	jr c, _LABEL_680A_
+	jr c, WitchTypeMonsterAction_680A
 	rrca
-	jr c, _LABEL_6818_
-	jr _LABEL_6826_
+	jr c, WitchTypeMonsterAction_6818
+	jr WitchTypeMonsterAction_6826
 
-_LABEL_67FC_:
+WitchTypeMonsterAction_67FC:
 	ld (ix+4), $01
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_680A_
-	jr _LABEL_6831_
+	jr c, WitchTypeMonsterAction_680A
+	jr WitchTypeMonsterAction_6831
 
-_LABEL_680A_:
+WitchTypeMonsterAction_680A:
 	ld (ix+4), $02
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_6818_
-	jr _LABEL_6831_
+	jr c, WitchTypeMonsterAction_6818
+	jr WitchTypeMonsterAction_6831
 
-_LABEL_6818_:
+WitchTypeMonsterAction_6818:
 	ld (ix+4), $04
 	call _LABEL_538E_
 	call _LABEL_5420_
-	jr c, _LABEL_6826_
-	jr _LABEL_6831_
+	jr c, WitchTypeMonsterAction_6826
+	jr WitchTypeMonsterAction_6831
 
-_LABEL_6826_:
+WitchTypeMonsterAction_6826:
 	ld (ix+4), $08
 	call _LABEL_538E_
 	call _LABEL_5420_
 	ret c
-_LABEL_6831_:
+WitchTypeMonsterAction_6831:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+22), <Data_7BDC
 	ld (ix+23), >Data_7BDC
-	ld (ix+0), <_LABEL_684B_
-	ld (ix+1), >_LABEL_684B_
+	ld (ix+0), <WitchTypeMonsterAction_684B
+	ld (ix+1), >WitchTypeMonsterAction_684B
 
-_LABEL_684B_:
+WitchTypeMonsterAction_684B:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_6931_
+	jp z, WitchTypeMonsterAction_6931
 	ld a, (ix+24)
 	cp $04
-	call z, _LABEL_685D_
+	call z, WitchTypeMonsterAction_685D
 	ret
 
-_LABEL_685D_:
+WitchTypeMonsterAction_685D:
 	ld (ix+4), $00
 	ld (ix+22), <Data_7C04
 	ld (ix+23), >Data_7C04
@@ -13488,62 +13477,62 @@ _LABEL_685D_:
 	ld (ix+6), a
 	jp _LABEL_550D_
 
-_LABEL_6878_:
+WitchTypeMonsterAction_6878:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6889_
+	jr z, WitchTypeMonsterAction_6889
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_69C6_
+	call z, WitchTypeMonsterAction_69C6
 	ret
 
-_LABEL_6889_:
+WitchTypeMonsterAction_6889:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6895_
-	ld (ix+1), >_LABEL_6895_
+	ld (ix+0), <WitchTypeMonsterAction_6895
+	ld (ix+1), >WitchTypeMonsterAction_6895
 
-_LABEL_6895_:
+WitchTypeMonsterAction_6895:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_68AA_
-	ld (ix+1), >_LABEL_68AA_
+	ld (ix+0), <WitchTypeMonsterAction_68AA
+	ld (ix+1), >WitchTypeMonsterAction_68AA
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_68AA_:
+WitchTypeMonsterAction_68AA:
 	dec (ix+24)
-	jr z, _LABEL_68BC_
+	jr z, WitchTypeMonsterAction_68BC
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_68B9_
+	jr nz, WitchTypeMonsterAction_68B9
 	call _LABEL_5302_
-_LABEL_68B9_:
+WitchTypeMonsterAction_68B9:
 	jp _LABEL_5643_
 
-_LABEL_68BC_:
+WitchTypeMonsterAction_68BC:
 	ld a, (ix+29)
 	or a
-	jr nz, _LABEL_6931_
+	jr nz, WitchTypeMonsterAction_6931
 	ld a, $01
 	ld ($C102), a
 	call _LABEL_51A5_
-	jr c, _LABEL_6931_
+	jr c, WitchTypeMonsterAction_6931
 	ld a, (DizzinessTicksLeft)
 	or a
-	jr nz, _LABEL_6931_
+	jr nz, WitchTypeMonsterAction_6931
 	ld a, (BlindnessTicksLeft)
 	or a
-	jr nz, _LABEL_6931_
+	jr nz, WitchTypeMonsterAction_6931
 	call GetRandomNumber
 	cp $40
-	jp nc, _LABEL_6931_
+	jp nc, WitchTypeMonsterAction_6931
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_68EC_
-	ld (ix+1), >_LABEL_68EC_
+	ld (ix+0), <WitchTypeMonsterAction_68EC
+	ld (ix+1), >WitchTypeMonsterAction_68EC
 
-_LABEL_68EC_:
+WitchTypeMonsterAction_68EC:
 	dec (ix+24)
 	ret nz
 	call GetRandomNumber
@@ -13553,7 +13542,7 @@ _LABEL_68EC_:
 	push af
 	ld a, (ix+31)
 	cp $0A
-	jr z, _LABEL_6918_
+	jr z, WitchTypeMonsterAction_6918
 	pop af
 	call _LABEL_21BF_
 	ld a, $01
@@ -13563,105 +13552,105 @@ _LABEL_68EC_:
 	ld (BlindnessTicksLeft), a
 	ld a, PlayerFogMessage
 	ld (CurrentMessage), a
-	jr _LABEL_6921_
+	jr WitchTypeMonsterAction_6921
 
-_LABEL_6918_:
+WitchTypeMonsterAction_6918:
 	pop af
 	ld (DizzinessTicksLeft), a
 	ld a, PlayerLightheadedMessage
 	ld (CurrentMessage), a
-_LABEL_6921_:
+WitchTypeMonsterAction_6921:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_692D_
-	ld (ix+1), >_LABEL_692D_
+	ld (ix+0), <WitchTypeMonsterAction_692D
+	ld (ix+1), >WitchTypeMonsterAction_692D
 
-_LABEL_692D_:
+WitchTypeMonsterAction_692D:
 	dec (ix+24)
 	ret nz
-_LABEL_6931_:
+WitchTypeMonsterAction_6931:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), <_LABEL_67A1_
-	ld (ix+1), >_LABEL_67A1_
+	ld (ix+0), <WitchTypeMonsterAction_67A1
+	ld (ix+1), >WitchTypeMonsterAction_67A1
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6950_
+	jr c, WitchTypeMonsterAction_6950
 	rrca
-	jr c, _LABEL_6959_
+	jr c, WitchTypeMonsterAction_6959
 	rrca
-	jr c, _LABEL_6962_
+	jr c, WitchTypeMonsterAction_6962
 	rrca
-	jr c, _LABEL_696B_
+	jr c, WitchTypeMonsterAction_696B
 	ret
 
-_LABEL_6950_:
+WitchTypeMonsterAction_6950:
 	ld (ix+22), <Data_7BFF
 	ld (ix+23), >Data_7BFF
 	ret
 
-_LABEL_6959_:
+WitchTypeMonsterAction_6959:
 	ld (ix+22), <Data_7C04
 	ld (ix+23), >Data_7C04
 	ret
 
-_LABEL_6962_:
+WitchTypeMonsterAction_6962:
 	ld (ix+22), <Data_7C09
 	ld (ix+23), >Data_7C09
 	ret
 
-_LABEL_696B_:
+WitchTypeMonsterAction_696B:
 	ld (ix+22), <Data_7C0E
 	ld (ix+23), >Data_7C0E
 	ret
 
-_LABEL_6974_:
+WitchTypeMonsterAction_6974:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_6931_
+	jr z, WitchTypeMonsterAction_6931
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6991_
+	jr c, WitchTypeMonsterAction_6991
 	rrca
-	jr c, _LABEL_699B_
+	jr c, WitchTypeMonsterAction_699B
 	rrca
-	jr c, _LABEL_69A5_
-	jr _LABEL_69AF_
+	jr c, WitchTypeMonsterAction_69A5
+	jr WitchTypeMonsterAction_69AF
 
-_LABEL_6991_:
+WitchTypeMonsterAction_6991:
 	ld (ix+22), <Data_7BF8
 	ld (ix+23), >Data_7BF8
-	jr _LABEL_69B7_
+	jr WitchTypeMonsterAction_69B7
 
-_LABEL_699B_:
+WitchTypeMonsterAction_699B:
 	ld (ix+22), <Data_7BE3
 	ld (ix+23), >Data_7BE3
-	jr _LABEL_69B7_
+	jr WitchTypeMonsterAction_69B7
 
-_LABEL_69A5_:
+WitchTypeMonsterAction_69A5:
 	ld (ix+22), <Data_7BEA
 	ld (ix+23), >Data_7BEA
-	jr _LABEL_69B7_
+	jr WitchTypeMonsterAction_69B7
 
-_LABEL_69AF_:
+WitchTypeMonsterAction_69AF:
 	ld (ix+22), <Data_7BF1
 	ld (ix+23), >Data_7BF1
-_LABEL_69B7_:
+WitchTypeMonsterAction_69B7:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6878_
-	ld (ix+1), >_LABEL_6878_
-	jp _LABEL_6878_
+	ld (ix+0), <WitchTypeMonsterAction_6878
+	ld (ix+1), >WitchTypeMonsterAction_6878
+	jp WitchTypeMonsterAction_6878
 
-_LABEL_69C6_:
+WitchTypeMonsterAction_69C6:
 	ld hl, _LABEL_7A70_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 23rd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_69CF:
+MadWitchMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $A0
@@ -13669,12 +13658,12 @@ JumpTable4_69CF:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C04
 	ld (ix+23), >Data_7C04
-	ld (ix+0), <_LABEL_67A1_
-	ld (ix+1), >_LABEL_67A1_
+	ld (ix+0), <WitchTypeMonsterAction_67A1
+	ld (ix+1), >WitchTypeMonsterAction_67A1
 	ret
 
 ; 12th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_69F2:
+MystMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13684,11 +13673,11 @@ JumpTable4_69F2:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C13
 	ld (ix+23), >Data_7C13
-	ld (ix+0), <_LABEL_6A1D_
-	ld (ix+1), >_LABEL_6A1D_
+	ld (ix+0), <MystTypeMonsterAction_6A1D
+	ld (ix+1), >MystTypeMonsterAction_6A1D
 	ret
 
-_LABEL_6A1D_:
+MystTypeMonsterAction_6A1D:
 	call _LABEL_5567_
 	ret c
 	ld (ix+3), $65
@@ -13697,192 +13686,192 @@ _LABEL_6A1D_:
 	ret nz
 	ld a, (ix+31)
 	cp $0B
-	jr nz, _LABEL_6A38_
+	jr nz, MystTypeMonsterAction_6A38
 	ld a, (ix+28)
 	and $10
 	ret z
-_LABEL_6A38_:
-	ld (ix+0), <_LABEL_6A40_
-	ld (ix+1), >_LABEL_6A40_
+MystTypeMonsterAction_6A38:
+	ld (ix+0), <MystTypeMonsterAction_6A40
+	ld (ix+1), >MystTypeMonsterAction_6A40
 
-_LABEL_6A40_:
+MystTypeMonsterAction_6A40:
 	call _LABEL_553A_
 	ld a, (ix+28)
 	and $02
 	jp nz, _LABEL_481B_
 	ld a, (ix+31)
 	cp $0B
-	jr nz, _LABEL_6A5A_
+	jr nz, MystTypeMonsterAction_6A5A
 	ld a, (ix+28)
 	and $10
 	jp z, _LABEL_481B_
-_LABEL_6A5A_:
+MystTypeMonsterAction_6A5A:
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_6A68_
+	jr z, MystTypeMonsterAction_6A68
 	cp $09
-	jr z, _LABEL_6A68_
+	jr z, MystTypeMonsterAction_6A68
 	jp _LABEL_481B_
 
-_LABEL_6A68_:
+MystTypeMonsterAction_6A68:
 	call _LABEL_5473_
-	jr nc, _LABEL_6A8E_
-	ld (ix+0), <_LABEL_6B76_
-	ld (ix+1), >_LABEL_6B76_
-	jp _LABEL_6B76_
+	jr nc, MystTypeMonsterAction_6A8E
+	ld (ix+0), <MystTypeMonsterAction_6B76
+	ld (ix+1), >MystTypeMonsterAction_6B76
+	jp MystTypeMonsterAction_6B76
 
-_LABEL_6A78_:
+MystTypeMonsterAction_6A78:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6A84_
-	ld (ix+1), >_LABEL_6A84_
+	ld (ix+0), <MystTypeMonsterAction_6A84
+	ld (ix+1), >MystTypeMonsterAction_6A84
 
-_LABEL_6A84_:
+MystTypeMonsterAction_6A84:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_6B6A_
+	jp z, MystTypeMonsterAction_6B6A
 	ret
 
-_LABEL_6A8E_:
+MystTypeMonsterAction_6A8E:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_6AA6_
+	jr nz, MystTypeMonsterAction_6AA6
 	call _LABEL_51DE_
-_LABEL_6A98_:
+MystTypeMonsterAction_6A98:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6AAB_
+	jr c, MystTypeMonsterAction_6AAB
 	rrca
-	jr c, _LABEL_6AC3_
+	jr c, MystTypeMonsterAction_6AC3
 	rrca
-	jr c, _LABEL_6ADB_
-	jr _LABEL_6AF5_
+	jr c, MystTypeMonsterAction_6ADB
+	jr MystTypeMonsterAction_6AF5
 
-_LABEL_6AA6_:
+MystTypeMonsterAction_6AA6:
 	call _LABEL_52A1_
-	jr _LABEL_6A98_
+	jr MystTypeMonsterAction_6A98
 
-_LABEL_6AAB_:
+MystTypeMonsterAction_6AAB:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_6AB9_
+	jr c, MystTypeMonsterAction_6AB9
 	ld (ix+4), $01
-	jr _LABEL_6B02_
+	jr MystTypeMonsterAction_6B02
 
-_LABEL_6AB9_:
+MystTypeMonsterAction_6AB9:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_6A98_
+	jr MystTypeMonsterAction_6A98
 
-_LABEL_6AC3_:
+MystTypeMonsterAction_6AC3:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_6AD1_
+	jr c, MystTypeMonsterAction_6AD1
 	ld (ix+4), $02
-	jr _LABEL_6B02_
+	jr MystTypeMonsterAction_6B02
 
-_LABEL_6AD1_:
+MystTypeMonsterAction_6AD1:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_6A98_
+	jr MystTypeMonsterAction_6A98
 
-_LABEL_6ADB_:
+MystTypeMonsterAction_6ADB:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_6AE9_
+	jr c, MystTypeMonsterAction_6AE9
 	ld (ix+4), $04
-	jr _LABEL_6B02_
+	jr MystTypeMonsterAction_6B02
 
-_LABEL_6AE9_:
+MystTypeMonsterAction_6AE9:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_6A98_
+	jr MystTypeMonsterAction_6A98
 
-_LABEL_6AF5_:
+MystTypeMonsterAction_6AF5:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_6A78_
+	jp c, MystTypeMonsterAction_6A78
 	ld (ix+4), $08
-_LABEL_6B02_:
+MystTypeMonsterAction_6B02:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6B14_
-	ld (ix+1), >_LABEL_6B14_
+	ld (ix+0), <MystTypeMonsterAction_6B14
+	ld (ix+1), >MystTypeMonsterAction_6B14
 
-_LABEL_6B14_:
+MystTypeMonsterAction_6B14:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6B6A_
+	jr z, MystTypeMonsterAction_6B6A
 	ret
 
-_LABEL_6B20_:
+MystTypeMonsterAction_6B20:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6B31_
+	jr z, MystTypeMonsterAction_6B31
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_6B97_
+	call z, MystTypeMonsterAction_6B97
 	ret
 
-_LABEL_6B31_:
+MystTypeMonsterAction_6B31:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6B3D_
-	ld (ix+1), >_LABEL_6B3D_
+	ld (ix+0), <MystTypeMonsterAction_6B3D
+	ld (ix+1), >MystTypeMonsterAction_6B3D
 
-_LABEL_6B3D_:
+MystTypeMonsterAction_6B3D:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_6B55_
-	ld (ix+1), >_LABEL_6B55_
+	ld (ix+0), <MystTypeMonsterAction_6B55
+	ld (ix+1), >MystTypeMonsterAction_6B55
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_6B55_:
+MystTypeMonsterAction_6B55:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6B6A_
+	jr z, MystTypeMonsterAction_6B6A
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_6B67_
+	jr nz, MystTypeMonsterAction_6B67
 	call _LABEL_5302_
-_LABEL_6B67_:
+MystTypeMonsterAction_6B67:
 	jp _LABEL_5643_
 
-_LABEL_6B6A_:
+MystTypeMonsterAction_6B6A:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_6A40_
-	ld (ix+1), >_LABEL_6A40_
+	ld (ix+0), <MystTypeMonsterAction_6A40
+	ld (ix+1), >MystTypeMonsterAction_6A40
 	ret
 
-_LABEL_6B76_:
+MystTypeMonsterAction_6B76:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_6B6A_
+	jr z, MystTypeMonsterAction_6B6A
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6B20_
-	ld (ix+1), >_LABEL_6B20_
-	jp _LABEL_6B20_
+	ld (ix+0), <MystTypeMonsterAction_6B20
+	ld (ix+1), >MystTypeMonsterAction_6B20
+	jp MystTypeMonsterAction_6B20
 
-_LABEL_6B97_:
+MystTypeMonsterAction_6B97:
 	ld hl, _LABEL_7A8D_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 24th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6BA0:
+DeathMystMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -13892,12 +13881,12 @@ JumpTable4_6BA0:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C13
 	ld (ix+23), >Data_7C13
-	ld (ix+0), <_LABEL_6A1D_
-	ld (ix+1), >_LABEL_6A1D_
+	ld (ix+0), <MystTypeMonsterAction_6A1D
+	ld (ix+1), >MystTypeMonsterAction_6A1D
 	ret
 
 ; 13th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6BCB:
+DemijawMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $04
@@ -13906,11 +13895,11 @@ JumpTable4_6BCB:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C18
 	ld (ix+23), >Data_7C18
-	ld (ix+0), <_LABEL_6BF2_
-	ld (ix+1), >_LABEL_6BF2_
+	ld (ix+0), <DemijawMonsterAction_6BF2
+	ld (ix+1), >DemijawMonsterAction_6BF2
 	ret
 
-_LABEL_6BF2_:
+DemijawMonsterAction_6BF2:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -13919,167 +13908,167 @@ _LABEL_6BF2_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_6C0F_
+	jr z, DemijawMonsterAction_6C0F
 	cp $09
-	jr z, _LABEL_6C0F_
+	jr z, DemijawMonsterAction_6C0F
 	jp _LABEL_481B_
 
-_LABEL_6C0F_:
+DemijawMonsterAction_6C0F:
 	ld (ix+25), $02
-_LABEL_6C13_:
+DemijawMonsterAction_6C13:
 	call _LABEL_5473_
-	jr nc, _LABEL_6C39_
-	ld (ix+0), <_LABEL_6D26_
-	ld (ix+1), >_LABEL_6D26_
-	jp _LABEL_6D26_
+	jr nc, DemijawMonsterAction_6C39
+	ld (ix+0), <DemijawMonsterAction_6D26
+	ld (ix+1), >DemijawMonsterAction_6D26
+	jp DemijawMonsterAction_6D26
 
-_LABEL_6C23_:
+DemijawMonsterAction_6C23:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6C2F_
-	ld (ix+1), >_LABEL_6C2F_
+	ld (ix+0), <DemijawMonsterAction_6C2F
+	ld (ix+1), >DemijawMonsterAction_6C2F
 
-_LABEL_6C2F_:
+DemijawMonsterAction_6C2F:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_6D16_
+	jp z, DemijawMonsterAction_6D16
 	ret
 
-_LABEL_6C39_:
+DemijawMonsterAction_6C39:
 	call GetRandomNumber
 	cp $80
-	jr c, _LABEL_6C4C_
+	jr c, DemijawMonsterAction_6C4C
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_6C4C_
+	jr nz, DemijawMonsterAction_6C4C
 	call _LABEL_51DE_
-	jr _LABEL_6C4F_
+	jr DemijawMonsterAction_6C4F
 
-_LABEL_6C4C_:
+DemijawMonsterAction_6C4C:
 	call _LABEL_52A1_
-_LABEL_6C4F_:
+DemijawMonsterAction_6C4F:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6C5D_
+	jr c, DemijawMonsterAction_6C5D
 	rrca
-	jr c, _LABEL_6C75_
+	jr c, DemijawMonsterAction_6C75
 	rrca
-	jr c, _LABEL_6C8D_
-	jr _LABEL_6CA7_
+	jr c, DemijawMonsterAction_6C8D
+	jr DemijawMonsterAction_6CA7
 
-_LABEL_6C5D_:
+DemijawMonsterAction_6C5D:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_6C6B_
+	jr c, DemijawMonsterAction_6C6B
 	ld (ix+4), $01
-	jr _LABEL_6CB4_
+	jr DemijawMonsterAction_6CB4
 
-_LABEL_6C6B_:
+DemijawMonsterAction_6C6B:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_6C4F_
+	jr DemijawMonsterAction_6C4F
 
-_LABEL_6C75_:
+DemijawMonsterAction_6C75:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_6C83_
+	jr c, DemijawMonsterAction_6C83
 	ld (ix+4), $02
-	jr _LABEL_6CB4_
+	jr DemijawMonsterAction_6CB4
 
-_LABEL_6C83_:
+DemijawMonsterAction_6C83:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_6C4F_
+	jr DemijawMonsterAction_6C4F
 
-_LABEL_6C8D_:
+DemijawMonsterAction_6C8D:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_6C9B_
+	jr c, DemijawMonsterAction_6C9B
 	ld (ix+4), $04
-	jr _LABEL_6CB4_
+	jr DemijawMonsterAction_6CB4
 
-_LABEL_6C9B_:
+DemijawMonsterAction_6C9B:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_6C4F_
+	jr DemijawMonsterAction_6C4F
 
-_LABEL_6CA7_:
+DemijawMonsterAction_6CA7:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_6C23_
+	jp c, DemijawMonsterAction_6C23
 	ld (ix+4), $08
-_LABEL_6CB4_:
+DemijawMonsterAction_6CB4:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $04
-	ld (ix+0), <_LABEL_6CC6_
-	ld (ix+1), >_LABEL_6CC6_
+	ld (ix+0), <DemijawMonsterAction_6CC6
+	ld (ix+1), >DemijawMonsterAction_6CC6
 
-_LABEL_6CC6_:
+DemijawMonsterAction_6CC6:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6CD2_
+	jr z, DemijawMonsterAction_6CD2
 	ret
 
-_LABEL_6CD2_:
+DemijawMonsterAction_6CD2:
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
 	ld (ix+6), a
 	dec (ix+25)
-	jr z, _LABEL_6D16_
-	ld (ix+0), <_LABEL_6C13_
-	ld (ix+1), >_LABEL_6C13_
+	jr z, DemijawMonsterAction_6D16
+	ld (ix+0), <DemijawMonsterAction_6C13
+	ld (ix+1), >DemijawMonsterAction_6C13
 	ret
 
-_LABEL_6CEC_:
+DemijawMonsterAction_6CEC:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_6CFC_
-	ld (ix+1), >_LABEL_6CFC_
+	ld (ix+0), <DemijawMonsterAction_6CFC
+	ld (ix+1), >DemijawMonsterAction_6CFC
 
-_LABEL_6CFC_:
+DemijawMonsterAction_6CFC:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6D16_
+	jr z, DemijawMonsterAction_6D16
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_6D13_
+	jr nz, DemijawMonsterAction_6D13
 	call _LABEL_5302_
-_LABEL_6D13_:
+DemijawMonsterAction_6D13:
 	jp _LABEL_5643_
 
-_LABEL_6D16_:
+DemijawMonsterAction_6D16:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), <_LABEL_6BF2_
-	ld (ix+1), >_LABEL_6BF2_
+	ld (ix+0), <DemijawMonsterAction_6BF2
+	ld (ix+1), >DemijawMonsterAction_6BF2
 	ret
 
-_LABEL_6D26_:
+DemijawMonsterAction_6D26:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_6D16_
+	jr z, DemijawMonsterAction_6D16
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6CEC_
-	ld (ix+1), >_LABEL_6CEC_
-	jp _LABEL_6CEC_
+	ld (ix+0), <DemijawMonsterAction_6CEC
+	ld (ix+1), >DemijawMonsterAction_6CEC
+	jp DemijawMonsterAction_6CEC
 
 ; 14th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6D47:
+KrakenMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14087,11 +14076,11 @@ JumpTable4_6D47:
 	ld (ix+27), $00
 	ld (ix+3), $6C
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_6D6A_
-	ld (ix+1), >_LABEL_6D6A_
+	ld (ix+0), <KrakenTypeMonsterAction_6D6A
+	ld (ix+1), >KrakenTypeMonsterAction_6D6A
 	ret
 
-_LABEL_6D6A_:
+KrakenTypeMonsterAction_6D6A:
 	call _LABEL_5567_
 	ret c
 	ld a, (ix+28)
@@ -14099,155 +14088,155 @@ _LABEL_6D6A_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_6D84_
+	jr z, KrakenTypeMonsterAction_6D84
 	cp $09
-	jr z, _LABEL_6D84_
+	jr z, KrakenTypeMonsterAction_6D84
 	jp _LABEL_481B_
 
-_LABEL_6D84_:
+KrakenTypeMonsterAction_6D84:
 	call _LABEL_5473_
-	jr nc, _LABEL_6DA7_
-	ld (ix+0), <_LABEL_6EF6_
-	ld (ix+1), >_LABEL_6EF6_
-	jp _LABEL_6EF6_
+	jr nc, KrakenTypeMonsterAction_6DA7
+	ld (ix+0), <KrakenTypeMonsterAction_6EF6
+	ld (ix+1), >KrakenTypeMonsterAction_6EF6
+	jp KrakenTypeMonsterAction_6EF6
 
-_LABEL_6D94_:
+KrakenTypeMonsterAction_6D94:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6DA0_
-	ld (ix+1), >_LABEL_6DA0_
+	ld (ix+0), <KrakenTypeMonsterAction_6DA0
+	ld (ix+1), >KrakenTypeMonsterAction_6DA0
 
-_LABEL_6DA0_:
+KrakenTypeMonsterAction_6DA0:
 	dec (ix+24)
-	jp z, _LABEL_6EE6_
+	jp z, KrakenTypeMonsterAction_6EE6
 	ret
 
-_LABEL_6DA7_:
+KrakenTypeMonsterAction_6DA7:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_6DC4_
+	jr nz, KrakenTypeMonsterAction_6DC4
 	call _LABEL_568C_
-	jr nc, _LABEL_6DC4_
+	jr nc, KrakenTypeMonsterAction_6DC4
 	call _LABEL_51DE_
-_LABEL_6DB6_:
+KrakenTypeMonsterAction_6DB6:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6DC9_
+	jr c, KrakenTypeMonsterAction_6DC9
 	rrca
-	jr c, _LABEL_6DEA_
+	jr c, KrakenTypeMonsterAction_6DEA
 	rrca
-	jr c, _LABEL_6E0B_
-	jr _LABEL_6E2E_
+	jr c, KrakenTypeMonsterAction_6E0B
+	jr KrakenTypeMonsterAction_6E2E
 
-_LABEL_6DC4_:
+KrakenTypeMonsterAction_6DC4:
 	call _LABEL_52A1_
-	jr _LABEL_6DB6_
+	jr KrakenTypeMonsterAction_6DB6
 
-_LABEL_6DC9_:
+KrakenTypeMonsterAction_6DC9:
 	ld hl, $FFE0
 	call _LABEL_5445_
-	jr c, _LABEL_6DE0_
+	jr c, KrakenTypeMonsterAction_6DE0
 	call _LABEL_5420_
-	jr c, _LABEL_6DE0_
+	jr c, KrakenTypeMonsterAction_6DE0
 	ld (ix+4), $01
 	ld (ix+3), $6F
-	jr _LABEL_6E45_
+	jr KrakenTypeMonsterAction_6E45
 
-_LABEL_6DE0_:
+KrakenTypeMonsterAction_6DE0:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_6DB6_
+	jr KrakenTypeMonsterAction_6DB6
 
-_LABEL_6DEA_:
+KrakenTypeMonsterAction_6DEA:
 	ld hl, $0020
 	call _LABEL_5445_
-	jr c, _LABEL_6E01_
+	jr c, KrakenTypeMonsterAction_6E01
 	call _LABEL_5420_
-	jr c, _LABEL_6E01_
+	jr c, KrakenTypeMonsterAction_6E01
 	ld (ix+4), $02
 	ld (ix+3), $6E
-	jr _LABEL_6E45_
+	jr KrakenTypeMonsterAction_6E45
 
-_LABEL_6E01_:
+KrakenTypeMonsterAction_6E01:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_6DB6_
+	jr KrakenTypeMonsterAction_6DB6
 
-_LABEL_6E0B_:
+KrakenTypeMonsterAction_6E0B:
 	ld hl, $FFFF
 	call _LABEL_5445_
-	jr c, _LABEL_6E22_
+	jr c, KrakenTypeMonsterAction_6E22
 	call _LABEL_5420_
-	jr c, _LABEL_6E22_
+	jr c, KrakenTypeMonsterAction_6E22
 	ld (ix+4), $04
 	ld (ix+3), $6C
-	jr _LABEL_6E45_
+	jr KrakenTypeMonsterAction_6E45
 
-_LABEL_6E22_:
+KrakenTypeMonsterAction_6E22:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_6DB6_
+	jr KrakenTypeMonsterAction_6DB6
 
-_LABEL_6E2E_:
+KrakenTypeMonsterAction_6E2E:
 	ld hl, $0001
 	call _LABEL_5445_
-	jp c, _LABEL_6D94_
+	jp c, KrakenTypeMonsterAction_6D94
 	call _LABEL_5420_
-	jp c, _LABEL_6D94_
+	jp c, KrakenTypeMonsterAction_6D94
 	ld (ix+4), $08
 	ld (ix+3), $6D
-_LABEL_6E45_:
+KrakenTypeMonsterAction_6E45:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_6E57_
-	ld (ix+1), >_LABEL_6E57_
+	ld (ix+0), <KrakenTypeMonsterAction_6E57
+	ld (ix+1), >KrakenTypeMonsterAction_6E57
 
-_LABEL_6E57_:
+KrakenTypeMonsterAction_6E57:
 	call _LABEL_47BB_
 	dec (ix+24)
-	jp z, _LABEL_6EE6_
+	jp z, KrakenTypeMonsterAction_6EE6
 	ret
 
-_LABEL_6E61_:
+KrakenTypeMonsterAction_6E61:
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-	ld (ix+0), <_LABEL_6E71_
-	ld (ix+1), >_LABEL_6E71_
+	ld (ix+0), <KrakenTypeMonsterAction_6E71
+	ld (ix+1), >KrakenTypeMonsterAction_6E71
 
-_LABEL_6E71_:
+KrakenTypeMonsterAction_6E71:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6E8B_
+	jr z, KrakenTypeMonsterAction_6E8B
 	ld a, (ix+30)
 	or a
 	ret z
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_6E88_
+	jr nz, KrakenTypeMonsterAction_6E88
 	call _LABEL_5302_
-_LABEL_6E88_:
+KrakenTypeMonsterAction_6E88:
 	jp _LABEL_5643_
 
-_LABEL_6E8B_:
+KrakenTypeMonsterAction_6E8B:
 	ld a, (ix+29)
 	or a
-	jr nz, _LABEL_6EE6_
+	jr nz, KrakenTypeMonsterAction_6EE6
 	ld a, $01
 	ld ($C102), a
 	ld a, (ix+28)
 	and $08
-	jr nz, _LABEL_6EE6_
+	jr nz, KrakenTypeMonsterAction_6EE6
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_6EE6_
+	jr nc, KrakenTypeMonsterAction_6EE6
 	ld a, (Food)
 	or a
-	jr z, _LABEL_6EE6_
+	jr z, KrakenTypeMonsterAction_6EE6
 	call GetRandomNumber
 	and $07
 	ld b, $08
@@ -14257,79 +14246,79 @@ _LABEL_6E8B_:
 	ld a, (Food)
 	sub b
 	daa
-	jr c, _LABEL_6EBD_
-	jr _LABEL_6EBE_
+	jr c, KrakenTypeMonsterAction_6EBD
+	jr KrakenTypeMonsterAction_6EBE
 
-_LABEL_6EBD_:
+KrakenTypeMonsterAction_6EBD:
 	xor a
-_LABEL_6EBE_:
+KrakenTypeMonsterAction_6EBE:
 	ld (Food), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6ECD_
-	ld (ix+1), >_LABEL_6ECD_
+	ld (ix+0), <KrakenTypeMonsterAction_6ECD
+	ld (ix+1), >KrakenTypeMonsterAction_6ECD
 
-_LABEL_6ECD_:
+KrakenTypeMonsterAction_6ECD:
 	dec (ix+24)
 	ret nz
 	ld a, FoodStolenMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6EE2_
-	ld (ix+1), >_LABEL_6EE2_
+	ld (ix+0), <KrakenTypeMonsterAction_6EE2
+	ld (ix+1), >KrakenTypeMonsterAction_6EE2
 
-_LABEL_6EE2_:
+KrakenTypeMonsterAction_6EE2:
 	dec (ix+24)
 	ret nz
-_LABEL_6EE6_:
+KrakenTypeMonsterAction_6EE6:
 	call _LABEL_5655_
 	ld (ix+25), $00
-	ld (ix+0), <_LABEL_6D6A_
-	ld (ix+1), >_LABEL_6D6A_
+	ld (ix+0), <KrakenTypeMonsterAction_6D6A
+	ld (ix+1), >KrakenTypeMonsterAction_6D6A
 	ret
 
-_LABEL_6EF6_:
+KrakenTypeMonsterAction_6EF6:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_6EE6_
+	jr z, KrakenTypeMonsterAction_6EE6
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_6F13_
+	jr c, KrakenTypeMonsterAction_6F13
 	rrca
-	jr c, _LABEL_6F1D_
+	jr c, KrakenTypeMonsterAction_6F1D
 	rrca
-	jr c, _LABEL_6F27_
-	jr _LABEL_6F31_
+	jr c, KrakenTypeMonsterAction_6F27
+	jr KrakenTypeMonsterAction_6F31
 
-_LABEL_6F13_:
+KrakenTypeMonsterAction_6F13:
 	ld (ix+22), <Data_7C39
 	ld (ix+23), >Data_7C39
-	jr _LABEL_6F39_
+	jr KrakenTypeMonsterAction_6F39
 
-_LABEL_6F1D_:
+KrakenTypeMonsterAction_6F1D:
 	ld (ix+22), <Data_7C46
 	ld (ix+23), >Data_7C46
-	jr _LABEL_6F39_
+	jr KrakenTypeMonsterAction_6F39
 
-_LABEL_6F27_:
+KrakenTypeMonsterAction_6F27:
 	ld (ix+22), <Data_7C1F
 	ld (ix+23), >Data_7C1F
-	jr _LABEL_6F39_
+	jr KrakenTypeMonsterAction_6F39
 
-_LABEL_6F31_:
+KrakenTypeMonsterAction_6F31:
 	ld (ix+22), <Data_7C2C
 	ld (ix+23), >Data_7C2C
-_LABEL_6F39_:
+KrakenTypeMonsterAction_6F39:
 	ld (ix+24), $12
-	ld (ix+0), <_LABEL_6E61_
-	ld (ix+1), >_LABEL_6E61_
-	jp _LABEL_6E61_
+	ld (ix+0), <KrakenTypeMonsterAction_6E61
+	ld (ix+1), >KrakenTypeMonsterAction_6E61
+	jp KrakenTypeMonsterAction_6E61
 
 ; 30th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6F48:
+KrakosMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14337,12 +14326,12 @@ JumpTable4_6F48:
 	ld (ix+27), $00
 	ld (ix+3), $6C
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_6D6A_
-	ld (ix+1), >_LABEL_6D6A_
+	ld (ix+0), <KrakenTypeMonsterAction_6D6A
+	ld (ix+1), >KrakenTypeMonsterAction_6D6A
 	ret
 
 ; 17th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_6F6B:
+RootMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $5A
@@ -14350,11 +14339,11 @@ JumpTable4_6F6B:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C53
 	ld (ix+23), >Data_7C53
-	ld (ix+0), <_LABEL_6F8E_
-	ld (ix+1), >_LABEL_6F8E_
+	ld (ix+0), <RootTypeMonsterAction_6F8E
+	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
 
-_LABEL_6F8E_:
+RootTypeMonsterAction_6F8E:
 	call _LABEL_5567_
 	ret c
 	call _LABEL_553A_
@@ -14363,12 +14352,12 @@ _LABEL_6F8E_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_6FAB_
+	jr z, RootTypeMonsterAction_6FAB
 	cp $09
-	jr z, _LABEL_6FAB_
+	jr z, RootTypeMonsterAction_6FAB
 	jp _LABEL_481B_
 
-_LABEL_6FAB_:
+RootTypeMonsterAction_6FAB:
 	call _LABEL_1EB1_
 	ret c
 	call _LABEL_557D_
@@ -14378,78 +14367,78 @@ _LABEL_6FAB_:
 	call GetRandomNumber
 	cp $40
 	ret c
-	ld (ix+0), <_LABEL_70B4_
-	ld (ix+1), >_LABEL_70B4_
-	jp _LABEL_70B4_
+	ld (ix+0), <RootTypeMonsterAction_70B4
+	ld (ix+1), >RootTypeMonsterAction_70B4
+	jp RootTypeMonsterAction_70B4
 
-_LABEL_6FC8_:
+RootTypeMonsterAction_6FC8:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_6FD9_
+	jr z, RootTypeMonsterAction_6FD9
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_70D5_
+	call z, RootTypeMonsterAction_70D5
 	ret
 
-_LABEL_6FD9_:
+RootTypeMonsterAction_6FD9:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6FE5_
-	ld (ix+1), >_LABEL_6FE5_
+	ld (ix+0), <RootTypeMonsterAction_6FE5
+	ld (ix+1), >RootTypeMonsterAction_6FE5
 
-_LABEL_6FE5_:
+RootTypeMonsterAction_6FE5:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_6FFD_
-	ld (ix+1), >_LABEL_6FFD_
+	ld (ix+0), <RootTypeMonsterAction_6FFD
+	ld (ix+1), >RootTypeMonsterAction_6FFD
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_6FFD_:
+RootTypeMonsterAction_6FFD:
 	call _LABEL_553A_
 
 ; 5th entry of Jump Table from 1C108 (indexed by PlaySoundSlot)
-_LABEL_7000_:
+UnusedSoundEngineCallback:
 	dec (ix+24)
-	jr z, _LABEL_7012_
+	jr z, RootTypeMonsterAction_7012
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_700F_
+	jr nz, RootTypeMonsterAction_700F
 	call _LABEL_5302_
-_LABEL_700F_:
+RootTypeMonsterAction_700F:
 	jp _LABEL_5643_
 
-_LABEL_7012_:
+RootTypeMonsterAction_7012:
 	ld a, (ix+29)
 	or a
-	jp nz, _LABEL_709E_
+	jp nz, RootTypeMonsterAction_709E
 	ld a, (ix+31)
 	cp $10
-	jr z, _LABEL_709E_
+	jr z, RootTypeMonsterAction_709E
 	cp $18
-	jr z, _LABEL_702B_
+	jr z, RootTypeMonsterAction_702B
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_709E_
-_LABEL_702B_:
+	jr nc, RootTypeMonsterAction_709E
+RootTypeMonsterAction_702B:
 	ld a, $01
 	ld ($C102), a
 	ld a, (ix+28)
 	and $08
-	jr nz, _LABEL_709E_
+	jr nz, RootTypeMonsterAction_709E
 	ld hl, (MaxHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_709E_
+	jr z, RootTypeMonsterAction_709E
 	call GetRandomNumber
 	and $07
 	ld b, $08
 	push af
 	ld a, (ix+31)
 	cp $18
-	call z, _LABEL_7082_
+	call z, RootTypeMonsterAction_7082
 	pop af
 	add a, b
 	ld c, a
@@ -14457,72 +14446,72 @@ _LABEL_702B_:
 	ld hl, (MaxHPLow)
 	or a
 	sbc hl, bc
-	call c, _LABEL_7077_
+	call c, RootTypeMonsterAction_7077
 	ld (MaxHPLow), hl
 	ld bc, (CurrentHPLow)
 	or a
 	sbc hl, bc
-	call c, _LABEL_707B_
+	call c, RootTypeMonsterAction_707B
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_7085_
-	ld (ix+1), >_LABEL_7085_
-	jr _LABEL_7085_
+	ld (ix+0), <RootTypeMonsterAction_7085
+	ld (ix+1), >RootTypeMonsterAction_7085
+	jr RootTypeMonsterAction_7085
 
-_LABEL_7077_:
+RootTypeMonsterAction_7077:
 	ld hl, $0000
 	ret
 
-_LABEL_707B_:
+RootTypeMonsterAction_707B:
 	ld hl, (MaxHPLow)
 	ld (CurrentHPLow), hl
 	ret
 
-_LABEL_7082_:
+RootTypeMonsterAction_7082:
 	ld b, $0C
 	ret
 
-_LABEL_7085_:
+RootTypeMonsterAction_7085:
 	dec (ix+24)
 	ret nz
 	ld a, PlayerStrengthDownMessage
 	ld (CurrentMessage), a
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_709A_
-	ld (ix+1), >_LABEL_709A_
+	ld (ix+0), <RootTypeMonsterAction_709A
+	ld (ix+1), >RootTypeMonsterAction_709A
 
-_LABEL_709A_:
+RootTypeMonsterAction_709A:
 	dec (ix+24)
 	ret nz
-_LABEL_709E_:
+RootTypeMonsterAction_709E:
 	ld a, $01
 	ld ($C102), a
 	ld (ix+30), $00
 	ld (ix+24), $00
-	ld (ix+0), <_LABEL_6F8E_
-	ld (ix+1), >_LABEL_6F8E_
+	ld (ix+0), <RootTypeMonsterAction_6F8E
+	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
 
-_LABEL_70B4_:
+RootTypeMonsterAction_70B4:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_709E_
+	jr z, RootTypeMonsterAction_709E
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_6FC8_
-	ld (ix+1), >_LABEL_6FC8_
-	jp _LABEL_6FC8_
+	ld (ix+0), <RootTypeMonsterAction_6FC8
+	ld (ix+1), >RootTypeMonsterAction_6FC8
+	jp RootTypeMonsterAction_6FC8
 
-_LABEL_70D5_:
+RootTypeMonsterAction_70D5:
 	ld hl, _LABEL_7AA2_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 21st entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_70DE:
+BloodRootMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $5F
@@ -14530,12 +14519,12 @@ JumpTable4_70DE:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C53
 	ld (ix+23), >Data_7C53
-	ld (ix+0), <_LABEL_6F8E_
-	ld (ix+1), >_LABEL_6F8E_
+	ld (ix+0), <RootTypeMonsterAction_6F8E
+	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
 
 ; 25th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_7101:
+DeathRootMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+26), $64
@@ -14543,12 +14532,12 @@ JumpTable4_7101:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7C53
 	ld (ix+23), >Data_7C53
-	ld (ix+0), <_LABEL_6F8E_
-	ld (ix+1), >_LABEL_6F8E_
+	ld (ix+0), <RootTypeMonsterAction_6F8E
+	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
 
 ; 31st entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_7124:
+DragonMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14556,215 +14545,215 @@ JumpTable4_7124:
 	ld (ix+27), $01
 	ld (ix+3), $88
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_7147_
-	ld (ix+1), >_LABEL_7147_
+	ld (ix+0), <DragonMonsterAction_7147
+	ld (ix+1), >DragonMonsterAction_7147
 	ret
 
-_LABEL_7147_:
+DragonMonsterAction_7147:
 	call _LABEL_5567_
 	ret c
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_7159_
+	jr z, DragonMonsterAction_7159
 	cp $09
-	jr z, _LABEL_7159_
+	jr z, DragonMonsterAction_7159
 	jp _LABEL_481B_
 
-_LABEL_7159_:
+DragonMonsterAction_7159:
 	call _LABEL_1EB1_
 	ret c
 	call _LABEL_5473_
-	jr c, _LABEL_7173_
+	jr c, DragonMonsterAction_7173
 	call _LABEL_557D_
-	jr nc, _LABEL_7192_
+	jr nc, DragonMonsterAction_7192
 	call _LABEL_55BF_
-	jr c, _LABEL_7192_
+	jr c, DragonMonsterAction_7192
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_7192_
-_LABEL_7173_:
-	ld (ix+0), <_LABEL_7288_
-	ld (ix+1), >_LABEL_7288_
-	jp _LABEL_7288_
+	jr nc, DragonMonsterAction_7192
+DragonMonsterAction_7173:
+	ld (ix+0), <DragonMonsterAction_7288
+	ld (ix+1), >DragonMonsterAction_7288
+	jp DragonMonsterAction_7288
 
-_LABEL_717E_:
+DragonMonsterAction_717E:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_718B_
-	ld (ix+1), >_LABEL_718B_
+	ld (ix+0), <DragonMonsterAction_718B
+	ld (ix+1), >DragonMonsterAction_718B
 	ret
 
-_LABEL_718B_:
+DragonMonsterAction_718B:
 	dec (ix+24)
-	jp z, _LABEL_727C_
+	jp z, DragonMonsterAction_727C
 	ret
 
-_LABEL_7192_:
+DragonMonsterAction_7192:
 	call _LABEL_51DE_
-_LABEL_7195_:
+DragonMonsterAction_7195:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_71A3_
+	jr c, DragonMonsterAction_71A3
 	rrca
-	jr c, _LABEL_71C3_
+	jr c, DragonMonsterAction_71C3
 	rrca
-	jr c, _LABEL_71E3_
-	jr _LABEL_7205_
+	jr c, DragonMonsterAction_71E3
+	jr DragonMonsterAction_7205
 
-_LABEL_71A3_:
+DragonMonsterAction_71A3:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_71B9_
+	jr c, DragonMonsterAction_71B9
 	ld (ix+4), $01
 	ld (ix+22), <Data_7C62
 	ld (ix+23), >Data_7C62
-	jr _LABEL_721A_
+	jr DragonMonsterAction_721A
 
-_LABEL_71B9_:
+DragonMonsterAction_71B9:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_7195_
+	jr DragonMonsterAction_7195
 
-_LABEL_71C3_:
+DragonMonsterAction_71C3:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_71D9_
+	jr c, DragonMonsterAction_71D9
 	ld (ix+4), $02
 	ld (ix+22), <Data_7C67
 	ld (ix+23), >Data_7C67
-	jr _LABEL_721A_
+	jr DragonMonsterAction_721A
 
-_LABEL_71D9_:
+DragonMonsterAction_71D9:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_7195_
+	jr DragonMonsterAction_7195
 
-_LABEL_71E3_:
+DragonMonsterAction_71E3:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_71F9_
+	jr c, DragonMonsterAction_71F9
 	ld (ix+4), $04
 	ld (ix+22), <Data_7C58
 	ld (ix+23), >Data_7C58
-	jr _LABEL_721A_
+	jr DragonMonsterAction_721A
 
-_LABEL_71F9_:
+DragonMonsterAction_71F9:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_7195_
+	jr DragonMonsterAction_7195
 
-_LABEL_7205_:
+DragonMonsterAction_7205:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_717E_
+	jp c, DragonMonsterAction_717E
 	ld (ix+4), $08
 	ld (ix+22), <Data_7C5D
 	ld (ix+23), >Data_7C5D
-_LABEL_721A_:
+DragonMonsterAction_721A:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_722C_
-	ld (ix+1), >_LABEL_722C_
+	ld (ix+0), <DragonMonsterAction_722C
+	ld (ix+1), >DragonMonsterAction_722C
 
-_LABEL_722C_:
+DragonMonsterAction_722C:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_727C_
+	jr z, DragonMonsterAction_727C
 	ret
 
-_LABEL_7238_:
+DragonMonsterAction_7238:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_7249_
+	jr z, DragonMonsterAction_7249
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_72DA_
+	call z, DragonMonsterAction_72DA
 	ret
 
-_LABEL_7249_:
+DragonMonsterAction_7249:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_7255_
-	ld (ix+1), >_LABEL_7255_
+	ld (ix+0), <DragonMonsterAction_7255
+	ld (ix+1), >DragonMonsterAction_7255
 
-_LABEL_7255_:
+DragonMonsterAction_7255:
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_726A_
-	ld (ix+1), >_LABEL_726A_
+	ld (ix+0), <DragonMonsterAction_726A
+	ld (ix+1), >DragonMonsterAction_726A
 	ld a, SoundEffectA4
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_726A_:
+DragonMonsterAction_726A:
 	dec (ix+24)
-	jr z, _LABEL_727C_
+	jr z, DragonMonsterAction_727C
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_7279_
+	jr nz, DragonMonsterAction_7279
 	call _LABEL_5302_
-_LABEL_7279_:
+DragonMonsterAction_7279:
 	jp _LABEL_5643_
 
-_LABEL_727C_:
+DragonMonsterAction_727C:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_7147_
-	ld (ix+1), >_LABEL_7147_
+	ld (ix+0), <DragonMonsterAction_7147
+	ld (ix+1), >DragonMonsterAction_7147
 	ret
 
-_LABEL_7288_:
+DragonMonsterAction_7288:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_727C_
+	jr z, DragonMonsterAction_727C
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_72A5_
+	jr c, DragonMonsterAction_72A5
 	rrca
-	jr c, _LABEL_72AF_
+	jr c, DragonMonsterAction_72AF
 	rrca
-	jr c, _LABEL_72B9_
-	jr _LABEL_72C3_
+	jr c, DragonMonsterAction_72B9
+	jr DragonMonsterAction_72C3
 
-_LABEL_72A5_:
+DragonMonsterAction_72A5:
 	ld (ix+22), <Data_7C76
 	ld (ix+23), >Data_7C76
-	jr _LABEL_72CB_
+	jr DragonMonsterAction_72CB
 
-_LABEL_72AF_:
+DragonMonsterAction_72AF:
 	ld (ix+22), <Data_7C7B
 	ld (ix+23), >Data_7C7B
-	jr _LABEL_72CB_
+	jr DragonMonsterAction_72CB
 
-_LABEL_72B9_:
+DragonMonsterAction_72B9:
 	ld (ix+22), <Data_7C6C
 	ld (ix+23), >Data_7C6C
-	jr _LABEL_72CB_
+	jr DragonMonsterAction_72CB
 
-_LABEL_72C3_:
+DragonMonsterAction_72C3:
 	ld (ix+22), <Data_7C71
 	ld (ix+23), >Data_7C71
-_LABEL_72CB_:
+DragonMonsterAction_72CB:
 	ld (ix+24), $0A
-	ld (ix+0), <_LABEL_7238_
-	ld (ix+1), >_LABEL_7238_
-	jp _LABEL_7238_
+	ld (ix+0), <DragonMonsterAction_7238
+	ld (ix+1), >DragonMonsterAction_7238
+	jp DragonMonsterAction_7238
 
-_LABEL_72DA_:
+DragonMonsterAction_72DA:
 	ld hl, _LABEL_7ABF_
 	ld ($C3C0), hl
 	jp _LABEL_56A9_
 
 ; 18th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_72E3:
+RedSnailMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -14772,11 +14761,11 @@ JumpTable4_72E3:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_7306_
-	ld (ix+1), >_LABEL_7306_
+	ld (ix+0), <SnailTypeMonsterAction_7306
+	ld (ix+1), >SnailTypeMonsterAction_7306
 	ret
 
-_LABEL_7306_:
+SnailTypeMonsterAction_7306:
 	call _LABEL_5567_
 	ret c
 	ld a, (ix+28)
@@ -14784,273 +14773,273 @@ _LABEL_7306_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_7320_
+	jr z, SnailTypeMonsterAction_7320
 	cp $09
-	jr z, _LABEL_7320_
+	jr z, SnailTypeMonsterAction_7320
 	jp _LABEL_481B_
 
-_LABEL_7320_:
+SnailTypeMonsterAction_7320:
 	call _LABEL_1EB1_
-	jr c, _LABEL_7348_
+	jr c, SnailTypeMonsterAction_7348
 	call _LABEL_5473_
-	jr nc, _LABEL_7348_
-	ld (ix+0), <_LABEL_74E5_
-	ld (ix+1), >_LABEL_74E5_
-	jp _LABEL_74E5_
+	jr nc, SnailTypeMonsterAction_7348
+	ld (ix+0), <SnailTypeMonsterAction_74E5
+	ld (ix+1), >SnailTypeMonsterAction_74E5
+	jp SnailTypeMonsterAction_74E5
 
-_LABEL_7335_:
+SnailTypeMonsterAction_7335:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_7341_
-	ld (ix+1), >_LABEL_7341_
+	ld (ix+0), <SnailTypeMonsterAction_7341
+	ld (ix+1), >SnailTypeMonsterAction_7341
 
-_LABEL_7341_:
+SnailTypeMonsterAction_7341:
 	dec (ix+24)
-	jp z, _LABEL_74D9_
+	jp z, SnailTypeMonsterAction_74D9
 	ret
 
-_LABEL_7348_:
+SnailTypeMonsterAction_7348:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_7360_
+	jr nz, SnailTypeMonsterAction_7360
 	call _LABEL_51DE_
-_LABEL_7352_:
+SnailTypeMonsterAction_7352:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_7365_
+	jr c, SnailTypeMonsterAction_7365
 	rrca
-	jr c, _LABEL_7385_
+	jr c, SnailTypeMonsterAction_7385
 	rrca
-	jr c, _LABEL_73A5_
-	jr _LABEL_73C7_
+	jr c, SnailTypeMonsterAction_73A5
+	jr SnailTypeMonsterAction_73C7
 
-_LABEL_7360_:
+SnailTypeMonsterAction_7360:
 	call _LABEL_52A1_
-	jr _LABEL_7352_
+	jr SnailTypeMonsterAction_7352
 
-_LABEL_7365_:
+SnailTypeMonsterAction_7365:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_737B_
+	jr c, SnailTypeMonsterAction_737B
 	ld (ix+4), $01
 	ld (ix+22), <Data_7C8A
 	ld (ix+23), >Data_7C8A
-	jr _LABEL_73DC_
+	jr SnailTypeMonsterAction_73DC
 
-_LABEL_737B_:
+SnailTypeMonsterAction_737B:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_7352_
+	jr SnailTypeMonsterAction_7352
 
-_LABEL_7385_:
+SnailTypeMonsterAction_7385:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_739B_
+	jr c, SnailTypeMonsterAction_739B
 	ld (ix+4), $02
 	ld (ix+22), <Data_7C8F
 	ld (ix+23), >Data_7C8F
-	jr _LABEL_73DC_
+	jr SnailTypeMonsterAction_73DC
 
-_LABEL_739B_:
+SnailTypeMonsterAction_739B:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_7352_
+	jr SnailTypeMonsterAction_7352
 
-_LABEL_73A5_:
+SnailTypeMonsterAction_73A5:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_73BB_
+	jr c, SnailTypeMonsterAction_73BB
 	ld (ix+4), $04
 	ld (ix+22), <Data_7C80
 	ld (ix+23), >Data_7C80
-	jr _LABEL_73DC_
+	jr SnailTypeMonsterAction_73DC
 
-_LABEL_73BB_:
+SnailTypeMonsterAction_73BB:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jr _LABEL_7352_
+	jr SnailTypeMonsterAction_7352
 
-_LABEL_73C7_:
+SnailTypeMonsterAction_73C7:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_7335_
+	jp c, SnailTypeMonsterAction_7335
 	ld (ix+4), $08
 	ld (ix+22), <Data_7C85
 	ld (ix+23), >Data_7C85
-_LABEL_73DC_:
+SnailTypeMonsterAction_73DC:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_73EE_
-	ld (ix+1), >_LABEL_73EE_
+	ld (ix+0), <SnailTypeMonsterAction_73EE
+	ld (ix+1), >SnailTypeMonsterAction_73EE
 
-_LABEL_73EE_:
+SnailTypeMonsterAction_73EE:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_74D9_
+	jp z, SnailTypeMonsterAction_74D9
 	ret
 
-_LABEL_73FB_:
+SnailTypeMonsterAction_73FB:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_740C_
+	jr z, SnailTypeMonsterAction_740C
 	ld a, (ix+24)
 	cp $08
-	call z, _LABEL_7537_
+	call z, SnailTypeMonsterAction_7537
 	ret
 
-_LABEL_740C_:
-	ld (ix+0), <_LABEL_7414_
-	ld (ix+1), >_LABEL_7414_
+SnailTypeMonsterAction_740C:
+	ld (ix+0), <SnailTypeMonsterAction_7414
+	ld (ix+1), >SnailTypeMonsterAction_7414
 
-_LABEL_7414_:
+SnailTypeMonsterAction_7414:
 	ld a, ($C3C2)
 	or a
 	ret nz
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_742D_
-	ld (ix+1), >_LABEL_742D_
+	ld (ix+0), <SnailTypeMonsterAction_742D
+	ld (ix+1), >SnailTypeMonsterAction_742D
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_742D_:
+SnailTypeMonsterAction_742D:
 	dec (ix+24)
-	jr z, _LABEL_743B_
+	jr z, SnailTypeMonsterAction_743B
 	ld a, (ix+24)
 	cp $01
 	ret nz
 	jp _LABEL_5302_
 
-_LABEL_743B_:
+SnailTypeMonsterAction_743B:
 	ld a, (ix+29)
 	or a
-	jp nz, _LABEL_74D9_
+	jp nz, SnailTypeMonsterAction_74D9
 	ld a, (ix+28)
 	and $08
-	jp nz, _LABEL_74D9_
+	jp nz, SnailTypeMonsterAction_74D9
 	ld a, (ix+31)
 	cp $19
-	jr z, _LABEL_7489_
+	jr z, SnailTypeMonsterAction_7489
 	ld a, (EquippedRing)
 	cp OgreRing
-	jp z, _LABEL_74D9_
+	jp z, SnailTypeMonsterAction_74D9
 	ld a, (ix+31)
 	cp $15
-	jr z, _LABEL_7473_
+	jr z, SnailTypeMonsterAction_7473
 	call GetRandomNumber
 	cp $40
-	jr nc, _LABEL_74D9_
+	jr nc, SnailTypeMonsterAction_74D9
 	ld a, (BasePW)
 	or a
-	jr z, _LABEL_74D9_
+	jr z, SnailTypeMonsterAction_74D9
 	dec a
 	ld (BasePW), a
-	jr _LABEL_749E_
+	jr SnailTypeMonsterAction_749E
 
-_LABEL_7473_:
+SnailTypeMonsterAction_7473:
 	call GetRandomNumber
 	cp $80
-	jr nc, _LABEL_74D9_
+	jr nc, SnailTypeMonsterAction_74D9
 	ld a, (BasePW)
 	or a
-	jr z, _LABEL_74D9_
+	jr z, SnailTypeMonsterAction_74D9
 	dec a
-	jr z, _LABEL_7484_
+	jr z, SnailTypeMonsterAction_7484
 	dec a
-_LABEL_7484_:
+SnailTypeMonsterAction_7484:
 	ld (BasePW), a
-	jr _LABEL_749E_
+	jr SnailTypeMonsterAction_749E
 
-_LABEL_7489_:
+SnailTypeMonsterAction_7489:
 	call GetRandomNumber
 	cp $20
-	jr nc, _LABEL_74D9_
+	jr nc, SnailTypeMonsterAction_74D9
 	ld a, (CharacterLevel)
 	cp $01
-	jr z, _LABEL_74D9_
+	jr z, SnailTypeMonsterAction_74D9
 	dec a
 	ld (CharacterLevel), a
 	call _LABEL_496B_
-_LABEL_749E_:
+SnailTypeMonsterAction_749E:
 	ld a, SoundEffectA3
 	ld (SFXQueue), a
 	call _LABEL_567B_
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_74B2_
-	ld (ix+1), >_LABEL_74B2_
-_LABEL_74B2_:
+	ld (ix+0), <SnailTypeMonsterAction_74B2
+	ld (ix+1), >SnailTypeMonsterAction_74B2
+SnailTypeMonsterAction_74B2:
 	dec (ix+24)
 	ret nz
 	ld a, (ix+31)
 	cp $19
-	jr z, _LABEL_74C4_
+	jr z, SnailTypeMonsterAction_74C4
 	ld a, PlayerStrengthDownMessage2
 	ld (CurrentMessage), a
-	jr _LABEL_74C9_
+	jr SnailTypeMonsterAction_74C9
 
-_LABEL_74C4_:
+SnailTypeMonsterAction_74C4:
 	ld a, LevelDownMessage2
 	ld (CurrentMessage), a
-_LABEL_74C9_:
+SnailTypeMonsterAction_74C9:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_74D5_
-	ld (ix+1), >_LABEL_74D5_
-_LABEL_74D5_:
+	ld (ix+0), <SnailTypeMonsterAction_74D5
+	ld (ix+1), >SnailTypeMonsterAction_74D5
+SnailTypeMonsterAction_74D5:
 	dec (ix+24)
 	ret nz
-_LABEL_74D9_:
+SnailTypeMonsterAction_74D9:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_7306_
-	ld (ix+1), >_LABEL_7306_
+	ld (ix+0), <SnailTypeMonsterAction_7306
+	ld (ix+1), >SnailTypeMonsterAction_7306
 	ret
 
-_LABEL_74E5_:
+SnailTypeMonsterAction_74E5:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_74D9_
+	jr z, SnailTypeMonsterAction_74D9
 	call _LABEL_1EF6_
 	ret c
 	ld (ix+30), $01
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_7502_
+	jr c, SnailTypeMonsterAction_7502
 	rrca
-	jr c, _LABEL_750C_
+	jr c, SnailTypeMonsterAction_750C
 	rrca
-	jr c, _LABEL_7516_
-	jr _LABEL_7520_
+	jr c, SnailTypeMonsterAction_7516
+	jr SnailTypeMonsterAction_7520
 
-_LABEL_7502_:
+SnailTypeMonsterAction_7502:
 	ld (ix+22), <Data_7C8A
 	ld (ix+23), >Data_7C8A
-	jr _LABEL_7528_
+	jr SnailTypeMonsterAction_7528
 
-_LABEL_750C_:
+SnailTypeMonsterAction_750C:
 	ld (ix+22), <Data_7C8F
 	ld (ix+23), >Data_7C8F
-	jr _LABEL_7528_
+	jr SnailTypeMonsterAction_7528
 
-_LABEL_7516_:
+SnailTypeMonsterAction_7516:
 	ld (ix+22), <Data_7C80
 	ld (ix+23), >Data_7C80
-	jr _LABEL_7528_
+	jr SnailTypeMonsterAction_7528
 
-_LABEL_7520_:
+SnailTypeMonsterAction_7520:
 	ld (ix+22), <Data_7C85
 	ld (ix+23), >Data_7C85
-_LABEL_7528_:
+SnailTypeMonsterAction_7528:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_73FB_
-	ld (ix+1), >_LABEL_73FB_
-	jp _LABEL_73FB_
+	ld (ix+0), <SnailTypeMonsterAction_73FB
+	ld (ix+1), >SnailTypeMonsterAction_73FB
+	jp SnailTypeMonsterAction_73FB
 
-_LABEL_7537_:
+SnailTypeMonsterAction_7537:
 	ld hl, _LABEL_7AD3_
 	ld ($C3C0), hl
 	ld hl, ($C10A)
@@ -15062,7 +15051,7 @@ _LABEL_7537_:
 	ret
 
 ; 22nd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_7550:
+BlueSnailMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -15070,12 +15059,12 @@ JumpTable4_7550:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_7306_
-	ld (ix+1), >_LABEL_7306_
+	ld (ix+0), <SnailTypeMonsterAction_7306
+	ld (ix+1), >SnailTypeMonsterAction_7306
 	ret
 
 ; 26th entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_7573:
+KingSnailMonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -15083,12 +15072,12 @@ JumpTable4_7573:
 	ld (ix+27), $00
 	ld (ix+3), $78
 	call _LABEL_569C_
-	ld (ix+0), <_LABEL_7306_
-	ld (ix+1), >_LABEL_7306_
+	ld (ix+0), <SnailTypeMonsterAction_7306
+	ld (ix+1), >SnailTypeMonsterAction_7306
 	ret
 
 ; 32nd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_7596:
+Kameleon1MonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -15097,11 +15086,11 @@ JumpTable4_7596:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7CBD
 	ld (ix+23), >Data_7CBD
-	ld (ix+0), <_LABEL_75BD_
-	ld (ix+1), >_LABEL_75BD_
+	ld (ix+0), <Kameleon1MonsterAction_75BD
+	ld (ix+1), >Kameleon1MonsterAction_75BD
 	ret
 
-_LABEL_75BD_:
+Kameleon1MonsterAction_75BD:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -15142,10 +15131,10 @@ _LABEL_75BD_:
 	add hl, bc
 	ld bc, $0204
 	call _LABEL_681_
-	ld (ix+0), <_LABEL_761E_
-	ld (ix+1), >_LABEL_761E_
+	ld (ix+0), <Kameleon1MonsterAction_761E
+	ld (ix+1), >Kameleon1MonsterAction_761E
 	
-_LABEL_761E_:
+Kameleon1MonsterAction_761E:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -15156,203 +15145,203 @@ _LABEL_761E_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_7641_
+	jr z, Kameleon1MonsterAction_7641
 	cp $09
-	jr z, _LABEL_7641_
+	jr z, Kameleon1MonsterAction_7641
 	jp _LABEL_481B_
 
-_LABEL_7641_:
+Kameleon1MonsterAction_7641:
 	call _LABEL_5473_
-	jr nc, _LABEL_7667_
-	ld (ix+0), <_LABEL_7774_
-	ld (ix+1), >_LABEL_7774_
-	jp _LABEL_7774_
+	jr nc, Kameleon1MonsterAction_7667
+	ld (ix+0), <Kameleon1MonsterAction_7774
+	ld (ix+1), >Kameleon1MonsterAction_7774
+	jp Kameleon1MonsterAction_7774
 
-_LABEL_7651_:
+Kameleon1MonsterAction_7651:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_765D_
-	ld (ix+1), >_LABEL_765D_
+	ld (ix+0), <Kameleon1MonsterAction_765D
+	ld (ix+1), >Kameleon1MonsterAction_765D
 
-_LABEL_765D_:
+Kameleon1MonsterAction_765D:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_7768_
+	jp z, Kameleon1MonsterAction_7768
 	ret
 
-_LABEL_7667_:
+Kameleon1MonsterAction_7667:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_7680_
+	jr nz, Kameleon1MonsterAction_7680
 	call _LABEL_51DE_
-_LABEL_7671_:
+Kameleon1MonsterAction_7671:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_7685_
+	jr c, Kameleon1MonsterAction_7685
 	rrca
-	jr c, _LABEL_76A5_
+	jr c, Kameleon1MonsterAction_76A5
 	rrca
-	jr c, _LABEL_76C5_
-	jp _LABEL_76E8_
+	jr c, Kameleon1MonsterAction_76C5
+	jp Kameleon1MonsterAction_76E8
 
-_LABEL_7680_:
+Kameleon1MonsterAction_7680:
 	call _LABEL_52A1_
-	jr _LABEL_7671_
+	jr Kameleon1MonsterAction_7671
 
-_LABEL_7685_:
+Kameleon1MonsterAction_7685:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_769B_
+	jr c, Kameleon1MonsterAction_769B
 	ld (ix+4), $01
 	ld (ix+22), <Data_7CC6
 	ld (ix+23), >Data_7CC6
-	jr _LABEL_76FD_
+	jr Kameleon1MonsterAction_76FD
 
-_LABEL_769B_:
+Kameleon1MonsterAction_769B:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_7671_
+	jr Kameleon1MonsterAction_7671
 
-_LABEL_76A5_:
+Kameleon1MonsterAction_76A5:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_76BB_
+	jr c, Kameleon1MonsterAction_76BB
 	ld (ix+4), $02
 	ld (ix+22), <Data_7CCF
 	ld (ix+23), >Data_7CCF
-	jr _LABEL_76FD_
+	jr Kameleon1MonsterAction_76FD
 
-_LABEL_76BB_:
+Kameleon1MonsterAction_76BB:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_7671_
+	jr Kameleon1MonsterAction_7671
 
-_LABEL_76C5_:
+Kameleon1MonsterAction_76C5:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_76DB_
+	jr c, Kameleon1MonsterAction_76DB
 	ld (ix+4), $04
 	ld (ix+22), <Data_7CB4
 	ld (ix+23), >Data_7CB4
-	jr _LABEL_76FD_
+	jr Kameleon1MonsterAction_76FD
 
-_LABEL_76DB_:
+Kameleon1MonsterAction_76DB:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jp _LABEL_7671_
+	jp Kameleon1MonsterAction_7671
 
-_LABEL_76E8_:
+Kameleon1MonsterAction_76E8:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_7651_
+	jp c, Kameleon1MonsterAction_7651
 	ld (ix+22), <Data_7CBD
 	ld (ix+23), >Data_7CBD
 	ld (ix+4), $08
-_LABEL_76FD_:
+Kameleon1MonsterAction_76FD:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_7717_
-	ld (ix+1), >_LABEL_7717_
+	ld (ix+0), <Kameleon1MonsterAction_7717
+	ld (ix+1), >Kameleon1MonsterAction_7717
 
-_LABEL_7717_:
+Kameleon1MonsterAction_7717:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_7768_
+	jr z, Kameleon1MonsterAction_7768
 	ret
 
-_LABEL_7723_:
+Kameleon1MonsterAction_7723:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_772F_
+	jr z, Kameleon1MonsterAction_772F
 	ld a, (ix+24)
 	ret
 
-_LABEL_772F_:
+Kameleon1MonsterAction_772F:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_773B_
-	ld (ix+1), >_LABEL_773B_
+	ld (ix+0), <Kameleon1MonsterAction_773B
+	ld (ix+1), >Kameleon1MonsterAction_773B
 
-_LABEL_773B_:
+Kameleon1MonsterAction_773B:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_7753_
-	ld (ix+1), >_LABEL_7753_
+	ld (ix+0), <Kameleon1MonsterAction_7753
+	ld (ix+1), >Kameleon1MonsterAction_7753
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
 
-_LABEL_7753_:
+Kameleon1MonsterAction_7753:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_7768_
+	jr z, Kameleon1MonsterAction_7768
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_7765_
+	jr nz, Kameleon1MonsterAction_7765
 	call _LABEL_5302_
-_LABEL_7765_:
+Kameleon1MonsterAction_7765:
 	jp _LABEL_5643_
 
-_LABEL_7768_:
+Kameleon1MonsterAction_7768:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_761E_
-	ld (ix+1), >_LABEL_761E_
+	ld (ix+0), <Kameleon1MonsterAction_761E
+	ld (ix+1), >Kameleon1MonsterAction_761E
 	ret
 
-_LABEL_7774_:
+Kameleon1MonsterAction_7774:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_7768_
+	jr z, Kameleon1MonsterAction_7768
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_7790_
+	jr c, Kameleon1MonsterAction_7790
 	rrca
-	jr c, _LABEL_779A_
+	jr c, Kameleon1MonsterAction_779A
 	rrca
-	jr c, _LABEL_77A4_
-	jr _LABEL_77AE_
+	jr c, Kameleon1MonsterAction_77A4
+	jr Kameleon1MonsterAction_77AE
 
-_LABEL_7790_:
+Kameleon1MonsterAction_7790:
 	ld (ix+22), <Data_7CC6
 	ld (ix+23), >Data_7CC6
-	jr _LABEL_77B6_
+	jr Kameleon1MonsterAction_77B6
 
-_LABEL_779A_:
+Kameleon1MonsterAction_779A:
 	ld (ix+22), <Data_7CCF
 	ld (ix+23), >Data_7CCF
-	jr _LABEL_77B6_
+	jr Kameleon1MonsterAction_77B6
 
-_LABEL_77A4_:
+Kameleon1MonsterAction_77A4:
 	ld (ix+22), <Data_7CB4
 	ld (ix+23), >Data_7CB4
-	jr _LABEL_77B6_
+	jr Kameleon1MonsterAction_77B6
 
-_LABEL_77AE_:
+Kameleon1MonsterAction_77AE:
 	ld (ix+22), <Data_7CBD
 	ld (ix+23), >Data_7CBD
-_LABEL_77B6_:
+Kameleon1MonsterAction_77B6:
 	ld (ix+30), $01
 	ld (ix+24), $10
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_7723_
-	ld (ix+1), >_LABEL_7723_
-	jp _LABEL_7723_
+	ld (ix+0), <Kameleon1MonsterAction_7723
+	ld (ix+1), >Kameleon1MonsterAction_7723
+	jp Kameleon1MonsterAction_7723
 
 ; 33rd entry of Jump Table from 2012 (indexed by unknown)
-JumpTable4_77D1:
+Kameleon2MonsterAction:
 	ld (ix+2), $01
 	call _LABEL_550D_
 	ld (ix+19), $02
@@ -15361,11 +15350,11 @@ JumpTable4_77D1:
 	call _LABEL_569C_
 	ld (ix+22), <Data_7CE1
 	ld (ix+23), >Data_7CE1
-	ld (ix+0), <_LABEL_77F8_
-	ld (ix+1), >_LABEL_77F8_
+	ld (ix+0), <Kameleon2MonsterAction_77F8
+	ld (ix+1), >Kameleon2MonsterAction_77F8
 	ret
 
-_LABEL_77F8_:
+Kameleon2MonsterAction_77F8:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -15406,10 +15395,10 @@ _LABEL_77F8_:
 	add hl, bc
 	ld bc, $0204
 	call _LABEL_681_
-	ld (ix+0), <_LABEL_7859_
-	ld (ix+1), >_LABEL_7859_
+	ld (ix+0), <Kameleon2MonsterAction_7859
+	ld (ix+1), >Kameleon2MonsterAction_7859
 
-_LABEL_7859_:
+Kameleon2MonsterAction_7859:
 	call _LABEL_1EB1_
 	jp c, _LABEL_481B_
 	call _LABEL_5567_
@@ -15420,199 +15409,199 @@ _LABEL_7859_:
 	jp nz, _LABEL_481B_
 	ld a, ($C601)
 	cp $01
-	jr z, _LABEL_787C_
+	jr z, Kameleon2MonsterAction_787C
 	cp $09
-	jr z, _LABEL_787C_
+	jr z, Kameleon2MonsterAction_787C
 	jp _LABEL_481B_
 
-_LABEL_787C_:
+Kameleon2MonsterAction_787C:
 	call _LABEL_5473_
-	jr nc, _LABEL_78A2_
-	ld (ix+0), <_LABEL_79AF_
-	ld (ix+1), >_LABEL_79AF_
-	jp _LABEL_79AF_
+	jr nc, Kameleon2MonsterAction_78A2
+	ld (ix+0), <Kameleon2MonsterAction_79AF
+	ld (ix+1), >Kameleon2MonsterAction_79AF
+	jp Kameleon2MonsterAction_79AF
 
-_LABEL_788C_:
+Kameleon2MonsterAction_788C:
 	ld (ix+24), $08
-	ld (ix+0), <_LABEL_7898_
-	ld (ix+1), >_LABEL_7898_
+	ld (ix+0), <Kameleon2MonsterAction_7898
+	ld (ix+1), >Kameleon2MonsterAction_7898
 
-_LABEL_7898_:
+Kameleon2MonsterAction_7898:
 	call _LABEL_553A_
 	dec (ix+24)
-	jp z, _LABEL_79A3_
+	jp z, Kameleon2MonsterAction_79A3
 	ret
 
-_LABEL_78A2_:
+Kameleon2MonsterAction_78A2:
 	ld a, (ix+28)
 	and $01
-	jr nz, _LABEL_78BB_
+	jr nz, Kameleon2MonsterAction_78BB
 	call _LABEL_51DE_
-_LABEL_78AC_:
+Kameleon2MonsterAction_78AC:
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_78C0_
+	jr c, Kameleon2MonsterAction_78C0
 	rrca
-	jr c, _LABEL_78E0_
+	jr c, Kameleon2MonsterAction_78E0
 	rrca
-	jr c, _LABEL_7900_
-	jp _LABEL_7923_
+	jr c, Kameleon2MonsterAction_7900
+	jp Kameleon2MonsterAction_7923
 
-_LABEL_78BB_:
+Kameleon2MonsterAction_78BB:
 	call _LABEL_52A1_
-	jr _LABEL_78AC_
+	jr Kameleon2MonsterAction_78AC
 
-_LABEL_78C0_:
+Kameleon2MonsterAction_78C0:
 	ld hl, $FFE0
 	call _LABEL_5420_
-	jr c, _LABEL_78D6_
+	jr c, Kameleon2MonsterAction_78D6
 	ld (ix+4), $01
 	ld (ix+22), <Data_7CEA
 	ld (ix+23), >Data_7CEA
-	jr _LABEL_7938_
+	jr Kameleon2MonsterAction_7938
 
-_LABEL_78D6_:
+Kameleon2MonsterAction_78D6:
 	ld a, (ix+4)
 	and $FE
 	ld (ix+4), a
-	jr _LABEL_78AC_
+	jr Kameleon2MonsterAction_78AC
 
-_LABEL_78E0_:
+Kameleon2MonsterAction_78E0:
 	ld hl, $0020
 	call _LABEL_5420_
-	jr c, _LABEL_78F6_
+	jr c, Kameleon2MonsterAction_78F6
 	ld (ix+4), $02
 	ld (ix+22), <Data_7CF3
 	ld (ix+23), >Data_7CF3
-	jr _LABEL_7938_
+	jr Kameleon2MonsterAction_7938
 
-_LABEL_78F6_:
+Kameleon2MonsterAction_78F6:
 	ld a, (ix+4)
 	and $FD
 	ld (ix+4), a
-	jr _LABEL_78AC_
+	jr Kameleon2MonsterAction_78AC
 
-_LABEL_7900_:
+Kameleon2MonsterAction_7900:
 	ld hl, $FFFF
 	call _LABEL_5420_
-	jr c, _LABEL_7916_
+	jr c, Kameleon2MonsterAction_7916
 	ld (ix+4), $04
 	ld (ix+22), <Data_7CD8
 	ld (ix+23), >Data_7CD8
-	jr _LABEL_7938_
+	jr Kameleon2MonsterAction_7938
 
-_LABEL_7916_:
+Kameleon2MonsterAction_7916:
 	ld a, (ix+4)
 	and $FB
 	or $03
 	ld (ix+4), a
-	jp _LABEL_78AC_
+	jp Kameleon2MonsterAction_78AC
 
-_LABEL_7923_:
+Kameleon2MonsterAction_7923:
 	ld hl, $0001
 	call _LABEL_5420_
-	jp c, _LABEL_788C_
+	jp c, Kameleon2MonsterAction_788C
 	ld (ix+22), <Data_7CE1
 	ld (ix+23), >Data_7CE1
 	ld (ix+4), $08
-_LABEL_7938_:
+Kameleon2MonsterAction_7938:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_7952_
-	ld (ix+1), >_LABEL_7952_
+	ld (ix+0), <Kameleon2MonsterAction_7952
+	ld (ix+1), >Kameleon2MonsterAction_7952
 
-_LABEL_7952_:
+Kameleon2MonsterAction_7952:
 	call _LABEL_47BB_
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_79A3_
+	jr z, Kameleon2MonsterAction_79A3
 	ret
 
-_LABEL_795E_:
+Kameleon2MonsterAction_795E:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_796A_
+	jr z, Kameleon2MonsterAction_796A
 	ld a, (ix+24)
 	ret
 
-_LABEL_796A_:
+Kameleon2MonsterAction_796A:
 	ld (ix+24), $10
-	ld (ix+0), <_LABEL_7976_
-	ld (ix+1), >_LABEL_7976_
+	ld (ix+0), <Kameleon2MonsterAction_7976
+	ld (ix+1), >Kameleon2MonsterAction_7976
 
-_LABEL_7976_:
+Kameleon2MonsterAction_7976:
 	call _LABEL_553A_
 	ld a, ($C3C2)
 	or a
 	ret nz
-	ld (ix+0), <_LABEL_798E_
-	ld (ix+1), >_LABEL_798E_
+	ld (ix+0), <Kameleon2MonsterAction_798E
+	ld (ix+1), >Kameleon2MonsterAction_798E
 	ld a, SoundEffectA0
 	ld (SFXQueue), a
 	call _LABEL_567B_
-_LABEL_798E_:
+Kameleon2MonsterAction_798E:
 	call _LABEL_553A_
 	dec (ix+24)
-	jr z, _LABEL_79A3_
+	jr z, Kameleon2MonsterAction_79A3
 	ld a, (ix+24)
 	cp $01
-	jr nz, _LABEL_79A0_
+	jr nz, Kameleon2MonsterAction_79A0
 	call _LABEL_5302_
-_LABEL_79A0_:
+Kameleon2MonsterAction_79A0:
 	jp _LABEL_5643_
 
-_LABEL_79A3_:
+Kameleon2MonsterAction_79A3:
 	call _LABEL_5655_
-	ld (ix+0), <_LABEL_7859_
-	ld (ix+1), >_LABEL_7859_
+	ld (ix+0), <Kameleon2MonsterAction_7859
+	ld (ix+1), >Kameleon2MonsterAction_7859
 	ret
 
-_LABEL_79AF_:
+Kameleon2MonsterAction_79AF:
 	ld hl, (CurrentHPLow)
 	ld a, h
 	or l
-	jr z, _LABEL_79A3_
+	jr z, Kameleon2MonsterAction_79A3
 	call _LABEL_553A_
 	call _LABEL_1EF6_
 	ret c
 	ld a, (ix+4)
 	rrca
-	jr c, _LABEL_79CB_
+	jr c, Kameleon2MonsterAction_79CB
 	rrca
-	jr c, _LABEL_79D5_
+	jr c, Kameleon2MonsterAction_79D5
 	rrca
-	jr c, _LABEL_79DF_
-	jr _LABEL_79E9_
+	jr c, Kameleon2MonsterAction_79DF
+	jr Kameleon2MonsterAction_79E9
 
-_LABEL_79CB_:
+Kameleon2MonsterAction_79CB:
 	ld (ix+22), <Data_7CEA
 	ld (ix+23), >Data_7CEA
-	jr _LABEL_79F1_
+	jr Kameleon2MonsterAction_79F1
 
-_LABEL_79D5_:
+Kameleon2MonsterAction_79D5:
 	ld (ix+22), <Data_7CF3
 	ld (ix+23), >Data_7CF3
-	jr _LABEL_79F1_
+	jr Kameleon2MonsterAction_79F1
 
-_LABEL_79DF_:
+Kameleon2MonsterAction_79DF:
 	ld (ix+22), <Data_7CD8
 	ld (ix+23), >Data_7CD8
-	jr _LABEL_79F1_
+	jr Kameleon2MonsterAction_79F1
 
-_LABEL_79E9_:
+Kameleon2MonsterAction_79E9:
 	ld (ix+22), <Data_7CE1
 	ld (ix+23), >Data_7CE1
-_LABEL_79F1_:
+Kameleon2MonsterAction_79F1:
 	ld (ix+30), $01
 	ld (ix+24), $10
 	ld (ix+21), $00
 	ld (ix+20), $00
-	ld (ix+0), <_LABEL_795E_
-	ld (ix+1), >_LABEL_795E_
-	jp _LABEL_795E_
+	ld (ix+0), <Kameleon2MonsterAction_795E
+	ld (ix+1), >Kameleon2MonsterAction_795E
+	jp Kameleon2MonsterAction_795E
 
 ; Data from 7A0C to 7A1B (16 bytes)
 Data_7A0C:
