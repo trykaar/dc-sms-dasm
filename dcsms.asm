@@ -11402,8 +11402,8 @@ OozeMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <OozeMonsterAction_56EF
 	ld (ix+1), >OozeMonsterAction_56EF
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ret
 
 OozeMonsterAction_56EF:
@@ -11546,8 +11546,8 @@ OozeMonsterAction_57FE:
 
 OozeMonsterAction_5801:
 	call _LABEL_5655_
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ld (ix+0), <OozeMonsterAction_56EF
 	ld (ix+1), >OozeMonsterAction_56EF
 	ret
@@ -11562,8 +11562,8 @@ OozeMonsterAction_5815:
 	ret c
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), <Data_7B2E
-	ld (ix+23), >Data_7B2E
+	ld (ix+22), <OozeTypeMonsterData_7B2E
+	ld (ix+23), >OozeTypeMonsterData_7B2E
 	ld (ix+0), <OozeMonsterAction_57D7
 	ld (ix+1), >OozeMonsterAction_57D7
 	jp OozeMonsterAction_57D7
@@ -11578,8 +11578,8 @@ BlueOozeMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <BlueOozeMonsterAction_5865
 	ld (ix+1), >BlueOozeMonsterAction_5865
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ret
 
 BlueOozeMonsterAction_5865:
@@ -11694,8 +11694,8 @@ BlueOozeMonsterAction_5942:
 
 BlueOozeMonsterAction_5945:
 	call _LABEL_5655_
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ld (ix+0), <BlueOozeMonsterAction_5865
 	ld (ix+1), >BlueOozeMonsterAction_5865
 	ret
@@ -11713,8 +11713,8 @@ BlueOozeMonsterAction_5959:
 	jr nc, BlueOozeMonsterAction_5989
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), <Data_7B2E
-	ld (ix+23), >Data_7B2E
+	ld (ix+22), <OozeTypeMonsterData_7B2E
+	ld (ix+23), >OozeTypeMonsterData_7B2E
 	ld (ix+0), <BlueOozeMonsterAction_591B
 	ld (ix+1), >BlueOozeMonsterAction_591B
 	jp BlueOozeMonsterAction_591B
@@ -11740,8 +11740,8 @@ RedOozeMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <RedOozeMonsterAction_59CD
 	ld (ix+1), >RedOozeMonsterAction_59CD
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ret
 
 RedOozeMonsterAction_59CD:
@@ -11884,8 +11884,8 @@ RedOozeMonsterAction_5ADC:
 
 RedOozeMonsterAction_5ADF:
 	call _LABEL_5655_
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ld (ix+0), <RedOozeMonsterAction_59CD
 	ld (ix+1), >RedOozeMonsterAction_59CD
 	ret
@@ -11903,8 +11903,8 @@ RedOozeMonsterAction_5AF3:
 	jr nc, RedOozeMonsterAction_5B23
 	ld (ix+30), $01
 	ld (ix+24), $08
-	ld (ix+22), <Data_7B2E
-	ld (ix+23), >Data_7B2E
+	ld (ix+22), <OozeTypeMonsterData_7B2E
+	ld (ix+23), >OozeTypeMonsterData_7B2E
 	ld (ix+0), <RedOozeMonsterAction_5AB5
 	ld (ix+1), >RedOozeMonsterAction_5AB5
 	jp RedOozeMonsterAction_5AB5
@@ -11930,8 +11930,8 @@ BlobMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <BlobMonsterAction_5B67
 	ld (ix+1), >BlobMonsterAction_5B67
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ret
 
 BlobMonsterAction_5B67:
@@ -12047,8 +12047,8 @@ BlobMonsterAction_5C42:
 	dec (ix+25)
 	jr nz, BlobMonsterAction_5C5B
 	call _LABEL_5655_
-	ld (ix+22), <Data_7B25
-	ld (ix+23), >Data_7B25
+	ld (ix+22), <OozeTypeMonsterData_7B25
+	ld (ix+23), >OozeTypeMonsterData_7B25
 	ld (ix+0), <BlobMonsterAction_5B67
 	ld (ix+1), >BlobMonsterAction_5B67
 	ret
@@ -12073,8 +12073,8 @@ BlobMonsterAction_5C70:
 	ld (ix+30), $01
 	ld (ix+24), $08
 	ld (ix+25), $01
-	ld (ix+22), <Data_7B2E
-	ld (ix+23), >Data_7B2E
+	ld (ix+22), <OozeTypeMonsterData_7B2E
+	ld (ix+23), >OozeTypeMonsterData_7B2E
 	ld (ix+0), <BlobMonsterAction_5C18
 	ld (ix+1), >BlobMonsterAction_5C18
 	jp BlobMonsterAction_5C18
@@ -12090,8 +12090,8 @@ SlimetoadMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <ToadTypeMonsterAction_5CC8
 	ld (ix+1), >ToadTypeMonsterAction_5CC8
-	ld (ix+22), <Data_7B37
-	ld (ix+23), >Data_7B37
+	ld (ix+22), <ToadTypeMonsterData_7B37
+	ld (ix+23), >ToadTypeMonsterData_7B37
 	ret
 
 ToadTypeMonsterAction_5CC8:
@@ -12150,8 +12150,8 @@ ToadTypeMonsterAction_5D26:
 	call _LABEL_5420_
 	jr c, ToadTypeMonsterAction_5D3C
 	ld (ix+4), $01
-	ld (ix+22), <Data_7B55
-	ld (ix+23), >Data_7B55
+	ld (ix+22), <ToadTypeMonsterData_7B55
+	ld (ix+23), >ToadTypeMonsterData_7B55
 	jr ToadTypeMonsterAction_5D9D
 
 ToadTypeMonsterAction_5D3C:
@@ -12165,8 +12165,8 @@ ToadTypeMonsterAction_5D46:
 	call _LABEL_5420_
 	jr c, ToadTypeMonsterAction_5D5C
 	ld (ix+4), $02
-	ld (ix+22), <Data_7B4B
-	ld (ix+23), >Data_7B4B
+	ld (ix+22), <ToadTypeMonsterData_7B4B
+	ld (ix+23), >ToadTypeMonsterData_7B4B
 	jr ToadTypeMonsterAction_5D9D
 
 ToadTypeMonsterAction_5D5C:
@@ -12180,8 +12180,8 @@ ToadTypeMonsterAction_5D66:
 	call _LABEL_5420_
 	jr c, ToadTypeMonsterAction_5D7C
 	ld (ix+4), $04
-	ld (ix+22), <Data_7B37
-	ld (ix+23), >Data_7B37
+	ld (ix+22), <ToadTypeMonsterData_7B37
+	ld (ix+23), >ToadTypeMonsterData_7B37
 	jr ToadTypeMonsterAction_5D9D
 
 ToadTypeMonsterAction_5D7C:
@@ -12196,8 +12196,8 @@ ToadTypeMonsterAction_5D88:
 	call _LABEL_5420_
 	jp c, ToadTypeMonsterAction_5CF6
 	ld (ix+4), $08
-	ld (ix+22), <Data_7B41
-	ld (ix+23), >Data_7B41
+	ld (ix+22), <ToadTypeMonsterData_7B41
+	ld (ix+23), >ToadTypeMonsterData_7B41
 ToadTypeMonsterAction_5D9D:
 	ld (ix+7), l
 	ld (ix+8), h
@@ -12292,23 +12292,23 @@ ToadTypeMonsterAction_5E3E:
 	jr ToadTypeMonsterAction_5E79
 
 ToadTypeMonsterAction_5E5B:
-	ld (ix+22), <Data_7B5A
-	ld (ix+23), >Data_7B5A
+	ld (ix+22), <ToadTypeMonsterData_7B5A
+	ld (ix+23), >ToadTypeMonsterData_7B5A
 	jr ToadTypeMonsterAction_5E81
 
 ToadTypeMonsterAction_5E65:
-	ld (ix+22), <Data_7B50
-	ld (ix+23), >Data_7B50
+	ld (ix+22), <ToadTypeMonsterData_7B50
+	ld (ix+23), >ToadTypeMonsterData_7B50
 	jr ToadTypeMonsterAction_5E81
 
 ToadTypeMonsterAction_5E6F:
-	ld (ix+22), <Data_7B3C
-	ld (ix+23), >Data_7B3C
+	ld (ix+22), <ToadTypeMonsterData_7B3C
+	ld (ix+23), >ToadTypeMonsterData_7B3C
 	jr ToadTypeMonsterAction_5E81
 
 ToadTypeMonsterAction_5E79:
-	ld (ix+22), <Data_7B46
-	ld (ix+23), >Data_7B46
+	ld (ix+22), <ToadTypeMonsterData_7B46
+	ld (ix+23), >ToadTypeMonsterData_7B46
 ToadTypeMonsterAction_5E81:
 	ld (ix+24), $0A
 	ld (ix+0), <ToadTypeMonsterAction_5DBB
@@ -12326,8 +12326,8 @@ LochtoadMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <ToadTypeMonsterAction_5CC8
 	ld (ix+1), >ToadTypeMonsterAction_5CC8
-	ld (ix+22), <Data_7B37
-	ld (ix+23), >Data_7B37
+	ld (ix+22), <ToadTypeMonsterData_7B37
+	ld (ix+23), >ToadTypeMonsterData_7B37
 	ret
 
 ; 10th entry of Jump Table from 2012 (indexed by unknown)
@@ -12341,8 +12341,8 @@ BloodtoadMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <ToadTypeMonsterAction_5CC8
 	ld (ix+1), >ToadTypeMonsterAction_5CC8
-	ld (ix+22), <Data_7B37
-	ld (ix+23), >Data_7B37
+	ld (ix+22), <ToadTypeMonsterData_7B37
+	ld (ix+23), >ToadTypeMonsterData_7B37
 	ret
 
 ; 3rd entry of Jump Table from 2012 (indexed by unknown)
@@ -12426,8 +12426,8 @@ ScorpionTypeMonsterAction_5F84:
 	call _LABEL_5420_
 	jr c, ScorpionTypeMonsterAction_5F9A
 	ld (ix+4), $01
-	ld (ix+22), <Data_7B64
-	ld (ix+23), >Data_7B64
+	ld (ix+22), <ScorpionTypeMonsterData_7B64
+	ld (ix+23), >ScorpionTypeMonsterData_7B64
 	jr ScorpionTypeMonsterAction_5FFB
 
 ScorpionTypeMonsterAction_5F9A:
@@ -12441,8 +12441,8 @@ ScorpionTypeMonsterAction_5FA4:
 	call _LABEL_5420_
 	jr c, ScorpionTypeMonsterAction_5FBA
 	ld (ix+4), $02
-	ld (ix+22), <Data_7B64
-	ld (ix+23), >Data_7B64
+	ld (ix+22), <ScorpionTypeMonsterData_7B64
+	ld (ix+23), >ScorpionTypeMonsterData_7B64
 	jr ScorpionTypeMonsterAction_5FFB
 
 ScorpionTypeMonsterAction_5FBA:
@@ -12456,8 +12456,8 @@ ScorpionTypeMonsterAction_5FC4:
 	call _LABEL_5420_
 	jr c, ScorpionTypeMonsterAction_5FDA
 	ld (ix+4), $04
-	ld (ix+22), <Data_7B5F
-	ld (ix+23), >Data_7B5F
+	ld (ix+22), <ScorpionTypeMonsterData_7B5F
+	ld (ix+23), >ScorpionTypeMonsterData_7B5F
 	jr ScorpionTypeMonsterAction_5FFB
 
 ScorpionTypeMonsterAction_5FDA:
@@ -12472,8 +12472,8 @@ ScorpionTypeMonsterAction_5FE6:
 	call _LABEL_5420_
 	jp c, ScorpionTypeMonsterAction_5F33
 	ld (ix+4), $08
-	ld (ix+22), <Data_7B5F
-	ld (ix+23), >Data_7B5F
+	ld (ix+22), <ScorpionTypeMonsterData_7B5F
+	ld (ix+23), >ScorpionTypeMonsterData_7B5F
 ScorpionTypeMonsterAction_5FFB:
 	ld (ix+7), l
 	ld (ix+8), h
@@ -12546,23 +12546,23 @@ ScorpionTypeMonsterAction_6069:
 	jr ScorpionTypeMonsterAction_60A4
 
 ScorpionTypeMonsterAction_6086:
-	ld (ix+22), <Data_7B69
-	ld (ix+23), >Data_7B69
+	ld (ix+22), <ScorpionTypeMonsterData_7B69
+	ld (ix+23), >ScorpionTypeMonsterData_7B69
 	jr ScorpionTypeMonsterAction_60AC
 
 ScorpionTypeMonsterAction_6090:
-	ld (ix+22), <Data_7B72
-	ld (ix+23), >Data_7B72
+	ld (ix+22), <ScorpionTypeMonsterData_7B72
+	ld (ix+23), >ScorpionTypeMonsterData_7B72
 	jr ScorpionTypeMonsterAction_60AC
 
 ScorpionTypeMonsterAction_609A:
-	ld (ix+22), <Data_7B84
-	ld (ix+23), >Data_7B84
+	ld (ix+22), <ScorpionTypeMonsterData_7B84
+	ld (ix+23), >ScorpionTypeMonsterData_7B84
 	jr ScorpionTypeMonsterAction_60AC
 
 ScorpionTypeMonsterAction_60A4:
-	ld (ix+22), <Data_7B7B
-	ld (ix+23), >Data_7B7B
+	ld (ix+22), <ScorpionTypeMonsterData_7B7B
+	ld (ix+23), >ScorpionTypeMonsterData_7B7B
 ScorpionTypeMonsterAction_60AC:
 	ld (ix+24), $10
 	ld (ix+0), <ScorpionTypeMonsterAction_6019
@@ -12595,8 +12595,8 @@ KragMonsterAction:
 	ld (ix+26), $09
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7B92
-	ld (ix+23), >Data_7B92
+	ld (ix+22), <KragTypeMonsterData_7B92
+	ld (ix+23), >KragTypeMonsterData_7B92
 	ld (ix+0), <KragTypeMonsterAction_610E
 	ld (ix+1), >KragTypeMonsterAction_610E
 	ret
@@ -12844,8 +12844,8 @@ KingKragMonsterAction:
 	ld (ix+26), $32
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7B92
-	ld (ix+23), >Data_7B92
+	ld (ix+22), <KragTypeMonsterData_7B92
+	ld (ix+23), >KragTypeMonsterData_7B92
 	ld (ix+0), <KragTypeMonsterAction_610E
 	ld (ix+1), >KragTypeMonsterAction_610E
 	ret
@@ -12933,8 +12933,8 @@ PhantomTypeMonsterAction_63C0:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+22), <Data_7B9B
-	ld (ix+23), >Data_7B9B
+	ld (ix+22), <PhantomTypeMonsterData_7B9B
+	ld (ix+23), >PhantomTypeMonsterData_7B9B
 	ld (ix+0), <PhantomTypeMonsterAction_63DA
 	ld (ix+1), >PhantomTypeMonsterAction_63DA
 
@@ -13013,23 +13013,23 @@ PhantomTypeMonsterAction_644E:
 	jr PhantomTypeMonsterAction_6489
 
 PhantomTypeMonsterAction_646B:
-	ld (ix+22), <Data_7BC1
-	ld (ix+23), >Data_7BC1
+	ld (ix+22), <PhantomTypeMonsterData_7BC1
+	ld (ix+23), >PhantomTypeMonsterData_7BC1
 	jr PhantomTypeMonsterAction_6491
 
 PhantomTypeMonsterAction_6475:
-	ld (ix+22), <Data_7BAC
-	ld (ix+23), >Data_7BAC
+	ld (ix+22), <PhantomTypeMonsterData_7BAC
+	ld (ix+23), >PhantomTypeMonsterData_7BAC
 	jr PhantomTypeMonsterAction_6491
 
 PhantomTypeMonsterAction_647F:
-	ld (ix+22), <Data_7BB3
-	ld (ix+23), >Data_7BB3
+	ld (ix+22), <PhantomTypeMonsterData_7BB3
+	ld (ix+23), >PhantomTypeMonsterData_7BB3
 	jr PhantomTypeMonsterAction_6491
 
 PhantomTypeMonsterAction_6489:
-	ld (ix+22), <Data_7BBA
-	ld (ix+23), >Data_7BBA
+	ld (ix+22), <PhantomTypeMonsterData_7BBA
+	ld (ix+23), >PhantomTypeMonsterData_7BBA
 PhantomTypeMonsterAction_6491:
 	ld (ix+24), $0C
 	ld (ix+0), <PhantomTypeMonsterAction_63FA
@@ -13075,8 +13075,8 @@ OrbMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <OrbTypeMonsterAction_650E
 	ld (ix+1), >OrbTypeMonsterAction_650E
-	ld (ix+22), <Data_7BD2
-	ld (ix+23), >Data_7BD2
+	ld (ix+22), <OrbTypeMonsterData_7BD2
+	ld (ix+23), >OrbTypeMonsterData_7BD2
 	ret
 
 OrbTypeMonsterAction_650E:
@@ -13142,8 +13142,8 @@ OrbTypeMonsterAction_6581:
 	call _LABEL_5420_
 	jr c, OrbTypeMonsterAction_6597
 	ld (ix+4), $01
-	ld (ix+22), <Data_7BC8
-	ld (ix+23), >Data_7BC8
+	ld (ix+22), <OrbTypeMonsterData_7BC8
+	ld (ix+23), >OrbTypeMonsterData_7BC8
 	jr OrbTypeMonsterAction_65F8
 
 OrbTypeMonsterAction_6597:
@@ -13157,8 +13157,8 @@ OrbTypeMonsterAction_65A1:
 	call _LABEL_5420_
 	jr c, OrbTypeMonsterAction_65B7
 	ld (ix+4), $02
-	ld (ix+22), <Data_7BCD
-	ld (ix+23), >Data_7BCD
+	ld (ix+22), <OrbTypeMonsterData_7BCD
+	ld (ix+23), >OrbTypeMonsterData_7BCD
 	jr OrbTypeMonsterAction_65F8
 
 OrbTypeMonsterAction_65B7:
@@ -13172,8 +13172,8 @@ OrbTypeMonsterAction_65C1:
 	call _LABEL_5420_
 	jr c, OrbTypeMonsterAction_65D7
 	ld (ix+4), $04
-	ld (ix+22), <Data_7BD2
-	ld (ix+23), >Data_7BD2
+	ld (ix+22), <OrbTypeMonsterData_7BD2
+	ld (ix+23), >OrbTypeMonsterData_7BD2
 	jr OrbTypeMonsterAction_65F8
 
 OrbTypeMonsterAction_65D7:
@@ -13188,8 +13188,8 @@ OrbTypeMonsterAction_65E3:
 	call _LABEL_5420_
 	jp c, OrbTypeMonsterAction_6549
 	ld (ix+4), $08
-	ld (ix+22), <Data_7BD7
-	ld (ix+23), >Data_7BD7
+	ld (ix+22), <OrbTypeMonsterData_7BD7
+	ld (ix+23), >OrbTypeMonsterData_7BD7
 OrbTypeMonsterAction_65F8:
 	ld (ix+7), l
 	ld (ix+8), h
@@ -13313,23 +13313,23 @@ OrbTypeMonsterAction_66D3:
 	jr OrbTypeMonsterAction_6711
 
 OrbTypeMonsterAction_66F3:
-	ld (ix+22), <Data_7BC8
-	ld (ix+23), >Data_7BC8
+	ld (ix+22), <OrbTypeMonsterData_7BC8
+	ld (ix+23), >OrbTypeMonsterData_7BC8
 	jr OrbTypeMonsterAction_6719
 
 OrbTypeMonsterAction_66FD:
-	ld (ix+22), <Data_7BCD
-	ld (ix+23), >Data_7BCD
+	ld (ix+22), <OrbTypeMonsterData_7BCD
+	ld (ix+23), >OrbTypeMonsterData_7BCD
 	jr OrbTypeMonsterAction_6719
 
 OrbTypeMonsterAction_6707:
-	ld (ix+22), <Data_7BD2
-	ld (ix+23), >Data_7BD2
+	ld (ix+22), <OrbTypeMonsterData_7BD2
+	ld (ix+23), >OrbTypeMonsterData_7BD2
 	jr OrbTypeMonsterAction_6719
 
 OrbTypeMonsterAction_6711:
-	ld (ix+22), <Data_7BD7
-	ld (ix+23), >Data_7BD7
+	ld (ix+22), <OrbTypeMonsterData_7BD7
+	ld (ix+23), >OrbTypeMonsterData_7BD7
 OrbTypeMonsterAction_6719:
 	ld (ix+24), $08
 	ld (ix+21), $00
@@ -13348,8 +13348,8 @@ BloodOrbMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <OrbTypeMonsterAction_650E
 	ld (ix+1), >OrbTypeMonsterAction_650E
-	ld (ix+22), <Data_7BD2
-	ld (ix+23), >Data_7BD2
+	ld (ix+22), <OrbTypeMonsterData_7BD2
+	ld (ix+23), >OrbTypeMonsterData_7BD2
 	ret
 
 ; 28th entry of Jump Table from 2012 (indexed by unknown)
@@ -13362,8 +13362,8 @@ DeathOrbMonsterAction:
 	call _LABEL_569C_
 	ld (ix+0), <OrbTypeMonsterAction_650E
 	ld (ix+1), >OrbTypeMonsterAction_650E
-	ld (ix+22), <Data_7BD2
-	ld (ix+23), >Data_7BD2
+	ld (ix+22), <OrbTypeMonsterData_7BD2
+	ld (ix+23), >OrbTypeMonsterData_7BD2
 	ret
 
 ; 11th entry of Jump Table from 2012 (indexed by unknown)
@@ -13373,8 +13373,8 @@ WitchMonsterAction:
 	ld (ix+26), $3C
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C04
-	ld (ix+23), >Data_7C04
+	ld (ix+22), <WitchTypeMonsterData_7C04
+	ld (ix+23), >WitchTypeMonsterData_7C04
 	ld (ix+0), <WitchTypeMonsterAction_67A1
 	ld (ix+1), >WitchTypeMonsterAction_67A1
 	ret
@@ -13453,8 +13453,8 @@ WitchTypeMonsterAction_6831:
 	ld (ix+7), l
 	ld (ix+8), h
 	ld (ix+24), $08
-	ld (ix+22), <Data_7BDC
-	ld (ix+23), >Data_7BDC
+	ld (ix+22), <WitchTypeMonsterData_7BDC
+	ld (ix+23), >WitchTypeMonsterData_7BDC
 	ld (ix+0), <WitchTypeMonsterAction_684B
 	ld (ix+1), >WitchTypeMonsterAction_684B
 
@@ -13469,8 +13469,8 @@ WitchTypeMonsterAction_684B:
 
 WitchTypeMonsterAction_685D:
 	ld (ix+4), $00
-	ld (ix+22), <Data_7C04
-	ld (ix+23), >Data_7C04
+	ld (ix+22), <WitchTypeMonsterData_7C04
+	ld (ix+23), >WitchTypeMonsterData_7C04
 	ld a, (ix+7)
 	ld (ix+5), a
 	ld a, (ix+8)
@@ -13584,23 +13584,23 @@ WitchTypeMonsterAction_6931:
 	ret
 
 WitchTypeMonsterAction_6950:
-	ld (ix+22), <Data_7BFF
-	ld (ix+23), >Data_7BFF
+	ld (ix+22), <WitchTypeMonsterData_7BFF
+	ld (ix+23), >WitchTypeMonsterData_7BFF
 	ret
 
 WitchTypeMonsterAction_6959:
-	ld (ix+22), <Data_7C04
-	ld (ix+23), >Data_7C04
+	ld (ix+22), <WitchTypeMonsterData_7C04
+	ld (ix+23), >WitchTypeMonsterData_7C04
 	ret
 
 WitchTypeMonsterAction_6962:
-	ld (ix+22), <Data_7C09
-	ld (ix+23), >Data_7C09
+	ld (ix+22), <WitchTypeMonsterData_7C09
+	ld (ix+23), >WitchTypeMonsterData_7C09
 	ret
 
 WitchTypeMonsterAction_696B:
-	ld (ix+22), <Data_7C0E
-	ld (ix+23), >Data_7C0E
+	ld (ix+22), <WitchTypeMonsterData_7C0E
+	ld (ix+23), >WitchTypeMonsterData_7C0E
 	ret
 
 WitchTypeMonsterAction_6974:
@@ -13621,23 +13621,23 @@ WitchTypeMonsterAction_6974:
 	jr WitchTypeMonsterAction_69AF
 
 WitchTypeMonsterAction_6991:
-	ld (ix+22), <Data_7BF8
-	ld (ix+23), >Data_7BF8
+	ld (ix+22), <WitchTypeMonsterData_7BF8
+	ld (ix+23), >WitchTypeMonsterData_7BF8
 	jr WitchTypeMonsterAction_69B7
 
 WitchTypeMonsterAction_699B:
-	ld (ix+22), <Data_7BE3
-	ld (ix+23), >Data_7BE3
+	ld (ix+22), <WitchTypeMonsterData_7BE3
+	ld (ix+23), >WitchTypeMonsterData_7BE3
 	jr WitchTypeMonsterAction_69B7
 
 WitchTypeMonsterAction_69A5:
-	ld (ix+22), <Data_7BEA
-	ld (ix+23), >Data_7BEA
+	ld (ix+22), <WitchTypeMonsterData_7BEA
+	ld (ix+23), >WitchTypeMonsterData_7BEA
 	jr WitchTypeMonsterAction_69B7
 
 WitchTypeMonsterAction_69AF:
-	ld (ix+22), <Data_7BF1
-	ld (ix+23), >Data_7BF1
+	ld (ix+22), <WitchTypeMonsterData_7BF1
+	ld (ix+23), >WitchTypeMonsterData_7BF1
 WitchTypeMonsterAction_69B7:
 	ld (ix+24), $10
 	ld (ix+0), <WitchTypeMonsterAction_6878
@@ -13656,8 +13656,8 @@ MadWitchMonsterAction:
 	ld (ix+26), $A0
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C04
-	ld (ix+23), >Data_7C04
+	ld (ix+22), <WitchTypeMonsterData_7C04
+	ld (ix+23), >WitchTypeMonsterData_7C04
 	ld (ix+0), <WitchTypeMonsterAction_67A1
 	ld (ix+1), >WitchTypeMonsterAction_67A1
 	ret
@@ -13671,8 +13671,8 @@ MystMonsterAction:
 	ld (ix+27), $00
 	ld (ix+28), $02
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C13
-	ld (ix+23), >Data_7C13
+	ld (ix+22), <MystTypeMonsterData_7C13
+	ld (ix+23), >MystTypeMonsterData_7C13
 	ld (ix+0), <MystTypeMonsterAction_6A1D
 	ld (ix+1), >MystTypeMonsterAction_6A1D
 	ret
@@ -13879,8 +13879,8 @@ DeathMystMonsterAction:
 	ld (ix+27), $00
 	ld (ix+28), $02
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C13
-	ld (ix+23), >Data_7C13
+	ld (ix+22), <MystTypeMonsterData_7C13
+	ld (ix+23), >MystTypeMonsterData_7C13
 	ld (ix+0), <MystTypeMonsterAction_6A1D
 	ld (ix+1), >MystTypeMonsterAction_6A1D
 	ret
@@ -13893,8 +13893,8 @@ DemijawMonsterAction:
 	ld (ix+26), $14
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C18
-	ld (ix+23), >Data_7C18
+	ld (ix+22), <DemijawMonsterData_7C18
+	ld (ix+23), >DemijawMonsterData_7C18
 	ld (ix+0), <DemijawMonsterAction_6BF2
 	ld (ix+1), >DemijawMonsterAction_6BF2
 	ret
@@ -14294,23 +14294,23 @@ KrakenTypeMonsterAction_6EF6:
 	jr KrakenTypeMonsterAction_6F31
 
 KrakenTypeMonsterAction_6F13:
-	ld (ix+22), <Data_7C39
-	ld (ix+23), >Data_7C39
+	ld (ix+22), <KrakenTypeMonsterData_7C39
+	ld (ix+23), >KrakenTypeMonsterData_7C39
 	jr KrakenTypeMonsterAction_6F39
 
 KrakenTypeMonsterAction_6F1D:
-	ld (ix+22), <Data_7C46
-	ld (ix+23), >Data_7C46
+	ld (ix+22), <KrakenTypeMonsterData_7C46
+	ld (ix+23), >KrakenTypeMonsterData_7C46
 	jr KrakenTypeMonsterAction_6F39
 
 KrakenTypeMonsterAction_6F27:
-	ld (ix+22), <Data_7C1F
-	ld (ix+23), >Data_7C1F
+	ld (ix+22), <KrakenTypeMonsterData_7C1F
+	ld (ix+23), >KrakenTypeMonsterData_7C1F
 	jr KrakenTypeMonsterAction_6F39
 
 KrakenTypeMonsterAction_6F31:
-	ld (ix+22), <Data_7C2C
-	ld (ix+23), >Data_7C2C
+	ld (ix+22), <KrakenTypeMonsterData_7C2C
+	ld (ix+23), >KrakenTypeMonsterData_7C2C
 KrakenTypeMonsterAction_6F39:
 	ld (ix+24), $12
 	ld (ix+0), <KrakenTypeMonsterAction_6E61
@@ -14337,8 +14337,8 @@ RootMonsterAction:
 	ld (ix+26), $5A
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C53
-	ld (ix+23), >Data_7C53
+	ld (ix+22), <RootTypeMonsterData_7C53
+	ld (ix+23), >RootTypeMonsterData_7C53
 	ld (ix+0), <RootTypeMonsterAction_6F8E
 	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
@@ -14517,8 +14517,8 @@ BloodRootMonsterAction:
 	ld (ix+26), $5F
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C53
-	ld (ix+23), >Data_7C53
+	ld (ix+22), <RootTypeMonsterData_7C53
+	ld (ix+23), >RootTypeMonsterData_7C53
 	ld (ix+0), <RootTypeMonsterAction_6F8E
 	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
@@ -14530,8 +14530,8 @@ DeathRootMonsterAction:
 	ld (ix+26), $64
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7C53
-	ld (ix+23), >Data_7C53
+	ld (ix+22), <RootTypeMonsterData_7C53
+	ld (ix+23), >RootTypeMonsterData_7C53
 	ld (ix+0), <RootTypeMonsterAction_6F8E
 	ld (ix+1), >RootTypeMonsterAction_6F8E
 	ret
@@ -14604,8 +14604,8 @@ DragonMonsterAction_71A3:
 	call _LABEL_5420_
 	jr c, DragonMonsterAction_71B9
 	ld (ix+4), $01
-	ld (ix+22), <Data_7C62
-	ld (ix+23), >Data_7C62
+	ld (ix+22), <DragonTypeMonsterData_7C62
+	ld (ix+23), >DragonTypeMonsterData_7C62
 	jr DragonMonsterAction_721A
 
 DragonMonsterAction_71B9:
@@ -14619,8 +14619,8 @@ DragonMonsterAction_71C3:
 	call _LABEL_5420_
 	jr c, DragonMonsterAction_71D9
 	ld (ix+4), $02
-	ld (ix+22), <Data_7C67
-	ld (ix+23), >Data_7C67
+	ld (ix+22), <DragonTypeMonsterData_7C67
+	ld (ix+23), >DragonTypeMonsterData_7C67
 	jr DragonMonsterAction_721A
 
 DragonMonsterAction_71D9:
@@ -14634,8 +14634,8 @@ DragonMonsterAction_71E3:
 	call _LABEL_5420_
 	jr c, DragonMonsterAction_71F9
 	ld (ix+4), $04
-	ld (ix+22), <Data_7C58
-	ld (ix+23), >Data_7C58
+	ld (ix+22), <DragonTypeMonsterData_7C58
+	ld (ix+23), >DragonTypeMonsterData_7C58
 	jr DragonMonsterAction_721A
 
 DragonMonsterAction_71F9:
@@ -14650,8 +14650,8 @@ DragonMonsterAction_7205:
 	call _LABEL_5420_
 	jp c, DragonMonsterAction_717E
 	ld (ix+4), $08
-	ld (ix+22), <Data_7C5D
-	ld (ix+23), >Data_7C5D
+	ld (ix+22), <DragonTypeMonsterData_7C5D
+	ld (ix+23), >DragonTypeMonsterData_7C5D
 DragonMonsterAction_721A:
 	ld (ix+7), l
 	ld (ix+8), h
@@ -14724,23 +14724,23 @@ DragonMonsterAction_7288:
 	jr DragonMonsterAction_72C3
 
 DragonMonsterAction_72A5:
-	ld (ix+22), <Data_7C76
-	ld (ix+23), >Data_7C76
+	ld (ix+22), <DragonTypeMonsterData_7C76
+	ld (ix+23), >DragonTypeMonsterData_7C76
 	jr DragonMonsterAction_72CB
 
 DragonMonsterAction_72AF:
-	ld (ix+22), <Data_7C7B
-	ld (ix+23), >Data_7C7B
+	ld (ix+22), <DragonTypeMonsterData_7C7B
+	ld (ix+23), >DragonTypeMonsterData_7C7B
 	jr DragonMonsterAction_72CB
 
 DragonMonsterAction_72B9:
-	ld (ix+22), <Data_7C6C
-	ld (ix+23), >Data_7C6C
+	ld (ix+22), <DragonTypeMonsterData_7C6C
+	ld (ix+23), >DragonTypeMonsterData_7C6C
 	jr DragonMonsterAction_72CB
 
 DragonMonsterAction_72C3:
-	ld (ix+22), <Data_7C71
-	ld (ix+23), >Data_7C71
+	ld (ix+22), <DragonTypeMonsterData_7C71
+	ld (ix+23), >DragonTypeMonsterData_7C71
 DragonMonsterAction_72CB:
 	ld (ix+24), $0A
 	ld (ix+0), <DragonMonsterAction_7238
@@ -14821,8 +14821,8 @@ SnailTypeMonsterAction_7365:
 	call _LABEL_5420_
 	jr c, SnailTypeMonsterAction_737B
 	ld (ix+4), $01
-	ld (ix+22), <Data_7C8A
-	ld (ix+23), >Data_7C8A
+	ld (ix+22), <SnailTypeMonsterData_7C8A
+	ld (ix+23), >SnailTypeMonsterData_7C8A
 	jr SnailTypeMonsterAction_73DC
 
 SnailTypeMonsterAction_737B:
@@ -14836,8 +14836,8 @@ SnailTypeMonsterAction_7385:
 	call _LABEL_5420_
 	jr c, SnailTypeMonsterAction_739B
 	ld (ix+4), $02
-	ld (ix+22), <Data_7C8F
-	ld (ix+23), >Data_7C8F
+	ld (ix+22), <SnailTypeMonsterData_7C8F
+	ld (ix+23), >SnailTypeMonsterData_7C8F
 	jr SnailTypeMonsterAction_73DC
 
 SnailTypeMonsterAction_739B:
@@ -14851,8 +14851,8 @@ SnailTypeMonsterAction_73A5:
 	call _LABEL_5420_
 	jr c, SnailTypeMonsterAction_73BB
 	ld (ix+4), $04
-	ld (ix+22), <Data_7C80
-	ld (ix+23), >Data_7C80
+	ld (ix+22), <SnailTypeMonsterData_7C80
+	ld (ix+23), >SnailTypeMonsterData_7C80
 	jr SnailTypeMonsterAction_73DC
 
 SnailTypeMonsterAction_73BB:
@@ -14867,8 +14867,8 @@ SnailTypeMonsterAction_73C7:
 	call _LABEL_5420_
 	jp c, SnailTypeMonsterAction_7335
 	ld (ix+4), $08
-	ld (ix+22), <Data_7C85
-	ld (ix+23), >Data_7C85
+	ld (ix+22), <SnailTypeMonsterData_7C85
+	ld (ix+23), >SnailTypeMonsterData_7C85
 SnailTypeMonsterAction_73DC:
 	ld (ix+7), l
 	ld (ix+8), h
@@ -15016,23 +15016,23 @@ SnailTypeMonsterAction_74E5:
 	jr SnailTypeMonsterAction_7520
 
 SnailTypeMonsterAction_7502:
-	ld (ix+22), <Data_7C8A
-	ld (ix+23), >Data_7C8A
+	ld (ix+22), <SnailTypeMonsterData_7C8A
+	ld (ix+23), >SnailTypeMonsterData_7C8A
 	jr SnailTypeMonsterAction_7528
 
 SnailTypeMonsterAction_750C:
-	ld (ix+22), <Data_7C8F
-	ld (ix+23), >Data_7C8F
+	ld (ix+22), <SnailTypeMonsterData_7C8F
+	ld (ix+23), >SnailTypeMonsterData_7C8F
 	jr SnailTypeMonsterAction_7528
 
 SnailTypeMonsterAction_7516:
-	ld (ix+22), <Data_7C80
-	ld (ix+23), >Data_7C80
+	ld (ix+22), <SnailTypeMonsterData_7C80
+	ld (ix+23), >SnailTypeMonsterData_7C80
 	jr SnailTypeMonsterAction_7528
 
 SnailTypeMonsterAction_7520:
-	ld (ix+22), <Data_7C85
-	ld (ix+23), >Data_7C85
+	ld (ix+22), <SnailTypeMonsterData_7C85
+	ld (ix+23), >SnailTypeMonsterData_7C85
 SnailTypeMonsterAction_7528:
 	ld (ix+24), $10
 	ld (ix+0), <SnailTypeMonsterAction_73FB
@@ -15084,8 +15084,8 @@ Kameleon1MonsterAction:
 	ld (ix+26), $B4
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7CBD
-	ld (ix+23), >Data_7CBD
+	ld (ix+22), <Kameleon1MonsterData_7CBD
+	ld (ix+23), >Kameleon1MonsterData_7CBD
 	ld (ix+0), <Kameleon1MonsterAction_75BD
 	ld (ix+1), >Kameleon1MonsterAction_75BD
 	ret
@@ -15192,8 +15192,8 @@ Kameleon1MonsterAction_7685:
 	call _LABEL_5420_
 	jr c, Kameleon1MonsterAction_769B
 	ld (ix+4), $01
-	ld (ix+22), <Data_7CC6
-	ld (ix+23), >Data_7CC6
+	ld (ix+22), <Kameleon1MonsterData_7CC6
+	ld (ix+23), >Kameleon1MonsterData_7CC6
 	jr Kameleon1MonsterAction_76FD
 
 Kameleon1MonsterAction_769B:
@@ -15207,8 +15207,8 @@ Kameleon1MonsterAction_76A5:
 	call _LABEL_5420_
 	jr c, Kameleon1MonsterAction_76BB
 	ld (ix+4), $02
-	ld (ix+22), <Data_7CCF
-	ld (ix+23), >Data_7CCF
+	ld (ix+22), <Kameleon1MonsterData_7CCF
+	ld (ix+23), >Kameleon1MonsterData_7CCF
 	jr Kameleon1MonsterAction_76FD
 
 Kameleon1MonsterAction_76BB:
@@ -15222,8 +15222,8 @@ Kameleon1MonsterAction_76C5:
 	call _LABEL_5420_
 	jr c, Kameleon1MonsterAction_76DB
 	ld (ix+4), $04
-	ld (ix+22), <Data_7CB4
-	ld (ix+23), >Data_7CB4
+	ld (ix+22), <Kameleon1MonsterData_7CB4
+	ld (ix+23), >Kameleon1MonsterData_7CB4
 	jr Kameleon1MonsterAction_76FD
 
 Kameleon1MonsterAction_76DB:
@@ -15237,8 +15237,8 @@ Kameleon1MonsterAction_76E8:
 	ld hl, $0001
 	call _LABEL_5420_
 	jp c, Kameleon1MonsterAction_7651
-	ld (ix+22), <Data_7CBD
-	ld (ix+23), >Data_7CBD
+	ld (ix+22), <Kameleon1MonsterData_7CBD
+	ld (ix+23), >Kameleon1MonsterData_7CBD
 	ld (ix+4), $08
 Kameleon1MonsterAction_76FD:
 	ld (ix+7), l
@@ -15314,23 +15314,23 @@ Kameleon1MonsterAction_7774:
 	jr Kameleon1MonsterAction_77AE
 
 Kameleon1MonsterAction_7790:
-	ld (ix+22), <Data_7CC6
-	ld (ix+23), >Data_7CC6
+	ld (ix+22), <Kameleon1MonsterData_7CC6
+	ld (ix+23), >Kameleon1MonsterData_7CC6
 	jr Kameleon1MonsterAction_77B6
 
 Kameleon1MonsterAction_779A:
-	ld (ix+22), <Data_7CCF
-	ld (ix+23), >Data_7CCF
+	ld (ix+22), <Kameleon1MonsterData_7CCF
+	ld (ix+23), >Kameleon1MonsterData_7CCF
 	jr Kameleon1MonsterAction_77B6
 
 Kameleon1MonsterAction_77A4:
-	ld (ix+22), <Data_7CB4
-	ld (ix+23), >Data_7CB4
+	ld (ix+22), <Kameleon1MonsterData_7CB4
+	ld (ix+23), >Kameleon1MonsterData_7CB4
 	jr Kameleon1MonsterAction_77B6
 
 Kameleon1MonsterAction_77AE:
-	ld (ix+22), <Data_7CBD
-	ld (ix+23), >Data_7CBD
+	ld (ix+22), <Kameleon1MonsterData_7CBD
+	ld (ix+23), >Kameleon1MonsterData_7CBD
 Kameleon1MonsterAction_77B6:
 	ld (ix+30), $01
 	ld (ix+24), $10
@@ -15348,8 +15348,8 @@ Kameleon2MonsterAction:
 	ld (ix+26), $82
 	ld (ix+27), $00
 	call _LABEL_569C_
-	ld (ix+22), <Data_7CE1
-	ld (ix+23), >Data_7CE1
+	ld (ix+22), <Kameleon2MonsterData_7CE1
+	ld (ix+23), >Kameleon2MonsterData_7CE1
 	ld (ix+0), <Kameleon2MonsterAction_77F8
 	ld (ix+1), >Kameleon2MonsterAction_77F8
 	ret
@@ -15456,8 +15456,8 @@ Kameleon2MonsterAction_78C0:
 	call _LABEL_5420_
 	jr c, Kameleon2MonsterAction_78D6
 	ld (ix+4), $01
-	ld (ix+22), <Data_7CEA
-	ld (ix+23), >Data_7CEA
+	ld (ix+22), <Kameleon2MonsterData_7CEA
+	ld (ix+23), >Kameleon2MonsterData_7CEA
 	jr Kameleon2MonsterAction_7938
 
 Kameleon2MonsterAction_78D6:
@@ -15471,8 +15471,8 @@ Kameleon2MonsterAction_78E0:
 	call _LABEL_5420_
 	jr c, Kameleon2MonsterAction_78F6
 	ld (ix+4), $02
-	ld (ix+22), <Data_7CF3
-	ld (ix+23), >Data_7CF3
+	ld (ix+22), <Kameleon2MonsterData_7CF3
+	ld (ix+23), >Kameleon2MonsterData_7CF3
 	jr Kameleon2MonsterAction_7938
 
 Kameleon2MonsterAction_78F6:
@@ -15486,8 +15486,8 @@ Kameleon2MonsterAction_7900:
 	call _LABEL_5420_
 	jr c, Kameleon2MonsterAction_7916
 	ld (ix+4), $04
-	ld (ix+22), <Data_7CD8
-	ld (ix+23), >Data_7CD8
+	ld (ix+22), <Kameleon2MonsterData_7CD8
+	ld (ix+23), >Kameleon2MonsterData_7CD8
 	jr Kameleon2MonsterAction_7938
 
 Kameleon2MonsterAction_7916:
@@ -15501,8 +15501,8 @@ Kameleon2MonsterAction_7923:
 	ld hl, $0001
 	call _LABEL_5420_
 	jp c, Kameleon2MonsterAction_788C
-	ld (ix+22), <Data_7CE1
-	ld (ix+23), >Data_7CE1
+	ld (ix+22), <Kameleon2MonsterData_7CE1
+	ld (ix+23), >Kameleon2MonsterData_7CE1
 	ld (ix+4), $08
 Kameleon2MonsterAction_7938:
 	ld (ix+7), l
@@ -15577,23 +15577,23 @@ Kameleon2MonsterAction_79AF:
 	jr Kameleon2MonsterAction_79E9
 
 Kameleon2MonsterAction_79CB:
-	ld (ix+22), <Data_7CEA
-	ld (ix+23), >Data_7CEA
+	ld (ix+22), <Kameleon2MonsterData_7CEA
+	ld (ix+23), >Kameleon2MonsterData_7CEA
 	jr Kameleon2MonsterAction_79F1
 
 Kameleon2MonsterAction_79D5:
-	ld (ix+22), <Data_7CF3
-	ld (ix+23), >Data_7CF3
+	ld (ix+22), <Kameleon2MonsterData_7CF3
+	ld (ix+23), >Kameleon2MonsterData_7CF3
 	jr Kameleon2MonsterAction_79F1
 
 Kameleon2MonsterAction_79DF:
-	ld (ix+22), <Data_7CD8
-	ld (ix+23), >Data_7CD8
+	ld (ix+22), <Kameleon2MonsterData_7CD8
+	ld (ix+23), >Kameleon2MonsterData_7CD8
 	jr Kameleon2MonsterAction_79F1
 
 Kameleon2MonsterAction_79E9:
-	ld (ix+22), <Data_7CE1
-	ld (ix+23), >Data_7CE1
+	ld (ix+22), <Kameleon2MonsterData_7CE1
+	ld (ix+23), >Kameleon2MonsterData_7CE1
 Kameleon2MonsterAction_79F1:
 	ld (ix+30), $01
 	ld (ix+24), $10
