@@ -2213,7 +2213,7 @@ DoGameOver:
 	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
-	ld hl, HUDGold
+	ld hl, HUDCharacterClass-22
 	ld de, $0016
 -:
 	add hl, de
@@ -2816,7 +2816,7 @@ JumpTable1_16F4:
 	rst $08	; Interrupt8
 	ld a, (CharacterLevel)
 	ld b, a
-	ld hl, HUDGold
+	ld hl, HUDCharacterClass-22
 	ld de, $0016
 -:
 	add hl, de
@@ -4938,15 +4938,15 @@ _LABEL_2802_:
 	rst $08	; Interrupt8
 	ld a, $04
 	ld ($FFFF), a
-	ld hl, $2838
+	ld hl, Data_283A-2
 	ld a, (EquippedArmor)
 	and $0F
 	cp $03
 	jr c, _LABEL_2826_
-	ld hl, $2860
+	ld hl, Data_283A+38
 	cp $06
 	jr c, _LABEL_2826_
-	ld hl, $2888
+	ld hl, Data_283A+4E
 	ld a, $02
 	ld ($FFFF), a
 _LABEL_2826_:
@@ -4962,7 +4962,8 @@ _LABEL_2826_:
 	call OUTI256
 	jp OUTI128
 
-; Data from 283A to 28B1 (120 bytes) - Unused?
+; Data from 283A to 28B1 (120 bytes)
+; Pointers to player sprites data?
 Data_283A:
 	.dw $800A $818A $830A $848A
 	.dw $860A $878A $890A $8A8A
@@ -7292,9 +7293,9 @@ _LABEL_3962_:
 	ld a, VictoryMessage
 	ld (CurrentMessage), a
 	ld iy, (CurrentMonster)
-	ld (iy+0), $0F
+	ld (iy+0), <_LABEL_310F_
 	inc hl
-	ld (iy+1), $31
+	ld (iy+1), >_LABEL_310F_
 	ld a, (iy+31)
 	cp $1F
 	jr c, _LABEL_39A0_
